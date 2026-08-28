@@ -11,5 +11,10 @@
                 จัดการแผนก
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link <?= str_starts_with($currentPath, '/positions') ? 'active' : '' ?>" href="<?= APP_URL ?>/positions">
+                จัดการตำแหน่ง
+            </a>
+        </li>
     </ul>
 </nav>
