@@ -6,5 +6,10 @@
                 จัดการผู้ใช้งาน
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link <?= str_starts_with($currentPath, '/departments') ? 'active' : '' ?>" href="<?= APP_URL ?>/departments">
+                จัดการแผนก
+            </a>
+        </li>
     </ul>
 </nav>

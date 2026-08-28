@@ -12,4 +12,5 @@ return [
     'GET /users/{id}/edit'    => ['UserController', 'edit', ['auth', 'role:admin']],
     'POST /users/{id}/edit'   => ['UserController', 'update', ['auth', 'role:admin']],
     'POST /users/{id}/delete' => ['UserController', 'destroy', ['auth', 'role:admin']],
+    'GET /departments'        => ['DepartmentController', 'index', ['auth']],
 ];

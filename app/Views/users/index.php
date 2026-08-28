@@ -1,6 +1,6 @@
 <?php $currentUser = Session::get('user'); ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">จัดการผู้ใช้งาน</h4>
+    <h4 class="mb-0">จัดการผู้ใช้งานอิอิ</h4>
     <?php if ($currentUser['user_role'] === 'admin'): ?>
         <a href="<?= APP_URL ?>/users/create" class="btn btn-primary btn-sm">+ เพิ่มผู้ใช้</a>
     <?php endif; ?>
