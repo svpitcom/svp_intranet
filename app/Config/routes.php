@@ -27,4 +27,18 @@ return [
     'GET /positions/{id}/edit'    => ['PositionController', 'edit', ['auth', 'role:admin']],
     'POST /positions/{id}/edit'   => ['PositionController', 'update', ['auth', 'role:admin']],
     'POST /positions/{id}/delete' => ['PositionController', 'destroy', ['auth', 'role:admin']],
+    // Device Types
+    'GET /device_types'        => ['DeviceTypeController', 'index', ['auth']],
+    'GET /device_types/create'       => ['DeviceTypeController', 'create', ['auth', 'role:admin']],
+    'POST /device_types/create'      => ['DeviceTypeController', 'store', ['auth', 'role:admin']],
+    'GET /device_types/{id}/edit'    => ['DeviceTypeController', 'edit', ['auth', 'role:admin']],
+    'POST /device_types/{id}/edit'   => ['DeviceTypeController', 'update', ['auth', 'role:admin']],
+    'POST /device_types/{id}/delete' => ['DeviceTypeController', 'destroy', ['auth', 'role:admin']],
+    // Devices
+    'GET /devices'        => ['DeviceController', 'index', ['auth']],
+    'GET /devices/create'       => ['DeviceController', 'create', ['auth', 'role:admin']],
+    'POST /devices/create'      => ['DeviceController', 'store', ['auth', 'role:admin']],
+    'GET /devices/{id}/edit'    => ['DeviceController', 'edit', ['auth', 'role:admin']],
+    'POST /devices/{id}/edit'   => ['DeviceController', 'update', ['auth', 'role:admin']],
+    'POST /devices/{id}/delete' => ['DeviceController', 'destroy', ['auth', 'role:admin']],
 ];

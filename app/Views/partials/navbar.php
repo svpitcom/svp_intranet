@@ -1,5 +1,5 @@
 <?php $user = Session::get('user'); ?>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark px-3">
+<nav class="navbar navbar-expand-md navbar-dark bg-blue-800 px-3">
     <a class="navbar-brand" href="<?= APP_URL ?>/"><?= APP_NAME ?></a>
     <div class="ms-auto d-flex align-items-center text-light">
         <?php if ($user): ?>

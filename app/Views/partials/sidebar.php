@@ -16,5 +16,10 @@
                 จัดการตำแหน่ง
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link <?= str_starts_with($currentPath, '/device_types') ? 'active' : '' ?>" href="<?= APP_URL ?>/device_types">
+                จัดการประเภทอุปกรณ์
+            </a>
+        </li>
     </ul>
 </nav>
