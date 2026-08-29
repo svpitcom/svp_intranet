@@ -75,7 +75,7 @@ class DepartmentController extends Controller
         $this->redirect('/departments');
     }
 
-    public function delete(int $id): void
+    public function destroy(int $id): void
     {
         // Implementation for deleting a department
         $department = (new Department())->find($id);

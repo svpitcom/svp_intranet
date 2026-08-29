@@ -14,7 +14,7 @@ $currentUser = Session::get('user');
 <div class="card">
     <div class="card-body">
         <form method="POST"
-            action="<?= APP_URL ?><?= $isEdit ? $department['svp_department_id'] . '/edit' : '/departments/create' ?>">
+            action="<?= APP_URL ?><?= $isEdit ? '/positions/' . $department['svp_department_id'] . '/edit' : '/departments/create' ?>">
             <div class="mb-3">
                 <label for="svp_code_department" class="form-label">รหัสแผนก</label>
                 <input
@@ -22,7 +22,7 @@ $currentUser = Session::get('user');
                     name="svp_code_department"
                     id="svp_code_department"
                     class="form-control"
-                    value="<?= htmlspecialchars($department['svp_department_name'] ?? '') ?>"
+                    value="<?= htmlspecialchars($department['svp_code_department'] ?? '') ?>"
                     required
                     autofocus>
             </div>

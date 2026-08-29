@@ -4,7 +4,11 @@ class PositionController extends Controller
 {
     public function index(): void
     {
-        $positions = (new Position())->all();
+        $sort = $this->input('sort', 'svp_position_id');
+        $dir  = $this->input('dir', 'asc');
+
+        $positions = (new Position())->allSorted($sort, $dir);
+
         $this->view('positions/index', ['positions' => $positions]);
     }
 
@@ -71,7 +75,7 @@ class PositionController extends Controller
         $this->redirect('/positions');
     }
 
-    public function delete(int $id): void
+    public function destroy(int $id): void
     {
         $position = (new Position())->find($id);
 
