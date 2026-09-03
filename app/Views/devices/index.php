@@ -45,7 +45,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
         <table class="table table-hover align-middle mb-0 table-modern">
             <thead>
                 <tr>
-                    <th>ID อุปกรณ์</th>
+                    <th>ID</th>
                     <th><?= sortLink('svp_device_name', 'ชื่ออุปกรณ์', $sort, $dir, $nextDir) ?></th>
                     <th><?= sortLink('brand_name', 'ยี่ห้อ', $sort, $dir, $nextDir) ?></th>
                     <th>โมเดล</th>

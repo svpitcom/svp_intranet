@@ -41,4 +41,18 @@ return [
     'GET /devices/{id}/edit'    => ['DeviceController', 'edit', ['auth', 'role:admin']],
     'POST /devices/{id}/edit'   => ['DeviceController', 'update', ['auth', 'role:admin']],
     'POST /devices/{id}/delete' => ['DeviceController', 'destroy', ['auth', 'role:admin']],
+    // ---------- PM Schedule ----------
+    'GET /pm-schedules'                 => ['PmScheduleController', 'index', ['auth']],
+    'GET /pm-schedules/create'          => ['PmScheduleController', 'create', ['auth', 'role:admin,manager']],
+    'POST /pm-schedules/create'         => ['PmScheduleController', 'store', ['auth', 'role:admin,manager']],
+    'GET /pm-schedules/{id}/edit'       => ['PmScheduleController', 'edit', ['auth', 'role:admin,manager']],
+    'POST /pm-schedules/{id}/edit'      => ['PmScheduleController', 'update', ['auth', 'role:admin,manager']],
+    'POST /pm-schedules/{id}/delete'    => ['PmScheduleController', 'destroy', ['auth', 'role:admin']],
+    // ---------- PM Record----------
+    'GET /pm-schedules/{id}/record'     => ['PmRecordController', 'create', ['auth']],
+    'POST /pm-schedules/{id}/record'    => ['PmRecordController', 'store', ['auth']],
+    'GET /pm-records'                   => ['PmRecordController', 'index', ['auth']],
+    'GET /pm-schedules/export' => ['ExportController', 'schedules', ['auth']],
+    'GET /pm-records/export'   => ['ExportController', 'records', ['auth']],
+    'GET /pm-schedules/{id}/export' => ['ExportController', 'scheduleForm', ['auth']],
 ];

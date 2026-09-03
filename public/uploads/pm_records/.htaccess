@@ -1,0 +1,4 @@
+# ป้องกันไม่ให้ไฟล์ในโฟลเดอร์นี้ถูกรันเป็น PHP ไม่ว่ากรณีใด
+<FilesMatch "\.(php|php\d|phtml|pl|py|cgi|asp|sh)$">
+    Require all denied
+</FilesMatch>

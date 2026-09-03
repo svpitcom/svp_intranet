@@ -1,0 +1,9 @@
+{
+  "name": "svp/intranet",
+  "description": "SVP Factory Intranet & IT Helpdesk",
+  "type": "project",
+  "require": {
+    "php": ">=8.0",
+    "dompdf/dompdf": "^3.1"
+  }
+}

@@ -39,7 +39,7 @@ class Router
                 }
 
                 $controller = new $controllerName();
-                call_user_func_array([$controller, $action], $params);
+                call_user_func_array([$controller, $action], array_values($params));
                 return;
             }
         }

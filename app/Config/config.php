@@ -20,6 +20,9 @@ define('APP_NAME', env('APP_NAME', 'Factory Intranet'));
 define('APP_URL', rtrim(env('APP_URL', '/'), '/'));
 define('APP_ENV', env('APP_ENV', 'development'));
 define('BASE_PATH', dirname(__DIR__, 2));
+define('UPLOAD_PM_RECORD_PATH', BASE_PATH . '/public/uploads/pm_records');
+define('UPLOAD_PM_SCHEDULE_PATH', BASE_PATH . '/public/uploads/pm_schedules');// config.php
+// define('UPLOAD_PM_RECORD_PATH', BASE_PATH . '/public/access/uploads/pm_records');
 
 if (APP_ENV === 'development') {
     error_reporting(E_ALL);

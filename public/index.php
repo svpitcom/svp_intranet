@@ -1,4 +1,5 @@
 <?php
+require dirname(__DIR__) . '/vendor/autoload.php';   // <-- เพิ่มบรรทัดนี้บนสุด
 require dirname(__DIR__) . '/app/Config/config.php';
 require dirname(__DIR__) . '/app/Config/database.php';
 
