@@ -38,8 +38,9 @@ class ExportController extends Controller
     private function streamPdf(string $html, string $filename, string $orientation = 'landscape'): void
     {
         $options = new Options();
-        $options->set('isRemoteEnabled', false);
+        $options->set('isRemoteEnabled', true); // ต้องเปิด ไม่งั้น Dompdf จะโหลดฟอนต์ @font-face ไม่ได้ แม้เป็นไฟล์ในเครื่องก็ตาม
         $options->set('isFontSubsettingEnabled', true);
+        $options->setChroot(BASE_PATH); // จำกัดขอบเขตให้เข้าถึงได้เฉพาะไฟล์ในโปรเจกต์ (กันความเสี่ยงจากการเปิด isRemoteEnabled)
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html, 'UTF-8');
