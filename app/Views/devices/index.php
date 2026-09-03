@@ -1,7 +1,5 @@
 <?php
 $currentUser = Session::get('user');
-$sort = $_GET['sort'] ?? 'devices';
-$dir  = ($_GET['dir'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
 $nextDir = $dir === 'asc' ? 'desc' : 'asc';
 
 function sortLink(string $column, string $label, string $sort, string $dir, string $nextDir): string
@@ -14,6 +12,12 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
     }
     $url = APP_URL . '/devices?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc');
     return '<a href="' . $url . '" class="sort-link">' . htmlspecialchars($label) . ' ' . $icon . '</a>';
+}
+
+/** สร้าง URL หน้าอื่น โดยคง sort/dir เดิมไว้เสมอ */
+function pageUrl(int $page, string $sort, string $dir): string
+{
+    return APP_URL . '/devices?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . $page;
 }
 ?>
 
@@ -31,7 +35,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="mb-0 fw-bold">จัดการอุปกรณ์</h4>
-        <span class="text-muted small">ทั้งหมด <?= count($devices) ?> รายการ</span>
+        <span class="text-muted small">ทั้งหมด <?= number_format($totalDevices) ?> รายการ</span>
     </div>
     <?php if ($currentUser['user_role'] === 'admin'): ?>
         <a href="<?= APP_URL ?>/devices/create" class="btn-primary-modern btn-sm">
@@ -106,6 +110,45 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
             </tbody>
         </table>
     </div>
+
+    <?php if ($totalPages > 1): ?>
+        <div class="pagination-modern">
+            <span class="pagination-info">
+                หน้า <?= $currentPage ?> จาก <?= $totalPages ?> (<?= number_format($totalDevices) ?> รายการ)
+            </span>
+
+            <div class="pagination-controls">
+                <a href="<?= pageUrl(max(1, $currentPage - 1), $sort, $dir) ?>"
+                    class="page-btn <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+
+                <?php
+                $startPage = max(1, $currentPage - 2);
+                $endPage = min($totalPages, $currentPage + 2);
+                ?>
+
+                <?php if ($startPage > 1): ?>
+                    <a href="<?= pageUrl(1, $sort, $dir) ?>" class="page-btn">1</a>
+                    <?php if ($startPage > 2): ?><span class="page-dots">...</span><?php endif; ?>
+                <?php endif; ?>
+
+                <?php for ($p = $startPage; $p <= $endPage; $p++): ?>
+                    <a href="<?= pageUrl($p, $sort, $dir) ?>" class="page-btn <?= $p === $currentPage ? 'active' : '' ?>"><?= $p ?></a>
+                <?php endfor; ?>
+
+                <?php if ($endPage < $totalPages): ?>
+                    <?php if ($endPage < $totalPages - 1): ?><span class="page-dots">...</span><?php endif; ?>
+                    <a href="<?= pageUrl($totalPages, $sort, $dir) ?>" class="page-btn"><?= $totalPages ?></a>
+                <?php endif; ?>
+
+                <a href="<?= pageUrl(min($totalPages, $currentPage + 1), $sort, $dir) ?>"
+                    class="page-btn <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <style>
@@ -269,5 +312,63 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
         background: #fef2f2;
         color: #b91c1c;
         border: 1px solid #fecaca;
+    }
+
+    /* ---- Pagination ---- */
+    .pagination-modern {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.9rem 1.2rem;
+        border-top: 1px solid #f4f5f7;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .pagination-info {
+        font-size: 0.82rem;
+        color: #9ca3af;
+    }
+
+    .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .page-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 0.5rem;
+        border-radius: 8px;
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        transition: all 0.15s ease;
+    }
+
+    .page-btn:hover {
+        background: #eef2ff;
+        color: #2b6cb0;
+    }
+
+    .page-btn.active {
+        background: linear-gradient(135deg, #4f7cff, #2b6cb0);
+        color: #fff;
+    }
+
+    .page-btn.disabled {
+        opacity: 0.35;
+        pointer-events: none;
+    }
+
+    .page-dots {
+        color: #9ca3af;
+        font-size: 0.82rem;
+        padding: 0 0.2rem;
     }
 </style>

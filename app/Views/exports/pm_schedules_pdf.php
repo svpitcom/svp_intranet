@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @font-face {
+        /* @font-face {
             font-family: 'Sarabun';
             src: url('<?= BASE_PATH ?>/public/assets/fonts/Sarabun-Regular.ttf') format('truetype');
-        }
+        } */
 
         body {
             font-family: 'Sarabun', sans-serif;
@@ -72,7 +72,7 @@
     <table>
         <thead>
             <tr>
-                <th>อุปกรณ์</th>
+                <th>Hardware</th>
                 <th>ชื่อแผน PM</th>
                 <th>รอบ (วัน)</th>
                 <th>ผู้รับผิดชอบ</th>

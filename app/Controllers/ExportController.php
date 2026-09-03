@@ -35,16 +35,15 @@ class ExportController extends Controller
         return ob_get_clean();
     }
 
-    private function streamPdf(string $html, string $filename): void
+    private function streamPdf(string $html, string $filename, string $orientation = 'landscape'): void
     {
         $options = new Options();
         $options->set('isRemoteEnabled', false);
-        $options->set('isFontSubsettingEnabled', true); // ลดขนาดไฟล์ PDF โดยฝังเฉพาะตัวอักษรที่ใช้จริง
-        // ลบบรรทัด $options->set('defaultFont', 'Sarabun'); ออก — ไม่จำเป็นแล้วเพราะกำหนดผ่าน @font-face ในไฟล์ view โดยตรง
+        $options->set('isFontSubsettingEnabled', true);
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html, 'UTF-8');
-        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->setPaper('A4', $orientation);
         $dompdf->render();
 
         $dompdf->stream($filename, ['Attachment' => true]);
@@ -61,8 +60,20 @@ class ExportController extends Controller
             $this->redirect('/pm-schedules');
         }
 
-        $html = $this->renderHtml('exports/pm_schedule_form_pdf', ['schedule' => $schedule]);
+        $checklistItems = array_values(array_filter(
+            array_map('trim', explode("\n", $schedule['checklist'] ?? '')),
+            fn($line) => $line !== ''
+        ));
+        if (empty($checklistItems)) {
+            $checklistItems = ['-'];
+        }
+
+        $html = $this->renderHtml('exports/pm_schedule_form_pdf', [
+            'schedule'       => $schedule,
+            'checklistItems' => $checklistItems,
+        ]);
+
         $filename = 'PM-Form-' . $schedule['pm_schedule_id'] . '-' . date('Y-m-d') . '.pdf';
-        $this->streamPdf($html, $filename);
+        $this->streamPdf($html, $filename, 'portrait');
     }
 }

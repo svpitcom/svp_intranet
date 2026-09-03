@@ -4,8 +4,26 @@ class DeviceController extends Controller
 {
     public function index(): void
     {
-        $devices = (new Device())->allWithDevice();
-        $this->view('devices/index', ['devices' => $devices]);
+        $perPage = 10;
+        $page = max(1, (int) $this->input('page', 1));
+        $sort = $this->input('sort', 'svp_device_id');
+        $dir  = $this->input('dir', 'asc');
+
+        $deviceModel = new Device();
+        $totalDevices = $deviceModel->countAll();
+        $totalPages = max(1, (int) ceil($totalDevices / $perPage));
+        $page = min($page, $totalPages); // กันเผลอเข้าเลขหน้าที่เกินจำนวนจริง
+
+        $devices = $deviceModel->paginate($page, $perPage, $sort, $dir);
+
+        $this->view('devices/index', [
+            'devices'      => $devices,
+            'totalDevices' => $totalDevices,
+            'currentPage'  => $page,
+            'totalPages'   => $totalPages,
+            'sort'         => $sort,
+            'dir'          => $dir,
+        ]);
     }
 
     public function create(): void
