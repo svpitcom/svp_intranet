@@ -55,7 +55,6 @@ class ExportController extends Controller
     public function scheduleForm(string $id): void
     {
         $schedule = (new PmSchedule())->findWithRelations((int) $id);
-
         if (!$schedule) {
             Session::flash('error', 'ไม่พบแผน PM นี้');
             $this->redirect('/pm-schedules');
@@ -72,6 +71,7 @@ class ExportController extends Controller
         $html = $this->renderHtml('exports/pm_schedule_form_pdf', [
             'schedule'       => $schedule,
             'checklistItems' => $checklistItems,
+            'logoPath'       => str_replace('\\', '/', BASE_PATH) . '/public/assets/img/AW_LOGO_SVPStroke-01.png',
         ]);
 
         $filename = 'PM-Form-' . $schedule['pm_schedule_id'] . '-' . date('Y-m-d') . '.pdf';

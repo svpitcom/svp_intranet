@@ -49,6 +49,38 @@
             margin-bottom: 3px;
         }
 
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3px;
+        }
+
+        .header-table td {
+            border: none;
+            padding: 0 4px;
+            vertical-align: middle;
+        }
+
+        .logo-cell {
+            width: 90px;
+            text-align: left;
+        }
+
+        .logo-cell img {
+            max-width: 85px;
+            max-height: 55px;
+        }
+
+        .title-cell {
+            text-align: center;
+        }
+
+        .checkbox-cell {
+            width: 110px;
+            text-align: right;
+            font-size: 8.5px;
+        }
+
         .checkbox {
             display: inline-block;
             width: 9px;
@@ -170,7 +202,7 @@
         </div>
 
         <div class="header-title">
-            <div class="t1">ใบรายงานผลการตรวจสอบและบำรุงรักษาเชิงป้องกัน (PM)</div>
+            <div class="t2">ใบรายงานผลการตรวจสอบและบำรุงรักษาเชิงป้องกัน</div>
             <div class="t2">SV POLYMER CO., LTD.</div>
         </div>
 
