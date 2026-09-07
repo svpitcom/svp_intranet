@@ -12,7 +12,7 @@
 
 <form method="POST"
     action="<?= APP_URL ?><?= $isEdit ? '/pm-schedules/' . $schedule['pm_schedule_id'] . '/edit' : '/pm-schedules/create' ?>"
-    class="card p-4" style="max-width: 640px;">
+    class="card p-4" style="max-width: 640px;" enctype="multipart/form-data">
 
     <div class="mb-3">
         <label class="form-label">อุปกรณ์</label>
@@ -69,10 +69,35 @@
         </div>
     <?php endif; ?>
 
+    <!-- ===== Checklist แบบเพิ่มทีละข้อ ===== -->
     <div class="mb-3">
         <label class="form-label">รายการตรวจเช็ค (Checklist)</label>
-        <textarea name="checklist" class="form-control" rows="4"
-            placeholder="พิมพ์แต่ละรายการขึ้นบรรทัดใหม่ เช่น&#10;- เช็คระดับน้ำมัน&#10;- ทำความสะอาดไส้กรอง"><?= htmlspecialchars($schedule['checklist'] ?? '') ?></textarea>
+
+        <?php
+        // แปลงข้อความเดิม (คั่นด้วย \n) ให้กลายเป็น array สำหรับแสดงเป็นแถว
+        $existingItems = array_values(array_filter(
+            array_map('trim', explode("\n", $schedule['checklist'] ?? '')),
+            fn($line) => $line !== ''
+        ));
+        if (empty($existingItems)) {
+            $existingItems = ['']; // อย่างน้อยแสดง 1 ช่องว่างให้กรอก
+        }
+        ?>
+
+        <div id="checklist-items">
+            <?php foreach ($existingItems as $item): ?>
+                <div class="input-group mb-2 checklist-row">
+                    <span class="input-group-text">☑</span>
+                    <input type="text" name="checklist[]" class="form-control"
+                        value="<?= htmlspecialchars($item) ?>" placeholder="เช่น เช็คระดับน้ำมัน">
+                    <button type="button" class="btn btn-outline-danger btn-remove-row">✕</button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <button type="button" id="btn-add-checklist" class="btn btn-sm btn-outline-primary mt-1">
+            + เพิ่มรายการ
+        </button>
     </div>
 
     <?php if ($isEdit): ?>
@@ -104,3 +129,40 @@
         <a href="<?= APP_URL ?>/pm-schedules" class="btn btn-outline-secondary">ยกเลิก</a>
     </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('checklist-items');
+        const addBtn = document.getElementById('btn-add-checklist');
+
+        function createRow(value = '') {
+            const row = document.createElement('div');
+            row.className = 'input-group mb-2 checklist-row';
+            row.innerHTML = `
+            <span class="input-group-text">☑</span>
+            <input type="text" name="checklist[]" class="form-control" value="${value}" placeholder="เช่น เช็คระดับน้ำมัน">
+            <button type="button" class="btn btn-outline-danger btn-remove-row">✕</button>
+        `;
+            return row;
+        }
+
+        addBtn.addEventListener('click', function() {
+            const row = createRow();
+            container.appendChild(row);
+            row.querySelector('input').focus();
+        });
+
+        // ใช้ event delegation เพราะแถวถูกเพิ่มเข้ามาใหม่ทีหลัง
+        container.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-remove-row')) {
+                const rows = container.querySelectorAll('.checklist-row');
+                // เหลืออย่างน้อย 1 แถวเสมอ กันฟอร์มไม่มีช่องให้กรอกเลย
+                if (rows.length > 1) {
+                    e.target.closest('.checklist-row').remove();
+                } else {
+                    e.target.closest('.checklist-row').querySelector('input').value = '';
+                }
+            }
+        });
+    });
+</script>

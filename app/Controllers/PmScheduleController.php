@@ -41,7 +41,7 @@ class PmScheduleController extends Controller
             'svp_device_id'                => $this->input('svp_device_id'),
             'pm_title'                      => $this->input('pm_title'),
             'frequency_days'                => $frequencyDays,
-            'checklist'                      => $this->input('checklist'),
+            'checklist' => $this->buildChecklistText(),
             'responsible_user_id'           => $this->input('responsible_user_id') ?: null,
             'next_pm_date'                   => date('Y-m-d', strtotime("{$startDate} +{$frequencyDays} days")),
             'reference_doc_original_name'  => $refDoc['original_name'] ?? null,
@@ -86,7 +86,7 @@ class PmScheduleController extends Controller
             'svp_device_id'        => $this->input('svp_device_id'),
             'pm_title'              => $this->input('pm_title'),
             'frequency_days'        => (int) $this->input('frequency_days'),
-            'checklist'              => $this->input('checklist'),
+            'checklist' => $this->buildChecklistText(),
             'responsible_user_id'   => $this->input('responsible_user_id') ?: null,
             'next_pm_date'           => $this->input('next_pm_date'),
             'is_active'              => $this->input('is_active') ? 1 : 0,
@@ -131,5 +131,19 @@ class PmScheduleController extends Controller
             $errors[] = 'กรุณากรอกรอบความถี่เป็นจำนวนวัน (มากกว่า 0)';
         }
         return $errors;
+    }
+
+    /** รวมรายการ checklist[] จากฟอร์ม (array) กลับเป็นข้อความคั่นบรรทัดเดียว สำหรับเก็บลง DB */
+    private function buildChecklistText(): string
+    {
+        $items = $_POST['checklist'] ?? [];
+        if (!is_array($items)) {
+            return '';
+        }
+
+        $items = array_map('trim', $items);
+        $items = array_filter($items, fn($item) => $item !== '');
+
+        return implode("\n", $items);
     }
 }

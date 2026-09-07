@@ -24,7 +24,6 @@
             margin-top: 15px;
         }
 
-        th,
         td {
             border: 1px solid #333;
             padding: 6px 8px;
@@ -32,6 +31,8 @@
         }
 
         th {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 12px;
             background-color: #333;
             color: #fff;
         }
@@ -66,15 +67,15 @@
 </head>
 
 <body>
-    <h2>รายงานแผนบำรุงรักษาเชิงป้องกัน (PM Schedule)</h2>
+    <p>รายงานแผนบำรุงรักษาเชิงป้องกัน (PM Schedule)</p>
     <p>วันที่ออกรายงาน: <?= date('d/m/Y H:i') ?> น.</p>
 
     <table>
         <thead>
             <tr>
                 <th>Hardware</th>
-                <th>ชื่อแผน PM</th>
-                <th>รอบ (วัน)</th>
+                <th>Name PM</th>
+                <th>Round (per day)</th>
                 <th>ผู้รับผิดชอบ</th>
                 <th>ครบกำหนดครั้งถัดไป</th>
                 <th>สถานะ</th>

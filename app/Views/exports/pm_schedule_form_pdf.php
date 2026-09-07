@@ -202,7 +202,7 @@
         </div>
 
         <div class="header-title">
-            <div class="t2">ใบรายงานผลการตรวจสอบและบำรุงรักษาเชิงป้องกัน</div>
+            <div class="lbl">ใบรายงานผลการตรวจสอบและบำรุงรักษาเชิงป้องกัน</div>
             <div class="t2">SV POLYMER CO., LTD.</div>
         </div>
 
