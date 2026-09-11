@@ -3,8 +3,54 @@ class UserController extends Controller
 {
     public function index(): void
     {
-        $users = (new User())->allWithDepartmentAndPosition();
-        $this->view('users/index', ['users' => $users]);
+        $perPage = 10;
+        $page = max(1, (int) $this->input('page', 1));
+        $sort = $this->input('sort', 'svp_user_id');
+        $dir  = $this->input('dir', 'asc');
+        $search = trim($this->input('search', ''));
+
+        $this->view('users/index', $this->buildUserListData($page, $perPage, $sort, $dir, $search));
+    }
+
+    /** Endpoint สำหรับ AJAX — คืนแค่ HTML fragment ของตาราง ไม่ใช่หน้าเต็ม */
+    public function search(): void
+    {
+        $perPage = 10;
+        $page = max(1, (int) $this->input('page', 1));
+        $sort = $this->input('sort', 'svp_user_id');
+        $dir  = $this->input('dir', 'asc');
+        $search = trim($this->input('search', ''));
+
+        $data = $this->buildUserListData($page, $perPage, $sort, $dir, $search);
+        extract($data);
+
+        // เรนเดอร์แค่ partial ตรงๆ ไม่ผ่าน layout
+        require BASE_PATH . '/app/Views/users/_table.php';
+
+        // แนบ total count ไว้ใน HTML comment ให้ JS ฝั่ง client อ่านไปอัปเดตหัวข้อได้
+        echo '<!-- data-total-count="' . $totalUsers . '" -->';
+    }
+
+    private function buildUserListData(int $page, int $perPage, string $sort, string $dir, string $search): array
+    {
+        $userModel = new User();
+        $totalUsers = $userModel->countAll($search);
+        $totalPages = max(1, (int) ceil($totalUsers / $perPage));
+        $page = min($page, $totalPages);
+
+        $users = $userModel->paginateWithRelations($page, $perPage, $sort, $dir, $search);
+
+        return [
+            'users'       => $users,
+            'totalUsers'  => $totalUsers,
+            'currentPage' => $page,
+            'perPage'     => $perPage,
+            'totalPages'  => $totalPages,
+            'sort'        => $sort,
+            'dir'         => $dir,
+            'search'      => $search,
+            'currentUser' => $this->currentUser(),
+        ];
     }
 
     public function create(): void

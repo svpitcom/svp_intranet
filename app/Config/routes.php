@@ -13,6 +13,7 @@ return [
     'GET /users/{id}/edit'    => ['UserController', 'edit', ['auth', 'role:admin']],
     'POST /users/{id}/edit'   => ['UserController', 'update', ['auth', 'role:admin']],
     'POST /users/{id}/delete' => ['UserController', 'destroy', ['auth', 'role:admin']],
+    'GET /users/search' => ['UserController', 'search', ['auth']],
     // Departments
     'GET /departments'        => ['DepartmentController', 'index', ['auth']],
     'GET /departments/create'       => ['DepartmentController', 'create', ['auth', 'role:admin']],
