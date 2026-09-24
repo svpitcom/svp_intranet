@@ -1,6 +1,6 @@
 <!-- Device Form -->
 <?php
-$isEdit = isset($devices) && $devices !== null;
+$isEdit = isset($device) && $device !== null;
 $currentUser = Session::get('user');
 $errors = Session::get('errors');
 ?>
@@ -28,7 +28,7 @@ $errors = Session::get('errors');
 <?php endif; ?>
 
 <form method="POST"
-    action="<?= APP_URL ?><?= $isEdit ? '/devices/' . $devices['svp_device_id'] . '/update' : '/devices/create' ?>"
+    action="<?= APP_URL ?><?= $isEdit ? '/devices/' . $device['svp_device_id'] . '/edit' : '/devices/create' ?>"
     class="form-card" style="max-width: 680px;">
 
     <div class="form-section">
@@ -41,7 +41,7 @@ $errors = Session::get('errors');
                 name="svp_device_name"
                 id="svp_device_name"
                 class="form-control form-control-modern"
-                value="<?= htmlspecialchars($devices['svp_device_name'] ?? '') ?>"
+                value="<?= htmlspecialchars($device['svp_device_name'] ?? '') ?>"
                 required
                 autofocus>
         </div>
@@ -54,7 +54,7 @@ $errors = Session::get('errors');
                     name="brand_name"
                     id="brand_name"
                     class="form-control form-control-modern"
-                    value="<?= htmlspecialchars($devices['brand_name'] ?? '') ?>">
+                    value="<?= htmlspecialchars($device['brand_name'] ?? '') ?>">
             </div>
             <div class="col-md-6 mb-3">
                 <label for="model_name" class="form-label-modern">รุ่น</label>
@@ -63,7 +63,7 @@ $errors = Session::get('errors');
                     name="model_name"
                     id="model_name"
                     class="form-control form-control-modern"
-                    value="<?= htmlspecialchars($devices['model_name'] ?? '') ?>">
+                    value="<?= htmlspecialchars($device['model_name'] ?? '') ?>">
             </div>
         </div>
 
@@ -76,7 +76,7 @@ $errors = Session::get('errors');
                     name="serial_number"
                     id="serial_number"
                     class="form-control form-control-modern"
-                    value="<?= htmlspecialchars($devices['serial_number'] ?? '') ?>"
+                    value="<?= htmlspecialchars($device['serial_number'] ?? '') ?>"
                     required>
             </div>
         </div>
@@ -91,7 +91,7 @@ $errors = Session::get('errors');
                 <option value="">-- เลือกประเภทอุปกรณ์ --</option>
                 <?php foreach ($deviceTypes as $type): ?>
                     <option value="<?= $type['device_type_id'] ?>"
-                        <?= (($devices['device_type_id'] ?? null) == $type['device_type_id']) ? 'selected' : '' ?>>
+                        <?= (($device['device_type_id'] ?? null) == $type['device_type_id']) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($type['device_type_name']) ?>
                     </option>
                 <?php endforeach; ?>
@@ -104,7 +104,7 @@ $errors = Session::get('errors');
                 <option value="">-- เลือกแผนก --</option>
                 <?php foreach ($departments as $dept): ?>
                     <option value="<?= $dept['svp_department_id'] ?>"
-                        <?= (($devices['svp_department_id'] ?? null) == $dept['svp_department_id']) ? 'selected' : '' ?>>
+                        <?= (($device['svp_department_id'] ?? null) == $dept['svp_department_id']) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($dept['svp_department_name']) ?>
                     </option>
                 <?php endforeach; ?>
@@ -117,7 +117,7 @@ $errors = Session::get('errors');
                 <option value="">-- ไม่ระบุผู้ถือครอง --</option>
                 <?php foreach ($users as $user): ?>
                     <option value="<?= $user['svp_user_id'] ?>"
-                        <?= (($devices['svp_user_id'] ?? null) == $user['svp_user_id']) ? 'selected' : '' ?>>
+                        <?= (($device['svp_user_id'] ?? null) == $user['svp_user_id']) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>
                     </option>
                 <?php endforeach; ?>
@@ -128,7 +128,7 @@ $errors = Session::get('errors');
     <?php if ($isEdit): ?>
         <div class="form-section" style="border-bottom: none; margin-bottom: 0.5rem; padding-bottom: 0;">
             <label class="switch-modern">
-                <input type="checkbox" name="is_active" id="is_active" value="1" <?= !empty($devices['is_active']) ? 'checked' : '' ?>>
+                <input type="checkbox" name="is_active" id="is_active" value="1" <?= !empty($device['is_active']) ? 'checked' : '' ?>>
                 <span class="switch-track"></span>
                 <span class="switch-text">ใช้งานอยู่</span>
             </label>
