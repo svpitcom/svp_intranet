@@ -49,7 +49,7 @@ function userSortLink(string $column, string $label, string $sort, string $dir, 
                     <td><?= htmlspecialchars($u['svp_department_name'] ?? '-') ?></td>
                     <td><?= htmlspecialchars($u['position_name'] ?? '-') ?></td>
                     <td>
-                        <span class="badge-modern badge-<?= $u['user_role'] ?>">
+                        <span class="badge-modern badge-<?= htmlspecialchars($u['user_role'], ENT_QUOTES, 'UTF-8') ?>">
                             <?= htmlspecialchars($u['user_role']) ?>
                         </span>
                     </td>
@@ -70,6 +70,7 @@ function userSortLink(string $column, string $label, string $sort, string $dir, 
                                 <button type="submit" class="btn-icon btn-icon-danger" title="ลบ">
                                     <i class="bi bi-trash3"></i>
                                 </button>
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                             </form>
                         </td>
                     <?php endif; ?>

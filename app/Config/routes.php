@@ -1,9 +1,11 @@
 <?php
 return [
     // Auth
+    'GET /pm-records/{id}/attachment' => ['FileController', 'record', ['auth']],
+    'GET /pm-schedules/{id}/attachment' => ['FileController', 'schedule', ['auth']],
     'GET /login'   => ['AuthController', 'showLogin'],
     'POST /login'  => ['AuthController', 'login'],
-    'GET /logout'  => ['AuthController', 'logout'],
+    'POST /logout' => ['AuthController', 'logout', ['auth']],
     // Home
     'GET /'        => ['UserController', 'index', ['auth']],
     // Users

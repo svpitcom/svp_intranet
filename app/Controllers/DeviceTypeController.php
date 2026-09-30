@@ -8,6 +8,7 @@ class DeviceTypeController extends Controller
         $dir  = $this->input('dir', 'asc');
 
         $devicetypes = (new DeviceType())->allSorted($sort, $dir);
+        $devicetypes = Search::rows($devicetypes, Search::term(), ['device_type_id', 'device_type_name']);
 
         $this->view('device_types/index', ['devicetypes' => $devicetypes]);
     }

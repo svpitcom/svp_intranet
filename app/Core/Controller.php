@@ -26,7 +26,7 @@ abstract class Controller
     protected function input(string $key, $default = null)
     {
         $value = $_POST[$key] ?? $_GET[$key] ?? $default;
-        return is_string($value) ? trim($value) : $value;
+        return is_string($value) ? ($key === 'password' ? $value : trim($value)) : $default;
     }
 
     protected function currentUser(): ?array

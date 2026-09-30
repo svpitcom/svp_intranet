@@ -10,7 +10,6 @@ class Router
 
     public function dispatch(string $method, string $uri): void
     {
-        $uri = parse_url($uri, PHP_URL_PATH);
         $uri = $uri !== '/' ? rtrim($uri, '/') : $uri;
 
         foreach ($this->routes as $pattern => $handler) {
@@ -20,7 +19,7 @@ class Router
             $paramNames = [];
             $regex = preg_replace_callback('#\{(\w+)\}#', function ($m) use (&$paramNames) {
                 $paramNames[] = $m[1];
-                return '([^/]+)';
+                return $m[1] === 'id' ? '([1-9][0-9]*)' : '([^/]+)';
             }, $routePath);
             $regex = '#^' . $regex . '$#';
 
@@ -31,6 +30,11 @@ class Router
 
                 foreach ($middlewares as $middleware) {
                     $this->runMiddleware($middleware);
+                }
+                if ($method === 'POST' && !Session::validCsrf($_POST['_csrf'] ?? null)) {
+                    http_response_code(403);
+                    echo 'คำขอหมดอายุหรือไม่ถูกต้อง กรุณาโหลดหน้าใหม่แล้วลองอีกครั้ง';
+                    return;
                 }
 
                 if (!class_exists($controllerName)) {

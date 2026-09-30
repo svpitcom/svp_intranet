@@ -1,0 +1,35 @@
+<?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+require __DIR__ . '/regression.php';
+$before = $checks;
+$today = new DateTimeImmutable('2026-09-30');
+$event = ['pm_schedule_id'=>7,'next_pm_date'=>'2024-02-29','pm_title'=>'ตรวจเครื่อง <script>bad</script>','svp_device_name'=>'NB-01','pm_status'=>'overdue'];
+$calendar = PmCalendar::build([$event,$event], '2024-02', $today);
+check($calendar['count']===2, 'multiple plans on same day');
+check($calendar['days'][0]['date']->format('Y-m-d')==='2024-01-29', 'Monday start');
+check(count($calendar['days'])===35, 'complete leap-month weeks');
+check($calendar['label']==='กุมภาพันธ์ 2567', 'Thai month and Buddhist year');
+check(PmCalendar::build([], '2026-12',$today)['next']==='2027-01', 'year rollover forward');
+check(PmCalendar::build([], '2026-01',$today)['previous']==='2025-12', 'year rollover backward');
+foreach (['2026-13','bad',['array'],'9999-01'] as $invalid) check(PmCalendar::build([], $invalid,$today)['month']==='2026-09','invalid month fallback');
+check(PmCalendar::build([$event], '2024-03',$today)['count']===0, 'adjacent month not counted');
+check(PmCalendar::build([array_replace($event,['next_pm_date'=>'2024-02-30'])], '2024-02',$today)['count']===0, 'invalid schedule date skipped');
+check(count(array_filter(PmCalendar::build([], '2026-09',$today)['days'],fn($d)=>$d['today']))===1,'today highlighted');
+check(PmCalendar::build([], '1900-01',$today)['previous']===null,'lower navigation bound');
+check(PmCalendar::build([], '2100-12',$today)['next']===null,'upper navigation bound');
+$_GET=['search'=>'NB','view'=>'calendar','month'=>'2024-02'];
+$html=render('pm_schedules/_calendar',['calendar'=>$calendar,'currentUser'=>['user_role'=>'user']]);
+check(!str_contains($html,'<script>bad</script>'),'calendar text escaped');
+check(!str_contains($html,'/7/edit') && str_contains($html,'/7/record'),'user actions restricted');
+$html=render('pm_schedules/_calendar',['calendar'=>$calendar,'currentUser'=>['user_role'=>'admin']]);
+check(str_contains($html,'/7/edit'),'admin edit link');
+check(str_contains($html,'search=NB'),'month navigation preserves search');
+$_SESSION['user']=['svp_user_id'=>1,'user_role'=>'admin'];
+$_GET=['view'=>'table','month'=>'2024-02'];
+$html=render('pm_schedules/index',['schedules'=>[]]);
+check(str_contains($html,'<table') && !str_contains($html,'pm-calendar-grid'),'table view retained');
+$_GET=['month'=>'2024-02'];
+$html=render('pm_schedules/index',['schedules'=>[]]);
+check(str_contains($html,'pm-calendar-grid') && str_contains($html,'ไม่มีแผนที่ครบกำหนด'),'calendar empty state');
+check(str_contains($html,'name="month" value="2024-02"'),'search preserves selected month');
+echo 'PASS: '.($checks-$before)." calendar checks\n";

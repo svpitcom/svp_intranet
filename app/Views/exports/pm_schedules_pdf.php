@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @font-face {
-            font-family: 'Sarabun';
-            src: url('<?= BASE_PATH ?>/public/assets/fonts/Sarabun-Regular.ttf') format('truetype');
-        }
+        <?php require __DIR__ . '/_fonts.php'; ?>
 
         body {
             font-family: 'Sarabun', sans-serif;

@@ -1,0 +1,6 @@
+# Protect private project files when Apache serves the repository directory.
+RewriteEngine On
+RewriteRule ^(?:app|database|tests|vendor|\.git)(?:/|$) - [F,L,NC]
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

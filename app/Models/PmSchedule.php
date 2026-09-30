@@ -34,9 +34,10 @@ class PmSchedule extends Model
 
     public function findWithRelations(int $id): ?array
     {
-        $sql = "SELECT ps.*, dv.svp_device_name, u.first_name, u.last_name
+        $sql = "SELECT ps.*, dv.svp_device_name, d.svp_department_name, u.first_name, u.last_name
                 FROM pm_schedule ps
                 JOIN device dv ON dv.svp_device_id = ps.svp_device_id
+                LEFT JOIN department d ON d.svp_department_id = dv.svp_department_id
                 LEFT JOIN users u ON u.svp_user_id = ps.responsible_user_id
                 WHERE ps.pm_schedule_id = :id
                 LIMIT 1";
@@ -49,6 +50,7 @@ class PmSchedule extends Model
     {
         $schedule = $this->find($id);
         if (!$schedule) return false;
+        if (!empty($schedule['last_pm_date']) && $performedDate < $schedule['last_pm_date']) return true;
 
         $nextDate = date('Y-m-d', strtotime($performedDate . " +{$schedule['frequency_days']} days"));
 

@@ -1,15 +1,28 @@
-<?php $currentUser = Session::get('user'); ?>
+<?php
+$currentUser = Session::get('user');
+$pmView = ($_GET['view'] ?? '') === 'table' ? 'table' : 'calendar';
+$calendar = PmCalendar::build($schedules, $_GET['month'] ?? null);
+$searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
+?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="mb-0">แผนการบำรุงรักษาเชิงป้องกัน (PM)</h4>
     <div class="d-flex gap-2">
-        <a href="<?= APP_URL ?>/pm-schedules/export" class="btn btn-outline-danger btn-sm">📄 Export PDF</a>
+        <a href="<?= APP_URL ?>/pm-schedules/export?search=<?= rawurlencode(Search::term()) ?>" class="btn btn-outline-danger btn-sm">📄 Export PDF</a>
         <?php if (in_array($currentUser['user_role'], ['admin', 'manager'], true)): ?>
             <a href="<?= APP_URL ?>/pm-schedules/create" class="btn btn-primary btn-sm">+ เพิ่มแผน PM</a>
         <?php endif; ?>
     </div>
 </div>
 
+<?php $searchPath = '/pm-schedules'; $searchPlaceholder = 'ชื่อแผน, อุปกรณ์, ผู้รับผิดชอบ, วันที่ หรือสถานะ'; $resultCount = count($schedules); require BASE_PATH . '/app/Views/partials/search.php'; ?>
+<nav class="pm-view-switch" aria-label="มุมมองแผนบำรุงรักษา">
+    <a class="<?= $pmView === 'calendar' ? 'active' : '' ?>" <?= $pmView === 'calendar' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('calendar', $calendar['month'], Search::term())) ?>">ปฏิทิน</a>
+    <a class="<?= $pmView === 'table' ? 'active' : '' ?>" <?= $pmView === 'table' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('table', $calendar['month'], Search::term())) ?>">ตารางทั้งหมด</a>
+</nav>
+<?php if ($pmView === 'calendar'): ?>
+    <?php require __DIR__ . '/_calendar.php'; ?>
+<?php else: ?>
 <div class="table-responsive">
     <table class="table table-striped table-hover align-middle bg-white">
         <thead class="table-dark">
@@ -49,6 +62,7 @@
                             <form action="<?= APP_URL ?>/pm-schedules/<?= $s['pm_schedule_id'] ?>/delete" method="POST" class="d-inline"
                                 onsubmit="return confirm('ยืนยันการลบแผน PM นี้?');">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">ลบ</button>
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                             </form>
                         <?php endif; ?>
                     </td>
@@ -62,3 +76,4 @@
         </tbody>
     </table>
 </div>
+<?php endif; ?>

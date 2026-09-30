@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form method="POST" action="<?= APP_URL ?>/pm-schedules/<?= $schedule['pm_schedule_id'] ?>/record" class="card p-4">
+        <form method="POST" action="<?= APP_URL ?>/pm-schedules/<?= $schedule['pm_schedule_id'] ?>/record" class="card p-4" enctype="multipart/form-data">
 
             <div class="mb-3">
                 <label class="form-label">วันที่ทำ</label>
@@ -43,6 +43,7 @@
                 <button type="submit" class="btn btn-success">บันทึกว่าทำเสร็จแล้ว</button>
                 <a href="<?= APP_URL ?>/pm-schedules" class="btn btn-outline-secondary">ยกเลิก</a>
             </div>
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
         </form>
     </div>
 
@@ -59,27 +60,10 @@
                     </div>
                     <small class="text-muted">โดย <?= htmlspecialchars($h['first_name'] . ' ' . $h['last_name']) ?></small>
                     <?php if ($h['notes']): ?><p class="mb-0 mt-1"><?= nl2br(htmlspecialchars($h['notes'])) ?></p><?php endif; ?>
-                </li>
-            <?php endforeach; ?>
-            <?php if (empty($history)): ?>
-                <li class="list-group-item text-muted text-center">ยังไม่มีประวัติการทำ PM</li>
-            <?php endif; ?>
-        </ul>
-        <ul class="list-group">
-            <?php foreach ($history as $h): ?>
-                <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                        <strong><?= htmlspecialchars($h['performed_date']) ?></strong>
-                        <span class="badge bg-<?= $h['result_status'] === 'issue_found' ? 'danger' : ($h['result_status'] === 'partial' ? 'warning text-dark' : 'success') ?>">
-                            <?= ['completed' => 'ปกติดี', 'partial' => 'ทำได้บางส่วน', 'issue_found' => 'พบปัญหา'][$h['result_status']] ?>
-                        </span>
-                    </div>
-                    <small class="text-muted">โดย <?= htmlspecialchars($h['first_name'] . ' ' . $h['last_name']) ?></small>
-                    <?php if ($h['notes']): ?><p class="mb-0 mt-1"><?= nl2br(htmlspecialchars($h['notes'])) ?></p><?php endif; ?>
 
                     <?php if (!empty($h['attachment_path'])): ?>
                         <div class="mt-2">
-                            <a href="<?= APP_URL ?>/uploads/pm_records/<?= htmlspecialchars($h['attachment_path']) ?>"
+                            <a href="<?= APP_URL ?>/pm-records/<?= (int) $h['pm_record_id'] ?>/attachment"
                                 target="_blank" class="btn btn-sm btn-outline-secondary">
                                 📄 <?= htmlspecialchars($h['attachment_original_name']) ?>
                             </a>

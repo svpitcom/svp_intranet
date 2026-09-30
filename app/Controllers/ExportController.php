@@ -13,6 +13,7 @@ class ExportController extends Controller
             $s['pm_status'] = PmSchedule::statusFromDaysRemaining((int) $s['days_remaining']);
         }
         unset($s);
+        $schedules = Search::rows($schedules, Search::term(), ['svp_device_name', 'serial_number', 'pm_title', 'frequency_days', 'first_name', 'last_name', 'next_pm_date', 'pm_status']);
 
         $html = $this->renderHtml('exports/pm_schedules_pdf', ['schedules' => $schedules]);
         $this->streamPdf($html, 'pm-schedules-' . date('Y-m-d') . '.pdf');
@@ -22,6 +23,7 @@ class ExportController extends Controller
     public function records(): void
     {
         $records = (new PmRecord())->allWithRelations();
+        $records = Search::rows($records, Search::term(), ['performed_date', 'svp_device_name', 'pm_title', 'first_name', 'last_name', 'result_status', 'notes', 'attachment_original_name']);
         $html = $this->renderHtml('exports/pm_records_pdf', ['records' => $records]);
         $this->streamPdf($html, 'pm-records-' . date('Y-m-d') . '.pdf');
     }
@@ -38,9 +40,9 @@ class ExportController extends Controller
     private function streamPdf(string $html, string $filename, string $orientation = 'landscape'): void
     {
         $options = new Options();
-        $options->set('isRemoteEnabled', true); // ต้องเปิด ไม่งั้น Dompdf จะโหลดฟอนต์ @font-face ไม่ได้ แม้เป็นไฟล์ในเครื่องก็ตาม
+        $options->set('isRemoteEnabled', false);
         $options->set('isFontSubsettingEnabled', true);
-        $options->setChroot(BASE_PATH); // จำกัดขอบเขตให้เข้าถึงได้เฉพาะไฟล์ในโปรเจกต์ (กันความเสี่ยงจากการเปิด isRemoteEnabled)
+        $options->setChroot(BASE_PATH . '/public'); // Only local public assets are needed by PDF templates.
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html, 'UTF-8');
@@ -71,7 +73,7 @@ class ExportController extends Controller
         $html = $this->renderHtml('exports/pm_schedule_form_pdf', [
             'schedule'       => $schedule,
             'checklistItems' => $checklistItems,
-            'logoPath'       => str_replace('\\', '/', BASE_PATH) . '/public/assets/img/AW_LOGO_SVPStroke-01.png',
+            'logoPath'       => str_replace('\\', '/', BASE_PATH) . '/public/imgs/AW_LOGO_SVPStroke-01.png',
         ]);
 
         $filename = 'PM-Form-' . $schedule['pm_schedule_id'] . '-' . date('Y-m-d') . '.pdf';

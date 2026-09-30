@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVP Intranet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="http://localhost/svp_intranet/assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://localhost/svp_intranet/assets/css/style.css?v=1790756343">
+</head>
+
+<body class="app-body">
+    <a class="skip-link" href="#main-content">ข้ามไปเนื้อหา</a>
+    <aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="app-sidebar" aria-labelledby="sidebar-title">
+    <div class="sidebar-brand">
+        <a href="http://localhost/svp_intranet/" class="brand-lockup" aria-label="SVP Intranet หน้าแรก">
+            <span class="brand-symbol">S<span>V</span></span>
+            <span><strong id="sidebar-title">SVP INTRANET</strong><small>PEOPLE · ASSETS · CARE</small></span>
+        </a>
+        <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#app-sidebar" aria-label="ปิดเมนู"></button>
+    </div>
+    <div class="offcanvas-body sidebar-body">
+        <nav aria-label="เมนูหลัก">
+                    <div class="nav-group-label">บุคลากร</div>
+            <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/users" >
+                    <i class="bi bi-people" aria-hidden="true"></i><span>ผู้ใช้งาน</span>
+                                    </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/departments" >
+                    <i class="bi bi-diagram-3" aria-hidden="true"></i><span>แผนก</span>
+                                    </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/positions" >
+                    <i class="bi bi-person-badge" aria-hidden="true"></i><span>ตำแหน่ง</span>
+                                    </a></li>
+                        </ul>
+                    <div class="nav-group-label">อุปกรณ์</div>
+            <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link-modern active" href="http://localhost/svp_intranet/devices" aria-current="page">
+                    <i class="bi bi-laptop" aria-hidden="true"></i><span>ทะเบียนอุปกรณ์</span>
+                    <span class="nav-indicator" aria-hidden="true"></span>                </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/device_types" >
+                    <i class="bi bi-grid" aria-hidden="true"></i><span>ประเภทอุปกรณ์</span>
+                                    </a></li>
+                        </ul>
+                    <div class="nav-group-label">งานบำรุงรักษา</div>
+            <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/pm-schedules" >
+                    <i class="bi bi-calendar2-check" aria-hidden="true"></i><span>แผนบำรุงรักษา</span>
+                                    </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/pm-records" >
+                    <i class="bi bi-clock-history" aria-hidden="true"></i><span>ประวัติการทำ PM</span>
+                                    </a></li>
+                        </ul>
+                </nav>
+        <div class="sidebar-note"><span class="sidebar-note-mark">SVP</span><p>ดูแลคน ดูแลอุปกรณ์<br><strong>ให้ทุกวันทำงานได้ดีขึ้น</strong></p></div>
+    </div>
+</aside>
+    <div class="app-workspace">
+        <header class="app-topbar">
+    <div class="d-flex align-items-center gap-3">
+        <button class="menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#app-sidebar" aria-controls="app-sidebar" aria-label="เปิดเมนูหลัก"><span aria-hidden="true">☰</span></button>
+        <div class="topbar-breadcrumb"><span>พื้นที่ทำงาน</span><span class="breadcrumb-divider">/</span><strong>ทะเบียนอุปกรณ์</strong></div>
+    </div>
+        <div class="dropdown">
+        <button class="user-menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="เมนูบัญชีผู้ใช้">
+            <span class="user-avatar">ส</span>
+            <span class="user-identity"><strong>สมชาย ตัวอย่าง</strong><small>ผู้ดูแลระบบ</small></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end mt-2">
+            <li><span class="dropdown-header">บัญชีผู้ใช้งาน</span></li>
+            <li><form method="POST" action="http://localhost/svp_intranet/logout">
+                <input type="hidden" name="_csrf" value="1ef98d7c0f68b336ef876f80b54c08e73043bf1dc61ca294dbf67ba4aeceb820">
+                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>ออกจากระบบ</button>
+            </form></li>
+        </ul>
+    </div>
+    </header>
+            <main id="main-content" class="app-content" tabindex="-1">
+                <div class="workspace-caption"><span>WORKSPACE</span><span>SVP · ระบบจัดการภายใน</span></div>
+                                                                
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0 fw-bold">จัดการอุปกรณ์</h4>
+        <span class="text-muted small">ทั้งหมด 1 รายการ</span>
+    </div>
+            <a href="http://localhost/svp_intranet/devices/create" class="btn-primary-modern btn-sm">
+            <i class="bi bi-plus-lg"></i> เพิ่มอุปกรณ์
+        </a>
+    </div>
+
+<form method="GET" action="http://localhost/svp_intranet/devices" class="list-search" role="search">
+    <label for="list-search-input" class="visually-hidden">ค้นหาข้อมูลในหน้านี้</label>
+    <div class="search-input-wrap">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input type="search" id="list-search-input" name="search" class="search-input" value="" placeholder="ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง">
+    </div>
+                                <button type="submit" class="btn btn-primary">ค้นหา</button>
+    </form>
+<div class="card-modern">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 table-modern">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th><a href="http://localhost/svp_intranet/devices?sort=svp_device_name&dir=asc&search=" class="sort-link">ชื่ออุปกรณ์ <i class="bi bi-arrow-down-up sort-icon-idle"></i></a></th>
+                    <th><a href="http://localhost/svp_intranet/devices?sort=brand_name&dir=asc&search=" class="sort-link">ยี่ห้อ <i class="bi bi-arrow-down-up sort-icon-idle"></i></a></th>
+                    <th>โมเดล</th>
+                    <th>SerialNumber</th>
+                    <th><a href="http://localhost/svp_intranet/devices?sort=device_type_name&dir=asc&search=" class="sort-link">ประเภทอุปกรณ์ <i class="bi bi-arrow-down-up sort-icon-idle"></i></a></th>
+                    <th><a href="http://localhost/svp_intranet/devices?sort=svp_department_name&dir=asc&search=" class="sort-link">แผนก <i class="bi bi-arrow-down-up sort-icon-idle"></i></a></th>
+                    <th>พนักงานใช้งาน</th>
+                    <th><a href="http://localhost/svp_intranet/devices?sort=is_active&dir=asc&search=" class="sort-link">สถานะ <i class="bi bi-arrow-down-up sort-icon-idle"></i></a></th>
+                    <th class="text-end">จัดการ</th>                </tr>
+            </thead>
+            <tbody>
+                                    <tr>
+                        <td class="text-muted">1</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="device-icon"><i class="bi bi-laptop"></i></span>
+                                <span class="fw-medium">SVP-NB-01</span>
+                            </div>
+                        </td>
+                        <td>Lenovo</td>
+                        <td>ThinkPad</td>
+                        <td><span class="code-chip">SVP-0001</span></td>
+                        <td>คอมพิวเตอร์</td>
+                        <td>เทคโนโลยีสารสนเทศ</td>
+                        <td class="text-muted">สมชาย ตัวอย่าง</td>
+                        <td>
+                                                            <span class="status-dot status-active"></span><span class="text-success small fw-medium">ใช้งาน</span>
+                                                    </td>
+                                                    <td class="text-end">
+                                <a href="http://localhost/svp_intranet/devices/1/edit" class="btn-icon" title="แก้ไข">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form action="http://localhost/svp_intranet/devices/1/delete" method="POST" class="d-inline"
+                                    onsubmit="return confirm('ยืนยันการลบอุปกรณ์นี้?');">
+                                    <button type="submit" class="btn-icon btn-icon-danger" title="ลบ">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                <input type="hidden" name="_csrf" value="1ef98d7c0f68b336ef876f80b54c08e73043bf1dc61ca294dbf67ba4aeceb820">
+                                </form>
+                            </td>
+                                            </tr>
+                                            </tbody>
+        </table>
+    </div>
+
+    </div>
+                <footer class="workspace-footer"><span>SV POLYMER</span><span>พื้นที่ทำงานร่วมกันของเรา</span></footer>
+            </main>
+    </div>
+    <script src="http://localhost/svp_intranet/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="http://localhost/svp_intranet/assets/js/main.js?v=1790741598"></script>
+<script>document.addEventListener("submit",e=>e.preventDefault(),true); document.getElementById("user-search-input")?.setAttribute("disabled", "");</script></body>
+
+</html>

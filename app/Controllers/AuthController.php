@@ -30,6 +30,7 @@ class AuthController extends Controller
         }
 
         unset($user['password']);
+        session_regenerate_id(true);
         Session::set('user', $user);
         $this->redirect('/');
     }

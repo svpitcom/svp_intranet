@@ -13,17 +13,28 @@ class FileUploader
      */
     public static function uploadPdf(string $inputName, string $destinationFolder): ?array
     {
-        if (empty($_FILES[$inputName]) || $_FILES[$inputName]['error'] === UPLOAD_ERR_NO_FILE) {
+        if (!isset($_FILES[$inputName])) {
             return null; // ผู้ใช้ไม่ได้แนบไฟล์มา ไม่ใช่ error
         }
 
         $file = $_FILES[$inputName];
+        if (!is_array($file) || !isset($file['error']) || !is_int($file['error'])) {
+            throw new RuntimeException('ข้อมูลไฟล์อัปโหลดไม่ถูกต้อง');
+        }
+        if ($file['error'] === UPLOAD_ERR_NO_FILE) return null;
 
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new RuntimeException('อัปโหลดไฟล์ไม่สำเร็จ (รหัส error: ' . $file['error'] . ')');
         }
 
-        if ($file['size'] > self::MAX_SIZE_BYTES) {
+        if (!isset($file['tmp_name'], $file['name']) || !is_string($file['tmp_name']) || !is_string($file['name']) || !is_uploaded_file($file['tmp_name'])) {
+            throw new RuntimeException('ข้อมูลไฟล์อัปโหลดไม่ถูกต้อง');
+        }
+        $size = filesize($file['tmp_name']);
+        if ($size === false || $size === 0) {
+            throw new RuntimeException('ไฟล์ว่างหรือไม่สามารถอ่านได้');
+        }
+        if ($size > self::MAX_SIZE_BYTES) {
             throw new RuntimeException('ไฟล์มีขนาดใหญ่เกิน 10 MB');
         }
 
@@ -36,8 +47,8 @@ class FileUploader
             throw new RuntimeException('รองรับเฉพาะไฟล์ PDF เท่านั้น');
         }
 
-        if (!is_dir($destinationFolder)) {
-            mkdir($destinationFolder, 0755, true);
+        if (!is_dir($destinationFolder) && !mkdir($destinationFolder, 0755, true) && !is_dir($destinationFolder)) {
+            throw new RuntimeException('ไม่สามารถสร้างโฟลเดอร์เก็บไฟล์ได้');
         }
 
         // สุ่มชื่อไฟล์ใหม่ทุกครั้ง กันชื่อไฟล์ชนกัน และกันคนเดารูปแบบชื่อไฟล์คนอื่น
@@ -49,8 +60,22 @@ class FileUploader
         }
 
         return [
-            'original_name' => basename($file['name']),
+            'original_name' => mb_substr(basename(str_replace('\\', '/', $file['name'])), 0, 255),
             'stored_path'   => $storedName, // เก็บแค่ชื่อไฟล์ ไม่เก็บ path เต็ม (กัน path traversal ตอนดึงกลับมาใช้)
         ];
+    }
+
+    public static function resolve(string $folder, ?string $name): ?string
+    {
+        if (!$name || !preg_match('/\A[a-f0-9]{32}\.pdf\z/', $name)) return null;
+        $root = realpath($folder);
+        $path = realpath($folder . '/' . $name);
+        return $root !== false && $path !== false && dirname($path) === $root && is_file($path) ? $path : null;
+    }
+
+    public static function discard(string $folder, ?string $name): void
+    {
+        $path = self::resolve($folder, $name);
+        if ($path !== null && !unlink($path)) error_log('Unable to remove unused attachment: ' . $name);
     }
 }

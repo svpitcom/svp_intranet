@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        <?php require __DIR__ . '/_fonts.php'; ?>
         body {
             font-family: 'Sarabun', sans-serif;
             font-size: 12px;

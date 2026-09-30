@@ -1,100 +1,37 @@
-<?php $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>
-<nav class="col-md-2 d-none d-md-block sidebar-modern py-4">
-    <div class="px-3 mb-3">
-        <span class="sidebar-heading">เมนูจัดการระบบ</span>
+<?php
+$currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$basePath = rtrim(parse_url(APP_URL, PHP_URL_PATH) ?: '', '/');
+if ($basePath !== '' && str_starts_with($currentPath, $basePath . '/')) $currentPath = substr($currentPath, strlen($basePath));
+$navGroups = [
+    'บุคลากร' => [['/users', 'ผู้ใช้งาน', 'people'], ['/departments', 'แผนก', 'diagram-3'], ['/positions', 'ตำแหน่ง', 'person-badge']],
+    'อุปกรณ์' => [['/devices', 'ทะเบียนอุปกรณ์', 'laptop'], ['/device_types', 'ประเภทอุปกรณ์', 'grid']],
+    'งานบำรุงรักษา' => [['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
+];
+?>
+<aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="app-sidebar" aria-labelledby="sidebar-title">
+    <div class="sidebar-brand">
+        <a href="<?= APP_URL ?>/" class="brand-lockup" aria-label="SVP Intranet หน้าแรก">
+            <span class="brand-symbol">S<span>V</span></span>
+            <span><strong id="sidebar-title">SVP INTRANET</strong><small>PEOPLE · ASSETS · CARE</small></span>
+        </a>
+        <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#app-sidebar" aria-label="ปิดเมนู"></button>
     </div>
-    <ul class="nav flex-column px-2">
-        <li class="nav-item mb-1">
-            <a class="nav-link-modern <?= str_starts_with($currentPath, '/users') ? 'active' : '' ?>" href="<?= APP_URL ?>/users">
-                <i class="bi bi-people-fill"></i>
-                <span>จัดการผู้ใช้งาน</span>
-            </a>
-        </li>
-        <li class="nav-item mb-1">
-            <a class="nav-link-modern <?= str_starts_with($currentPath, '/departments') ? 'active' : '' ?>" href="<?= APP_URL ?>/departments">
-                <i class="bi bi-diagram-3-fill"></i>
-                <span>จัดการแผนก</span>
-            </a>
-        </li>
-        <li class="nav-item mb-1">
-            <a class="nav-link-modern <?= str_starts_with($currentPath, '/positions') ? 'active' : '' ?>" href="<?= APP_URL ?>/positions">
-                <i class="bi bi-award-fill"></i>
-                <span>จัดการตำแหน่ง</span>
-            </a>
-        </li>
-        <li class="nav-item mb-1">
-            <a class="nav-link-modern <?= str_starts_with($currentPath, '/device_types') ? 'active' : '' ?>" href="<?= APP_URL ?>/device_types">
-                <i class="bi bi-tags-fill"></i>
-                <span>จัดการประเภทอุปกรณ์</span>
-            </a>
-        </li>
-        <li class="nav-item mb-1">
-            <a class="nav-link-modern <?= str_starts_with($currentPath, '/devices') ? 'active' : '' ?>" href="<?= APP_URL ?>/devices">
-                <i class="bi bi-laptop"></i>
-                <span>จัดการอุปกรณ์</span>
-            </a>
-        </li>
-        <li class="nav-item mb-1">
-            <a class="nav-link-modern <?= str_starts_with($currentPath, '/pm-schedules') ? 'active' : '' ?>" href="<?= APP_URL ?>/pm-schedules">
-                <i class="bi bi-calendar-check"></i>
-                <span>จัดการPMอุปกรณ์</span>
-            </a>
-        </li>
-    </ul>
-</nav>
-
-<style>
-    .sidebar-modern {
-        background: #ffffff;
-        border-right: 1px solid #eef0f2;
-        min-height: 100vh;
-    }
-
-    .sidebar-heading {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        color: #9aa1ac;
-        text-transform: uppercase;
-    }
-
-    .nav-link-modern {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.65rem 0.9rem;
-        border-radius: 10px;
-        color: #4a5568;
-        font-size: 0.92rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .nav-link-modern i {
-        font-size: 1.05rem;
-        color: #9aa1ac;
-        transition: color 0.2s ease;
-        width: 20px;
-        text-align: center;
-    }
-
-    .nav-link-modern:hover {
-        background: #f4f6fb;
-        color: #2b6cb0;
-    }
-
-    .nav-link-modern:hover i {
-        color: #2b6cb0;
-    }
-
-    .nav-link-modern.active {
-        background: linear-gradient(135deg, #4f7cff, #2b6cb0);
-        color: #ffffff;
-        box-shadow: 0 4px 10px rgba(43, 108, 176, 0.25);
-    }
-
-    .nav-link-modern.active i {
-        color: #ffffff;
-    }
-</style>
+    <div class="offcanvas-body sidebar-body">
+        <nav aria-label="เมนูหลัก">
+        <?php foreach ($navGroups as $heading => $items): ?>
+            <div class="nav-group-label"><?= $heading ?></div>
+            <ul class="nav flex-column">
+            <?php foreach ($items as [$path, $label, $icon]):
+                $active = $currentPath === $path || str_starts_with($currentPath, $path . '/') || ($path === '/users' && $currentPath === '/');
+            ?>
+                <li class="nav-item"><a class="nav-link-modern <?= $active ? 'active' : '' ?>" href="<?= APP_URL . $path ?>" <?= $active ? 'aria-current="page"' : '' ?>>
+                    <i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span>
+                    <?php if ($active): ?><span class="nav-indicator" aria-hidden="true"></span><?php endif; ?>
+                </a></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endforeach; ?>
+        </nav>
+        <div class="sidebar-note"><span class="sidebar-note-mark">SVP</span><p>ดูแลคน ดูแลอุปกรณ์<br><strong>ให้ทุกวันทำงานได้ดีขึ้น</strong></p></div>
+    </div>
+</aside>

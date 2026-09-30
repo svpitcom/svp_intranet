@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVP Intranet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="http://localhost/svp_intranet/assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://localhost/svp_intranet/assets/css/style.css?v=1790755939">
+</head>
+
+<body class="app-body">
+    <a class="skip-link" href="#main-content">ข้ามไปเนื้อหา</a>
+    <aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="app-sidebar" aria-labelledby="sidebar-title">
+    <div class="sidebar-brand">
+        <a href="http://localhost/svp_intranet/" class="brand-lockup" aria-label="SVP Intranet หน้าแรก">
+            <span class="brand-symbol">S<span>V</span></span>
+            <span><strong id="sidebar-title">SVP INTRANET</strong><small>PEOPLE · ASSETS · CARE</small></span>
+        </a>
+        <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#app-sidebar" aria-label="ปิดเมนู"></button>
+    </div>
+    <div class="offcanvas-body sidebar-body">
+        <nav aria-label="เมนูหลัก">
+                    <div class="nav-group-label">บุคลากร</div>
+            <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/users" >
+                    <i class="bi bi-people" aria-hidden="true"></i><span>ผู้ใช้งาน</span>
+                                    </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/departments" >
+                    <i class="bi bi-diagram-3" aria-hidden="true"></i><span>แผนก</span>
+                                    </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/positions" >
+                    <i class="bi bi-person-badge" aria-hidden="true"></i><span>ตำแหน่ง</span>
+                                    </a></li>
+                        </ul>
+                    <div class="nav-group-label">อุปกรณ์</div>
+            <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/devices" >
+                    <i class="bi bi-laptop" aria-hidden="true"></i><span>ทะเบียนอุปกรณ์</span>
+                                    </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/device_types" >
+                    <i class="bi bi-grid" aria-hidden="true"></i><span>ประเภทอุปกรณ์</span>
+                                    </a></li>
+                        </ul>
+                    <div class="nav-group-label">งานบำรุงรักษา</div>
+            <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link-modern active" href="http://localhost/svp_intranet/pm-schedules" aria-current="page">
+                    <i class="bi bi-calendar2-check" aria-hidden="true"></i><span>แผนบำรุงรักษา</span>
+                    <span class="nav-indicator" aria-hidden="true"></span>                </a></li>
+                            <li class="nav-item"><a class="nav-link-modern " href="http://localhost/svp_intranet/pm-records" >
+                    <i class="bi bi-clock-history" aria-hidden="true"></i><span>ประวัติการทำ PM</span>
+                                    </a></li>
+                        </ul>
+                </nav>
+        <div class="sidebar-note"><span class="sidebar-note-mark">SVP</span><p>ดูแลคน ดูแลอุปกรณ์<br><strong>ให้ทุกวันทำงานได้ดีขึ้น</strong></p></div>
+    </div>
+</aside>
+    <div class="app-workspace">
+        <header class="app-topbar">
+    <div class="d-flex align-items-center gap-3">
+        <button class="menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#app-sidebar" aria-controls="app-sidebar" aria-label="เปิดเมนูหลัก"><span aria-hidden="true">☰</span></button>
+        <div class="topbar-breadcrumb"><span>พื้นที่ทำงาน</span><span class="breadcrumb-divider">/</span><strong>แผนบำรุงรักษา</strong></div>
+    </div>
+        <div class="dropdown">
+        <button class="user-menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="เมนูบัญชีผู้ใช้">
+            <span class="user-avatar">ส</span>
+            <span class="user-identity"><strong>สมชาย ตัวอย่าง</strong><small>ผู้ดูแลระบบ</small></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end mt-2">
+            <li><span class="dropdown-header">บัญชีผู้ใช้งาน</span></li>
+            <li><form method="POST" action="http://localhost/svp_intranet/logout">
+                <input type="hidden" name="_csrf" value="4dd7a44064f438b011d6a0d421b1dc53d9f47085dab979319362cb30cc0538cc">
+                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>ออกจากระบบ</button>
+            </form></li>
+        </ul>
+    </div>
+    </header>
+            <main id="main-content" class="app-content" tabindex="-1">
+                <div class="workspace-caption"><span>WORKSPACE</span><span>SVP · ระบบจัดการภายใน</span></div>
+                                                                
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">สร้างแผน PM ใหม่</h4>
+    </div>
+
+<form method="POST"
+    action="http://localhost/svp_intranet/pm-schedules/create"
+    class="card p-4" style="max-width: 640px;" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label class="form-label">อุปกรณ์</label>
+        <select name="svp_device_id" class="form-select" required>
+            <option value="">-- เลือกอุปกรณ์ --</option>
+                            <option value="1"
+                    >
+                    SVP-NB-01                </option>
+                    </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">ชื่อแผน PM</label>
+        <input type="text" name="pm_title" class="form-control"
+            value=""
+            placeholder="เช่น ตรวจเช็คเครื่องอัดลมประจำเดือน" required>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label class="form-label">รอบความถี่ (วัน)</label>
+            <input type="number" name="frequency_days" min="1" class="form-control"
+                value="30" required>
+            <div class="form-text">เช่น 7 = รายสัปดาห์, 30 = รายเดือน, 90 = รายไตรมาส</div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">ผู้รับผิดชอบ</label>
+            <select name="responsible_user_id" class="form-select">
+                <option value="">-- ไม่ระบุ --</option>
+                                    <option value="1"
+                        >
+                        สมชาย ตัวอย่าง                    </option>
+                                    <option value="2"
+                        >
+                        วิภา ตัวอย่าง                    </option>
+                            </select>
+        </div>
+    </div>
+
+            <div class="mb-3">
+            <label class="form-label">เริ่มนับรอบจากวันที่</label>
+            <input type="date" name="start_date" class="form-control" value="2026-09-30">
+            <div class="form-text">ระบบจะคำนวณวันครบกำหนดครั้งแรก = วันที่นี้ + รอบความถี่</div>
+        </div>
+    
+    <!-- ===== Checklist แบบเพิ่มทีละข้อ ===== -->
+    <div class="mb-3">
+        <label class="form-label">รายการตรวจเช็ค (Checklist)</label>
+
+        
+        <div id="checklist-items">
+                            <div class="input-group mb-2 checklist-row">
+                    <span class="input-group-text">☑</span>
+                    <input type="text" name="checklist[]" class="form-control" aria-label="รายการตรวจเช็ค"
+                        value="" placeholder="เช่น เช็คระดับน้ำมัน">
+                    <button type="button" class="btn btn-outline-danger btn-remove-row" aria-label="ลบรายการตรวจเช็ค">✕</button>
+                </div>
+                    </div>
+
+        <button type="button" id="btn-add-checklist" class="btn btn-sm btn-outline-primary mt-1">
+            + เพิ่มรายการ
+        </button>
+    </div>
+
+    
+    <div class="mb-3">
+        <label class="form-label">ไฟล์อ้างอิง (คู่มือ/มาตรฐานการตรวจเช็ค - PDF)</label>
+        <input type="file" name="reference_doc" class="form-control" accept="application/pdf">
+        <div class="form-text">ไม่เกิน 10 MB — เว้นว่างไว้ได้หากไม่มีไฟล์แนบ</div>
+
+            </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+        <a href="http://localhost/svp_intranet/pm-schedules" class="btn btn-outline-secondary">ยกเลิก</a>
+    </div>
+<input type="hidden" name="_csrf" value="4dd7a44064f438b011d6a0d421b1dc53d9f47085dab979319362cb30cc0538cc">
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('checklist-items');
+        const addBtn = document.getElementById('btn-add-checklist');
+
+        function createRow(value = '') {
+            const row = document.createElement('div');
+            row.className = 'input-group mb-2 checklist-row';
+            row.innerHTML = `
+            <span class="input-group-text">☑</span>
+            <input type="text" name="checklist[]" class="form-control" aria-label="รายการตรวจเช็ค" placeholder="เช่น เช็คระดับน้ำมัน">
+            <button type="button" class="btn btn-outline-danger btn-remove-row" aria-label="ลบรายการตรวจเช็ค">✕</button>
+        `;
+            row.querySelector('input').value = value;
+            return row;
+        }
+
+        addBtn.addEventListener('click', function() {
+            const row = createRow();
+            container.appendChild(row);
+            row.querySelector('input').focus();
+        });
+
+        // ใช้ event delegation เพราะแถวถูกเพิ่มเข้ามาใหม่ทีหลัง
+        container.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-remove-row')) {
+                const rows = container.querySelectorAll('.checklist-row');
+                // เหลืออย่างน้อย 1 แถวเสมอ กันฟอร์มไม่มีช่องให้กรอกเลย
+                if (rows.length > 1) {
+                    e.target.closest('.checklist-row').remove();
+                } else {
+                    e.target.closest('.checklist-row').querySelector('input').value = '';
+                }
+            }
+        });
+    });
+</script>
+                <footer class="workspace-footer"><span>SV POLYMER</span><span>พื้นที่ทำงานร่วมกันของเรา</span></footer>
+            </main>
+    </div>
+    <script src="http://localhost/svp_intranet/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="http://localhost/svp_intranet/assets/js/main.js?v=1790741598"></script>
+<script>document.addEventListener("submit",e=>e.preventDefault(),true); document.getElementById("user-search-input")?.setAttribute("disabled", "");</script></body>
+
+</html>

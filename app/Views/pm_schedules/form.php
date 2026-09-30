@@ -88,9 +88,9 @@
             <?php foreach ($existingItems as $item): ?>
                 <div class="input-group mb-2 checklist-row">
                     <span class="input-group-text">☑</span>
-                    <input type="text" name="checklist[]" class="form-control"
+                    <input type="text" name="checklist[]" class="form-control" aria-label="รายการตรวจเช็ค"
                         value="<?= htmlspecialchars($item) ?>" placeholder="เช่น เช็คระดับน้ำมัน">
-                    <button type="button" class="btn btn-outline-danger btn-remove-row">✕</button>
+                    <button type="button" class="btn btn-outline-danger btn-remove-row" aria-label="ลบรายการตรวจเช็ค">✕</button>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -116,7 +116,7 @@
         <?php if ($isEdit && !empty($schedule['reference_doc_path'])): ?>
             <div class="mt-2">
                 ไฟล์ปัจจุบัน:
-                <a href="<?= APP_URL ?>/uploads/pm_schedules/<?= htmlspecialchars($schedule['reference_doc_path']) ?>" target="_blank">
+                <a href="<?= APP_URL ?>/pm-schedules/<?= (int) $schedule['pm_schedule_id'] ?>/attachment" target="_blank" rel="noopener">
                     📄 <?= htmlspecialchars($schedule['reference_doc_original_name']) ?>
                 </a>
                 <div class="form-text">แนบไฟล์ใหม่ด้านบนเพื่อแทนที่ไฟล์นี้</div>
@@ -128,6 +128,7 @@
         <button type="submit" class="btn btn-primary"><?= $isEdit ? 'บันทึกการแก้ไข' : 'บันทึก' ?></button>
         <a href="<?= APP_URL ?>/pm-schedules" class="btn btn-outline-secondary">ยกเลิก</a>
     </div>
+<input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
 </form>
 
 <script>
@@ -140,9 +141,10 @@
             row.className = 'input-group mb-2 checklist-row';
             row.innerHTML = `
             <span class="input-group-text">☑</span>
-            <input type="text" name="checklist[]" class="form-control" value="${value}" placeholder="เช่น เช็คระดับน้ำมัน">
-            <button type="button" class="btn btn-outline-danger btn-remove-row">✕</button>
+            <input type="text" name="checklist[]" class="form-control" aria-label="รายการตรวจเช็ค" placeholder="เช่น เช็คระดับน้ำมัน">
+            <button type="button" class="btn btn-outline-danger btn-remove-row" aria-label="ลบรายการตรวจเช็ค">✕</button>
         `;
+            row.querySelector('input').value = value;
             return row;
         }
 

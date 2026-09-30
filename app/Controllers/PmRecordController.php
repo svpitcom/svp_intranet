@@ -5,6 +5,7 @@ class PmRecordController extends Controller
     public function index(): void
     {
         $records = (new PmRecord())->allWithRelations();
+        $records = Search::rows($records, Search::term(), ['performed_date', 'svp_device_name', 'pm_title', 'first_name', 'last_name', 'result_status', 'notes', 'attachment_original_name']);
         $this->view('pm_records/index', ['records' => $records]);
     }
 
@@ -28,7 +29,15 @@ class PmRecordController extends Controller
         $scheduleId = (int) $scheduleId;
         $performedDate = $this->input('performed_date') ?: date('Y-m-d');
 
-        if (!$this->input('result_status')) {
+        if (!(new PmSchedule())->find($scheduleId)) {
+            Session::flash('error', 'ไม่พบแผน PM นี้');
+            $this->redirect('/pm-schedules');
+        }
+        if (!Validation::date($performedDate)) {
+            Session::flash('error', 'วันที่ทำ PM ไม่ถูกต้อง');
+            $this->redirect("/pm-schedules/{$scheduleId}/record");
+        }
+        if (!in_array($this->input('result_status'), ['completed', 'partial', 'issue_found'], true)) {
             Session::flash('error', 'กรุณาเลือกผลการทำ PM');
             $this->redirect("/pm-schedules/{$scheduleId}/record");
         }
@@ -48,17 +57,32 @@ class PmRecordController extends Controller
             $this->redirect("/pm-schedules/{$scheduleId}/record");
         }
 
-        (new PmRecord())->insert([
-            'pm_schedule_id'            => $scheduleId,
-            'performed_by'                => $this->currentUser()['svp_user_id'],
-            'performed_date'              => $performedDate,
-            'result_status'                => $this->input('result_status'),
-            'notes'                         => $this->input('notes'),
-            'attachment_original_name'   => $attachmentOriginalName,
-            'attachment_path'             => $attachmentPath,
-        ]);
+        $db = Database::connect();
+        try {
+            $db->beginTransaction();
+            // Serialize records for the same schedule so an older completion cannot overwrite a newer one.
+            $lock = $db->prepare('SELECT pm_schedule_id FROM pm_schedule WHERE pm_schedule_id = ? FOR UPDATE');
+            $lock->execute([$scheduleId]);
+            if (!$lock->fetch()) throw new RuntimeException('Schedule no longer exists');
+            (new PmRecord())->insert([
+                'pm_schedule_id'            => $scheduleId,
+                'performed_by'                => $this->currentUser()['svp_user_id'],
+                'performed_date'              => $performedDate,
+                'result_status'                => $this->input('result_status'),
+                'notes'                         => $this->input('notes'),
+                'attachment_original_name'   => $attachmentOriginalName,
+                'attachment_path'             => $attachmentPath,
+            ]);
 
-        (new PmSchedule())->markCompleted($scheduleId, $performedDate);
+            (new PmSchedule())->markCompleted($scheduleId, $performedDate);
+            $db->commit();
+        } catch (Throwable $e) {
+            if ($db->inTransaction()) $db->rollBack();
+            FileUploader::discard(UPLOAD_PM_RECORD_PATH, $attachmentPath);
+            error_log('PM record save failed: ' . $e->getMessage());
+            Session::flash('error', 'บันทึกข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง');
+            $this->redirect("/pm-schedules/{$scheduleId}/record");
+        }
 
         Session::flash('success', 'บันทึกการทำ PM เรียบร้อยแล้ว');
         $this->redirect('/pm-schedules');

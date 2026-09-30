@@ -44,6 +44,7 @@ $errors = Session::get('errors');
                 </button>
                 <a href="<?= APP_URL ?>/positions" class="btn btn-outline-secondary">ยกเลิก</a>
             </div>
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
         </form>
     </div>
 </div>

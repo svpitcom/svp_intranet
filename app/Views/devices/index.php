@@ -10,14 +10,14 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
             ? '<i class="bi bi-sort-up-alt sort-icon-active"></i>'
             : '<i class="bi bi-sort-down sort-icon-active"></i>';
     }
-    $url = APP_URL . '/devices?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc');
+    $url = APP_URL . '/devices?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc') . Search::suffix();
     return '<a href="' . $url . '" class="sort-link">' . htmlspecialchars($label) . ' ' . $icon . '</a>';
 }
 
 /** สร้าง URL หน้าอื่น โดยคง sort/dir เดิมไว้เสมอ */
 function pageUrl(int $page, string $sort, string $dir): string
 {
-    return APP_URL . '/devices?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . $page;
+    return APP_URL . '/devices?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . $page . Search::suffix();
 }
 ?>
 
@@ -44,6 +44,7 @@ function pageUrl(int $page, string $sort, string $dir): string
     <?php endif; ?>
 </div>
 
+<?php $searchPath = '/devices'; $searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง'; $resultCount = $totalDevices; require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="card-modern">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 table-modern">
@@ -94,6 +95,7 @@ function pageUrl(int $page, string $sort, string $dir): string
                                     <button type="submit" class="btn-icon btn-icon-danger" title="ลบ">
                                         <i class="bi bi-trash3"></i>
                                     </button>
+                                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                                 </form>
                             </td>
                         <?php endif; ?>
@@ -150,225 +152,3 @@ function pageUrl(int $page, string $sort, string $dir): string
         </div>
     <?php endif; ?>
 </div>
-
-<style>
-    .btn-primary-modern {
-        background: linear-gradient(135deg, #4f7cff, #2b6cb0);
-        border: none;
-        color: #fff;
-        border-radius: 8px;
-        padding: 0.4rem 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary-modern:hover {
-        box-shadow: 0 4px 10px rgba(43, 108, 176, 0.3);
-        color: #fff;
-    }
-
-    .card-modern {
-        background: #fff;
-        border-radius: 14px;
-        border: 1px solid #eef0f2;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-        overflow: hidden;
-    }
-
-    .table-modern thead th {
-        background: #f8f9fb;
-        color: #6b7280;
-        font-size: 0.78rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        border-bottom: 1px solid #eef0f2;
-        padding: 0.85rem 1rem;
-        white-space: nowrap;
-    }
-
-    .table-modern tbody td {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-        color: #374151;
-        border-bottom: 1px solid #f4f5f7;
-    }
-
-    .table-modern tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .table-modern tbody tr:hover {
-        background: #f8faff;
-    }
-
-    .sort-link {
-        color: #6b7280;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        transition: color 0.15s ease;
-    }
-
-    .sort-link:hover {
-        color: #2b6cb0;
-    }
-
-    .sort-icon-idle {
-        font-size: 0.7rem;
-        opacity: 0.4;
-    }
-
-    .sort-icon-active {
-        font-size: 0.75rem;
-        color: #4f7cff;
-    }
-
-    .device-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        background: #eef2ff;
-        color: #4f7cff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.85rem;
-        flex-shrink: 0;
-    }
-
-    .code-chip {
-        display: inline-block;
-        background: #f3f4f6;
-        color: #4b5563;
-        font-family: 'SFMono-Regular', Consolas, monospace;
-        font-size: 0.78rem;
-        font-weight: 600;
-        padding: 0.25rem 0.6rem;
-        border-radius: 6px;
-    }
-
-    .status-dot {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        margin-right: 5px;
-    }
-
-    .status-active {
-        background: #22c55e;
-    }
-
-    .status-inactive {
-        background: #9ca3af;
-    }
-
-    .btn-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: none;
-        background: transparent;
-        color: #6b7280;
-        transition: all 0.2s ease;
-    }
-
-    .btn-icon:hover {
-        background: #eef2ff;
-        color: #2b6cb0;
-    }
-
-    .btn-icon-danger:hover {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-
-    .alert-modern {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.75rem 1rem;
-        border-radius: 10px;
-        font-size: 0.88rem;
-        margin-bottom: 1rem;
-    }
-
-    .alert-success-modern {
-        background: #f0fdf4;
-        color: #15803d;
-        border: 1px solid #bbf7d0;
-    }
-
-    .alert-danger-modern {
-        background: #fef2f2;
-        color: #b91c1c;
-        border: 1px solid #fecaca;
-    }
-
-    /* ---- Pagination ---- */
-    .pagination-modern {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.9rem 1.2rem;
-        border-top: 1px solid #f4f5f7;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-    }
-
-    .pagination-info {
-        font-size: 0.82rem;
-        color: #9ca3af;
-    }
-
-    .pagination-controls {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-
-    .page-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 32px;
-        height: 32px;
-        padding: 0 0.5rem;
-        border-radius: 8px;
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 0.82rem;
-        font-weight: 500;
-        transition: all 0.15s ease;
-    }
-
-    .page-btn:hover {
-        background: #eef2ff;
-        color: #2b6cb0;
-    }
-
-    .page-btn.active {
-        background: linear-gradient(135deg, #4f7cff, #2b6cb0);
-        color: #fff;
-    }
-
-    .page-btn.disabled {
-        opacity: 0.35;
-        pointer-events: none;
-    }
-
-    .page-dots {
-        color: #9ca3af;
-        font-size: 0.82rem;
-        padding: 0 0.2rem;
-    }
-</style>

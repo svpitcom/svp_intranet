@@ -10,11 +10,12 @@ class DeviceController extends Controller
         $dir  = $this->input('dir', 'asc');
 
         $deviceModel = new Device();
-        $totalDevices = $deviceModel->countAll();
+        $search = Search::term();
+        $totalDevices = $deviceModel->countAll($search);
         $totalPages = max(1, (int) ceil($totalDevices / $perPage));
         $page = min($page, $totalPages); // กันเผลอเข้าเลขหน้าที่เกินจำนวนจริง
 
-        $devices = $deviceModel->paginate($page, $perPage, $sort, $dir);
+        $devices = $deviceModel->paginate($page, $perPage, $sort, $dir, $search);
 
         $this->view('devices/index', [
             'devices'      => $devices,
@@ -79,6 +80,10 @@ class DeviceController extends Controller
     public function update(string $id): void
     {
         $id = (int) $id;
+        if (!(new Device())->findByDeviceId($id)) {
+            Session::flash('error', 'ไม่พบอุปกรณ์ที่ต้องการแก้ไข');
+            $this->redirect('/devices');
+        }
         $errors = $this->validate();
         if ($errors) {
             Session::flash('errors', implode(' / ', $errors));

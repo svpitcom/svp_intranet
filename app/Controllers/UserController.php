@@ -104,7 +104,11 @@ class UserController extends Controller
     public function update(string $id): void
     {
         $id = (int) $id;
-        $errors = $this->validate(isUpdate: true);
+        if (!(new User())->findById($id)) {
+            Session::flash('error', 'ไม่พบผู้ใช้ที่ต้องการแก้ไข');
+            $this->redirect('/users');
+        }
+        $errors = $this->validate(isUpdate: true, id: $id);
         if ($errors) {
             Session::flash('errors', implode(' / ', $errors));
             $this->redirect("/users/{$id}/edit");
@@ -145,14 +149,19 @@ class UserController extends Controller
         $this->redirect('/users');
     }
 
-    private function validate(bool $isUpdate = false): array
+    private function validate(bool $isUpdate = false, ?int $id = null): array
     {
         $errors = [];
         if (!$this->input('username')) $errors[] = 'กรุณากรอกชื่อผู้ใช้';
+        if ($this->input('username')) {
+            $existing = (new User())->findByUsername($this->input('username'));
+            if ($existing && (int) $existing['svp_user_id'] !== $id) $errors[] = 'ชื่อผู้ใช้นี้ถูกใช้งานแล้ว';
+        }
         if (!$this->input('first_name')) $errors[] = 'กรุณากรอกชื่อ';
         if (!$this->input('last_name')) $errors[] = 'กรุณากรอกนามสกุล';
 
         $email = $this->input('email');
+        if (!in_array($this->input('user_role', 'user'), ['admin', 'manager', 'user'], true)) $errors[] = 'สิทธิ์ผู้ใช้ไม่ถูกต้อง';
         if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'กรุณากรอกอีเมลให้ถูกต้อง';
         if (!$isUpdate && !$this->input('password')) $errors[] = 'กรุณากรอกรหัสผ่าน';
 

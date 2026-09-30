@@ -1,6 +1,6 @@
 <?php
 $currentUser = Session::get('user');
-$sort = $_GET['sort'] ?? 'svp_position_id';
+$sort = is_string($_GET['sort'] ?? null) ? $_GET['sort'] : 'svp_position_id';
 $dir  = ($_GET['dir'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
 $nextDir = $dir === 'asc' ? 'desc' : 'asc';
 
@@ -11,7 +11,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
     if ($sort === $column) {
         $icon = $dir === 'asc' ? ' ▲' : ' ▼';
     }
-    $url = APP_URL . '/positions?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc');
+    $url = APP_URL . '/positions?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc') . Search::suffix();
     return '<a href="' . $url . '" class="text-white text-decoration-none">' . htmlspecialchars($label) . $icon . '</a>';
 }
 ?>
@@ -23,6 +23,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
     <?php endif; ?>
 </div>
 
+<?php $searchPath = '/positions'; $searchPlaceholder = 'รหัสตำแหน่ง หรือชื่อตำแหน่ง'; $resultCount = count($positions); require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="table-responsive">
     <table class="table table-striped table-hover align-middle bg-white">
         <thead class="table-dark">
@@ -43,6 +44,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
                             <form action="<?= APP_URL ?>/positions/<?= $p['svp_position_id'] ?>/delete" method="POST" class="d-inline"
                                 onsubmit="return confirm('ยืนยันการลบตำแหน่งนี้?');">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">ลบ</button>
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                             </form>
                         </td>
                     <?php endif; ?>

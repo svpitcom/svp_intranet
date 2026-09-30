@@ -8,6 +8,7 @@ class PositionController extends Controller
         $dir  = $this->input('dir', 'asc');
 
         $positions = (new Position())->allSorted($sort, $dir);
+        $positions = Search::rows($positions, Search::term(), ['svp_position_id', 'position_name']);
 
         $this->view('positions/index', ['positions' => $positions]);
     }

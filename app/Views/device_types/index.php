@@ -1,6 +1,6 @@
 <?php
 $currentUser = Session::get('user');
-$sort = $_GET['sort'] ?? 'device_type_id';
+$sort = is_string($_GET['sort'] ?? null) ? $_GET['sort'] : 'device_type_id';
 $dir  = ($_GET['dir'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
 $nextDir = $dir === 'asc' ? 'desc' : 'asc';
 
@@ -10,7 +10,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
     if ($sort === $column) {
         $icon = $dir === 'asc' ? ' ▲' : ' ▼';
     }
-    $url = APP_URL . '/device_types?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc');
+    $url = APP_URL . '/device_types?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc') . Search::suffix();
     return '<a href="' . $url . '" class="text-white text-decoration-none">' . htmlspecialchars($label) . $icon . '</a>';
 }
 ?>
@@ -21,6 +21,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
     <?php endif; ?>
 </div>
 
+<?php $searchPath = '/device_types'; $searchPlaceholder = 'รหัสประเภท หรือชื่อประเภทอุปกรณ์'; $resultCount = count($devicetypes); require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="table-responsive">
     <table class="table table-striped table-hover align-middle bg-white">
         <thead class="table-dark">
@@ -41,6 +42,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
                             <form action="<?= APP_URL ?>/device_types/<?= $dt['device_type_id'] ?>/delete" method="POST" class="d-inline"
                                 onsubmit="return confirm('ยืนยันการลบประเภทอุปกรณ์นี้?');">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">ลบ</button>
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                             </form>
                         </td>
                     <?php endif; ?>

@@ -5,6 +5,8 @@ class Session
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_name(env('SESSION_NAME', 'factory_intranet_sess'));
+            ini_set('session.use_strict_mode', '1');
+            session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off']);
             session_start();
         }
     }
@@ -12,6 +14,17 @@ class Session
     public static function set(string $key, $value): void
     {
         $_SESSION[$key] = $value;
+    }
+
+    public static function csrfToken(): string
+    {
+        if (!isset($_SESSION['_csrf'])) $_SESSION['_csrf'] = bin2hex(random_bytes(32));
+        return $_SESSION['_csrf'];
+    }
+
+    public static function validCsrf($token): bool
+    {
+        return is_string($token) && isset($_SESSION['_csrf']) && hash_equals($_SESSION['_csrf'], $token);
     }
     public static function get(string $key, $default = null)
     {

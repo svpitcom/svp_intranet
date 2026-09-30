@@ -1,14 +1,10 @@
-<?php $fontPath = str_replace('\\', '/', BASE_PATH) . '/public/assets/fonts/Sarabun-Regular.ttf'; ?>
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8">
     <style>
-        @font-face {
-            font-family: 'Sarabun';
-            src: url('<?= $fontPath ?>') format('truetype');
-        }
+        <?php require __DIR__ . '/_fonts.php'; ?>
 
         * {
             box-sizing: border-box;

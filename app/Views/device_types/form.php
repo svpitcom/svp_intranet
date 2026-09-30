@@ -33,7 +33,7 @@ $errors = Session::get('errors');
                     name="device_type_name"
                     id="device_type_name"
                     class="form-control"
-                    value="<?= htmlspecialchars($deviceTypes['device_type_name'] ?? '') ?>"
+                    value="<?= htmlspecialchars($devicetypes['device_type_name'] ?? '') ?>"
                     required
                     autofocus>
             </div>
@@ -44,6 +44,7 @@ $errors = Session::get('errors');
                 </button>
                 <a href="<?= APP_URL ?>/device_types" class="btn btn-outline-secondary">ยกเลิก</a>
             </div>
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
         </form>
     </div>
 </div>

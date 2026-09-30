@@ -6,6 +6,7 @@ class DepartmentController extends Controller
     {
         // Implementation for displaying departments
         $departments = (new Department())->all();
+        $departments = Search::rows($departments, Search::term(), ['svp_code_department', 'svp_department_name']);
         $this->view('departments/index', ['departments' => $departments]);
     }
 
