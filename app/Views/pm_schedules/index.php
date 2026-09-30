@@ -1,6 +1,6 @@
 <?php
 $currentUser = Session::get('user');
-$pmView = ($_GET['view'] ?? '') === 'table' ? 'table' : 'calendar';
+$pmView = ($_GET['view'] ?? '') === 'calendar' ? 'calendar' : 'table';
 $calendar = PmCalendar::build($schedules, $_GET['month'] ?? null);
 $searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
 ?>
@@ -17,8 +17,8 @@ $searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
 
 <?php $searchPath = '/pm-schedules'; $searchPlaceholder = 'ชื่อแผน, อุปกรณ์, ผู้รับผิดชอบ, วันที่ หรือสถานะ'; $resultCount = count($schedules); require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <nav class="pm-view-switch" aria-label="มุมมองแผนบำรุงรักษา">
-    <a class="<?= $pmView === 'calendar' ? 'active' : '' ?>" <?= $pmView === 'calendar' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('calendar', $calendar['month'], Search::term())) ?>">ปฏิทิน</a>
     <a class="<?= $pmView === 'table' ? 'active' : '' ?>" <?= $pmView === 'table' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('table', $calendar['month'], Search::term())) ?>">ตารางทั้งหมด</a>
+    <a class="<?= $pmView === 'calendar' ? 'active' : '' ?>" <?= $pmView === 'calendar' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('calendar', $calendar['month'], Search::term())) ?>">ปฏิทิน</a>
 </nav>
 <?php if ($pmView === 'calendar'): ?>
     <?php require __DIR__ . '/_calendar.php'; ?>

@@ -31,8 +31,8 @@ $canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
                         <article class="pm-calendar-event <?= $status ?>">
                             <span class="pm-event-status"><?= $calendarStatuses[$status] ?></span>
                             <a class="pm-event-title" href="<?= APP_URL ?>/pm-schedules/<?= (int)$event['pm_schedule_id'] ?>/record"><?= htmlspecialchars($event['pm_title']) ?></a>
-                            <span><?= htmlspecialchars($event['svp_device_name']) ?></span>
-                            <small><?= htmlspecialchars(trim(($event['first_name'] ?? '') . ' ' . ($event['last_name'] ?? '')) ?: 'ไม่ระบุผู้รับผิดชอบ') ?></small>
+                            <!-- <span><?= htmlspecialchars($event['svp_device_name']) ?></span> -->
+                            <!-- <small><?= htmlspecialchars(trim(($event['first_name'] ?? '') . ' ' . ($event['last_name'] ?? '')) ?: 'ไม่ระบุผู้รับผิดชอบ') ?></small> -->
                             <?php if ($canEdit): ?><a class="pm-event-edit" href="<?= APP_URL ?>/pm-schedules/<?= (int)$event['pm_schedule_id'] ?>/edit">แก้ไขแผน</a><?php endif; ?>
                         </article>
                     <?php endforeach; ?>
