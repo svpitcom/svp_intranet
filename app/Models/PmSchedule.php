@@ -22,14 +22,50 @@ class PmSchedule extends Model
     public function allWithRelations(): array
     {
         $sql = "SELECT ps.*, dv.svp_device_name, dv.serial_number,
-                       u.first_name, u.last_name,
+                       u.first_name, u.last_name, done.completed_current_year,
                        DATEDIFF(ps.next_pm_date, CURDATE()) AS days_remaining
                 FROM pm_schedule ps
                 JOIN device dv ON dv.svp_device_id = ps.svp_device_id
                 LEFT JOIN users u ON u.svp_user_id = ps.responsible_user_id
+                LEFT JOIN (
+                    SELECT pm_schedule_id, MAX(performed_date) AS completed_current_year
+                    FROM pm_record
+                    WHERE result_status = 'completed' AND YEAR(performed_date) = YEAR(CURDATE())
+                    GROUP BY pm_schedule_id
+                ) done ON done.pm_schedule_id = ps.pm_schedule_id
                 WHERE ps.is_active = 1
                 ORDER BY ps.next_pm_date ASC";
         return $this->query($sql)->fetchAll();
+    }
+
+    /** แสดงแผนของปีปัจจุบันและวันครบรอบปีหน้าโดยไม่สร้างประวัติการทำ PM ล่วงหน้า */
+    public static function withAnnualDates(array $schedules, ?int $year = null): array
+    {
+        $year ??= (int) date('Y');
+        foreach ($schedules as &$schedule) {
+            $due = $schedule['next_pm_date'] ?? '';
+            $dueYear = is_string($due) && Validation::date($due) ? (int) substr($due, 0, 4) : 0;
+            $completed = $schedule['completed_current_year'] ?? null;
+            $schedule['plan_current_year'] = null;
+            $schedule['plan_next_year'] = null;
+            $schedule['plan_current_done'] = false;
+            $schedule['plan_next_projected'] = false;
+
+            if ($dueYear === $year) {
+                $schedule['plan_current_year'] = $due;
+                $schedule['plan_next_year'] = (new DateTimeImmutable($due))
+                    ->modify('+' . (int) $schedule['frequency_days'] . ' days')->format('Y-m-d');
+                $schedule['plan_next_projected'] = true;
+            } elseif ($dueYear === $year + 1) {
+                $schedule['plan_next_year'] = $due;
+                if ($completed) {
+                    $schedule['plan_current_year'] = $completed;
+                    $schedule['plan_current_done'] = true;
+                }
+            }
+        }
+        unset($schedule);
+        return $schedules;
     }
 
     public function findWithRelations(int $id): ?array

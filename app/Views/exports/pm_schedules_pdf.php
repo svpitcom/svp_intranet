@@ -74,7 +74,8 @@
                 <th>Name PM</th>
                 <th>Round (per day)</th>
                 <th>ผู้รับผิดชอบ</th>
-                <th>ครบกำหนดครั้งถัดไป</th>
+                <th>แผนปี <?= (int) date('Y') ?></th>
+                <th>แผนปี <?= (int) date('Y') + 1 ?></th>
                 <th>สถานะ</th>
             </tr>
         </thead>
@@ -88,7 +89,8 @@
                     <td><?= htmlspecialchars($s['pm_title']) ?></td>
                     <td>ทุก <?= (int) $s['frequency_days'] ?> วัน</td>
                     <td><?= htmlspecialchars(trim(($s['first_name'] ?? '') . ' ' . ($s['last_name'] ?? '')) ?: '-') ?></td>
-                    <td><?= htmlspecialchars($s['next_pm_date']) ?></td>
+                    <td><?= htmlspecialchars($s['plan_current_year'] ?? '-') ?><?= !empty($s['plan_current_done']) ? ' (ทำแล้ว)' : '' ?></td>
+                    <td><?= htmlspecialchars($s['plan_next_year'] ?? '-') ?><?= !empty($s['plan_next_projected']) ? ' (คาดการณ์)' : '' ?></td>
                     <td><span class="badge <?= $s['pm_status'] ?>"><?= $labelMap[$s['pm_status']] ?></span></td>
                 </tr>
             <?php endforeach; ?>

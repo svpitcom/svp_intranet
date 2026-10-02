@@ -13,6 +13,13 @@ class PmCalendar
         foreach ($schedules as $schedule) {
             $date = $schedule['next_pm_date'] ?? '';
             if (is_string($date) && Validation::date($date)) $byDate[$date][] = $schedule;
+            $projection = $schedule['plan_next_projected'] ?? false;
+            $nextYearDate = $schedule['plan_next_year'] ?? '';
+            if ($projection && is_string($nextYearDate) && Validation::date($nextYearDate) && $nextYearDate !== $date) {
+                $projectedEvent = $schedule;
+                $projectedEvent['calendar_projection'] = true;
+                $byDate[$nextYearDate][] = $projectedEvent;
+            }
         }
         $days = [];
         $count = 0;

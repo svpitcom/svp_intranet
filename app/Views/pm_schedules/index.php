@@ -1,8 +1,14 @@
 <?php
 $currentUser = Session::get('user');
+$planYear = (int) date('Y');
 $pmView = ($_GET['view'] ?? '') === 'calendar' ? 'calendar' : 'table';
 $calendar = PmCalendar::build($schedules, $_GET['month'] ?? null);
 $searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
+$tableSchedules = $tableSchedules ?? $schedules;
+$currentPage = $currentPage ?? 1;
+$totalPages = $totalPages ?? 1;
+$perPage = $perPage ?? 10;
+$pageUrl = static fn(int $page): string => PmCalendar::url('table', $calendar['month'], Search::term()) . '&page=' . $page;
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -31,13 +37,14 @@ $searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
                 <th>ชื่อแผน PM</th>
                 <th>รอบ (วัน)</th>
                 <th>ผู้รับผิดชอบ</th>
-                <th>ครบกำหนดครั้งถัดไป</th>
+                <th>แผนปี <?= $planYear ?></th>
+                <th>แผนปี <?= $planYear + 1 ?></th>
                 <th>สถานะ</th>
                 <th class="text-end">จัดการ</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($schedules as $s): ?>
+            <?php foreach ($tableSchedules as $s): ?>
                 <?php
                 $badgeMap = [
                     'overdue' => ['bg-danger', 'เกินกำหนด'],
@@ -51,7 +58,14 @@ $searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
                     <td><?= htmlspecialchars($s['pm_title']) ?></td>
                     <td>ทุก <?= (int) $s['frequency_days'] ?> วัน</td>
                     <td><?= htmlspecialchars(trim(($s['first_name'] ?? '') . ' ' . ($s['last_name'] ?? '')) ?: '-') ?></td>
-                    <td><?= htmlspecialchars($s['next_pm_date']) ?></td>
+                    <td>
+                        <?= htmlspecialchars($s['plan_current_year'] ?? '-') ?>
+                        <?php if (!empty($s['plan_current_done'])): ?><span class="badge bg-success ms-1">ทำแล้ว</span><?php endif; ?>
+                    </td>
+                    <td>
+                        <?= htmlspecialchars($s['plan_next_year'] ?? '-') ?>
+                        <?php if (!empty($s['plan_next_projected'])): ?><small class="text-muted d-block">คาดการณ์ตามรอบ PM</small><?php endif; ?>
+                    </td>
                     <td><span class="badge <?= $badgeClass ?>"><?= $badgeLabel ?></span></td>
                     <td class="text-end">
                         <a href="<?= APP_URL ?>/pm-schedules/<?= $s['pm_schedule_id'] ?>/record" class="btn btn-sm btn-outline-success">บันทึกว่าทำแล้ว</a>
@@ -70,10 +84,45 @@ $searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
             <?php endforeach; ?>
             <?php if (empty($schedules)): ?>
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-4">ยังไม่มีแผน PM</td>
+                    <td colspan="8" class="text-center text-muted py-4">ยังไม่มีแผน PM</td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
 </div>
+<nav class="pagination-modern" aria-label="หน้าตารางแผน PM">
+    <span class="pagination-info">
+        <?php if (count($schedules)): ?>
+            แสดง <?= number_format(($currentPage - 1) * $perPage + 1) ?>–<?= number_format(($currentPage - 1) * $perPage + count($tableSchedules)) ?> จาก <?= number_format(count($schedules)) ?> รายการ
+        <?php else: ?>
+            ไม่มีรายการ
+        <?php endif; ?>
+    </span>
+    <?php if ($totalPages > 1): ?>
+        <div class="pagination-controls">
+            <?php if ($currentPage > 1): ?>
+                <a class="page-btn" href="<?= htmlspecialchars($pageUrl($currentPage - 1), ENT_QUOTES, 'UTF-8') ?>" aria-label="หน้าก่อนหน้า">‹</a>
+            <?php else: ?>
+                <span class="page-btn disabled" aria-hidden="true">‹</span>
+            <?php endif; ?>
+            <?php $startPage = max(1, $currentPage - 2); $endPage = min($totalPages, $currentPage + 2); ?>
+            <?php if ($startPage > 1): ?>
+                <a class="page-btn" href="<?= htmlspecialchars($pageUrl(1), ENT_QUOTES, 'UTF-8') ?>">1</a>
+                <?php if ($startPage > 2): ?><span class="page-dots" aria-hidden="true">…</span><?php endif; ?>
+            <?php endif; ?>
+            <?php for ($page = $startPage; $page <= $endPage; $page++): ?>
+                <a class="page-btn <?= $page === $currentPage ? 'active' : '' ?>" href="<?= htmlspecialchars($pageUrl($page), ENT_QUOTES, 'UTF-8') ?>" <?= $page === $currentPage ? 'aria-current="page"' : '' ?>><?= $page ?></a>
+            <?php endfor; ?>
+            <?php if ($endPage < $totalPages): ?>
+                <?php if ($endPage < $totalPages - 1): ?><span class="page-dots" aria-hidden="true">…</span><?php endif; ?>
+                <a class="page-btn" href="<?= htmlspecialchars($pageUrl($totalPages), ENT_QUOTES, 'UTF-8') ?>"><?= $totalPages ?></a>
+            <?php endif; ?>
+            <?php if ($currentPage < $totalPages): ?>
+                <a class="page-btn" href="<?= htmlspecialchars($pageUrl($currentPage + 1), ENT_QUOTES, 'UTF-8') ?>" aria-label="หน้าถัดไป">›</a>
+            <?php else: ?>
+                <span class="page-btn disabled" aria-hidden="true">›</span>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</nav>
 <?php endif; ?>

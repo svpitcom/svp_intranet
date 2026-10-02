@@ -19,7 +19,7 @@ $canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
             </form>
         </div>
     </div>
-    <div class="pm-calendar-legend"><span class="pm-status overdue">เกินกำหนด</span><span class="pm-status soon">ใกล้ครบกำหนด</span><span class="pm-status normal">ปกติ</span><span>แสดงวันครบกำหนดครั้งถัดไปของแต่ละแผน</span></div>
+    <div class="pm-calendar-legend"><span class="pm-status overdue">เกินกำหนด</span><span class="pm-status soon">ใกล้ครบกำหนด</span><span class="pm-status normal">ปกติ</span><span>ปีถัดไปเป็นวันคาดการณ์ตามรอบ PM จนกว่าจะบันทึกงานปีนี้</span></div>
     <?php if (!$calendar['count']): ?><p class="pm-calendar-empty" role="status">ไม่มีแผนที่ครบกำหนดในเดือนนี้<?= Search::term() !== '' ? 'ตามคำค้นที่เลือก' : '' ?> ลองเปลี่ยนเดือนหรือดูตารางทั้งหมด</p><?php endif; ?>
     <div class="pm-calendar-scroll" tabindex="0" role="region" aria-label="ปฏิทินรายเดือน เลื่อนแนวนอนเพื่อดูวันทั้งหมด">
         <div class="pm-calendar-grid">
@@ -29,8 +29,12 @@ $canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
                     <time class="pm-day-number" datetime="<?= $day['date']->format('Y-m-d') ?>" <?= $day['today'] ? 'aria-current="date"' : '' ?>><?= $day['date']->format('j') ?></time>
                     <?php foreach ($day['events'] as $event): $status = isset($calendarStatuses[$event['pm_status']]) ? $event['pm_status'] : 'normal'; ?>
                         <article class="pm-calendar-event <?= $status ?>">
-                            <span class="pm-event-status"><?= $calendarStatuses[$status] ?></span>
-                            <a class="pm-event-title" href="<?= APP_URL ?>/pm-schedules/<?= (int)$event['pm_schedule_id'] ?>/record"><?= htmlspecialchars($event['pm_title']) ?></a>
+                            <span class="pm-event-status"><?= !empty($event['calendar_projection']) ? 'แผนปีถัดไป (คาดการณ์)' : $calendarStatuses[$status] ?></span>
+                            <?php if (!empty($event['calendar_projection'])): ?>
+                                <span class="pm-event-title"><?= htmlspecialchars($event['pm_title']) ?></span>
+                            <?php else: ?>
+                                <a class="pm-event-title" href="<?= APP_URL ?>/pm-schedules/<?= (int)$event['pm_schedule_id'] ?>/record"><?= htmlspecialchars($event['pm_title']) ?></a>
+                            <?php endif; ?>
                             <!-- <span><?= htmlspecialchars($event['svp_device_name']) ?></span> -->
                             <!-- <small><?= htmlspecialchars(trim(($event['first_name'] ?? '') . ' ' . ($event['last_name'] ?? '')) ?: 'ไม่ระบุผู้รับผิดชอบ') ?></small> -->
                             <?php if ($canEdit): ?><a class="pm-event-edit" href="<?= APP_URL ?>/pm-schedules/<?= (int)$event['pm_schedule_id'] ?>/edit">แก้ไขแผน</a><?php endif; ?>

@@ -8,12 +8,12 @@ class ExportController extends Controller
     /** Export รายการแผน PM ทั้งหมดเป็น PDF */
     public function schedules(): void
     {
-        $schedules = (new PmSchedule())->allWithRelations();
+        $schedules = PmSchedule::withAnnualDates((new PmSchedule())->allWithRelations());
         foreach ($schedules as &$s) {
             $s['pm_status'] = PmSchedule::statusFromDaysRemaining((int) $s['days_remaining']);
         }
         unset($s);
-        $schedules = Search::rows($schedules, Search::term(), ['svp_device_name', 'serial_number', 'pm_title', 'frequency_days', 'first_name', 'last_name', 'next_pm_date', 'pm_status']);
+        $schedules = Search::rows($schedules, Search::term(), ['svp_device_name', 'serial_number', 'pm_title', 'frequency_days', 'first_name', 'last_name', 'next_pm_date', 'plan_current_year', 'plan_next_year', 'pm_status']);
 
         $html = $this->renderHtml('exports/pm_schedules_pdf', ['schedules' => $schedules]);
         $this->streamPdf($html, 'pm-schedules-' . date('Y-m-d') . '.pdf');

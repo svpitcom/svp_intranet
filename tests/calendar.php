@@ -14,6 +14,8 @@ check(PmCalendar::build([], '2026-01',$today)['previous']==='2025-12', 'year rol
 foreach (['2026-13','bad',['array'],'9999-01'] as $invalid) check(PmCalendar::build([], $invalid,$today)['month']==='2026-09','invalid month fallback');
 check(PmCalendar::build([$event], '2024-03',$today)['count']===0, 'adjacent month not counted');
 check(PmCalendar::build([array_replace($event,['next_pm_date'=>'2024-02-30'])], '2024-02',$today)['count']===0, 'invalid schedule date skipped');
+$annual = array_replace($event, ['next_pm_date'=>'2026-10-05', 'plan_next_year'=>'2027-10-05', 'plan_next_projected'=>true]);
+check(PmCalendar::build([$annual], '2027-10', $today)['count']===1, 'next-year projection appears in calendar');
 check(count(array_filter(PmCalendar::build([], '2026-09',$today)['days'],fn($d)=>$d['today']))===1,'today highlighted');
 check(PmCalendar::build([], '1900-01',$today)['previous']===null,'lower navigation bound');
 check(PmCalendar::build([], '2100-12',$today)['next']===null,'upper navigation bound');
@@ -28,7 +30,7 @@ $_SESSION['user']=['svp_user_id'=>1,'user_role'=>'admin'];
 $_GET=['view'=>'table','month'=>'2024-02'];
 $html=render('pm_schedules/index',['schedules'=>[]]);
 check(str_contains($html,'<table') && !str_contains($html,'pm-calendar-grid'),'table view retained');
-$_GET=['month'=>'2024-02'];
+$_GET=['view'=>'calendar','month'=>'2024-02'];
 $html=render('pm_schedules/index',['schedules'=>[]]);
 check(str_contains($html,'pm-calendar-grid') && str_contains($html,'ไม่มีแผนที่ครบกำหนด'),'calendar empty state');
 check(str_contains($html,'name="month" value="2024-02"'),'search preserves selected month');

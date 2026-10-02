@@ -3,14 +3,20 @@ class PmScheduleController extends Controller
 {
     public function index(): void
     {
-        $schedules = (new PmSchedule())->allWithRelations();
+        $schedules = PmSchedule::withAnnualDates((new PmSchedule())->allWithRelations());
         foreach ($schedules as &$s) {
             $s['pm_status'] = PmSchedule::statusFromDaysRemaining((int) $s['days_remaining']);
         }
         unset($s);
-        $schedules = Search::rows($schedules, Search::term(), ['svp_device_name', 'serial_number', 'pm_title', 'frequency_days', 'first_name', 'last_name', 'next_pm_date', 'pm_status']);
+        $schedules = Search::rows($schedules, Search::term(), ['svp_device_name', 'serial_number', 'pm_title', 'frequency_days', 'first_name', 'last_name', 'next_pm_date', 'plan_current_year', 'plan_next_year', 'pm_status']);
 
-        $this->view('pm_schedules/index', ['schedules' => $schedules]);
+        $perPage = 10;
+        $totalPages = max(1, (int) ceil(count($schedules) / $perPage));
+        $requestedPage = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $currentPage = min($requestedPage === false ? 1 : $requestedPage, $totalPages);
+        $tableSchedules = array_slice($schedules, ($currentPage - 1) * $perPage, $perPage);
+
+        $this->view('pm_schedules/index', compact('schedules', 'tableSchedules', 'currentPage', 'totalPages', 'perPage'));
     }
 
     public function create(): void
