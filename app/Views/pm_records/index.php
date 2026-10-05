@@ -16,6 +16,12 @@
             <td><?= nl2br(htmlspecialchars($record['notes'] ?? '')) ?></td>
             <td><?php if (!empty($record['attachment_path'])): ?>
                 <a href="<?= APP_URL ?>/pm-records/<?= (int) $record['pm_record_id'] ?>/attachment"><?= htmlspecialchars($record['attachment_original_name'] ?? 'PDF') ?></a>
+                <?php if ((Session::get('user')['user_role'] ?? '') === 'admin'): ?>
+                <form method="post" action="<?= APP_URL ?>/pm-records/<?= (int) $record['pm_record_id'] ?>/sharepoint" class="mt-2">
+                    <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+                    <button class="btn btn-sm btn-outline-primary">ส่ง PDF ไป SharePoint / ส่งซ้ำ</button>
+                </form>
+                <?php endif; ?>
             <?php else: ?>—<?php endif; ?></td>
         </tr>
     <?php endforeach; ?>

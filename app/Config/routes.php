@@ -1,5 +1,10 @@
 <?php
 return [
+    'POST /sharepoint/export-tables' => ['SharePointController', 'exportTables', ['auth', 'role:admin']],
+    'POST /pm-records/{id}/sharepoint' => ['PmRecordController', 'retryPdf', ['auth', 'role:admin']],
+    // App-only SharePoint metadata and exports are restricted to administrators.
+    'GET /sharepoint' => ['SharePointController', 'index', ['auth', 'role:admin']],
+    'POST /sharepoint/export' => ['SharePointController', 'export', ['auth', 'role:admin']],
     // Auth
     'GET /pm-records/{id}/attachment' => ['FileController', 'record', ['auth']],
     'GET /pm-schedules/{id}/attachment' => ['FileController', 'schedule', ['auth']],

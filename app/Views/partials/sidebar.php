@@ -7,6 +7,9 @@ $navGroups = [
     'อุปกรณ์' => [['/devices', 'ทะเบียนอุปกรณ์', 'laptop'], ['/device_types', 'ประเภทอุปกรณ์', 'grid']],
     'งานบำรุงรักษา' => [['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
 ];
+if ((Session::get('user')['user_role'] ?? '') === 'admin') {
+    $navGroups['เชื่อมต่อระบบ'] = [['/sharepoint', 'SharePoint', 'cloud']];
+}
 ?>
 <aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="app-sidebar" aria-labelledby="sidebar-title">
     <div class="sidebar-brand">

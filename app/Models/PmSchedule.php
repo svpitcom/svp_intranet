@@ -81,6 +81,16 @@ class PmSchedule extends Model
         return $row ?: null;
     }
 
+    /** Include inactive plans and retain plans whose related records are missing. */
+    public function allForSharePoint(): array
+    {
+        return $this->query('SELECT ps.*, dv.svp_device_name, dv.serial_number, u.first_name, u.last_name
+            FROM pm_schedule ps
+            LEFT JOIN device dv ON dv.svp_device_id = ps.svp_device_id
+            LEFT JOIN users u ON u.svp_user_id = ps.responsible_user_id
+            ORDER BY ps.pm_schedule_id')->fetchAll();
+    }
+
     /** อัปเดตวันที่ทำ PM ล่าสุด + คำนวณวันครบกำหนดครั้งถัดไปอัตโนมัติ */
     public function markCompleted(int $id, string $performedDate): bool
     {

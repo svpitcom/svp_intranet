@@ -64,7 +64,7 @@ class PmRecordController extends Controller
             $lock = $db->prepare('SELECT pm_schedule_id FROM pm_schedule WHERE pm_schedule_id = ? FOR UPDATE');
             $lock->execute([$scheduleId]);
             if (!$lock->fetch()) throw new RuntimeException('Schedule no longer exists');
-            (new PmRecord())->insert([
+            $recordId = (new PmRecord())->insert([
                 'pm_schedule_id'            => $scheduleId,
                 'performed_by'                => $this->currentUser()['svp_user_id'],
                 'performed_date'              => $performedDate,
@@ -85,6 +85,36 @@ class PmRecordController extends Controller
         }
 
         Session::flash('success', 'บันทึกการทำ PM เรียบร้อยแล้ว');
+        if ($attachmentPath !== null) {
+            // Upload only after commit: remote failure must not discard a saved PM or PDF.
+            $this->sendPdfToSharePoint($recordId, $attachmentPath);
+        }
         $this->redirect('/pm-schedules');
+    }
+
+    protected function sharePointClient(): SharePointClient
+    {
+        return new SharePointClient();
+    }
+
+    protected function sendPdfToSharePoint(int $recordId, string $attachmentPath): void
+    {
+        try {
+            $this->sharePointClient()->uploadRecordPdf($recordId, $attachmentPath);
+            Session::flash('success', 'บันทึก PM และส่งไฟล์ PDF ไป SharePoint เรียบร้อยแล้ว');
+        } catch (Throwable $e) {
+            Session::flash('error', 'บันทึก PM และ PDF ในระบบแล้ว แต่ส่ง PDF ไป SharePoint ไม่สำเร็จ ให้ผู้ดูแลส่งซ้ำจากหน้าประวัติ PM ไม่ต้องบันทึก PM ใหม่');
+        }
+    }
+
+    public function retryPdf(int $id): void
+    {
+        $record = (new PmRecord())->find($id);
+        if (!$record || empty($record['attachment_path'])) {
+            Session::flash('error', 'ไม่พบรายการ PM หรือไฟล์ PDF แนบ');
+        } else {
+            $this->sendPdfToSharePoint($id, $record['attachment_path']);
+        }
+        $this->redirect('/pm-records');
     }
 }

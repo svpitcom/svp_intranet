@@ -37,6 +37,7 @@
                 <label class="form-label">แนบไฟล์รายงาน (PDF)</label>
                 <input type="file" name="pm_attachment" class="form-control" accept="application/pdf">
                 <div class="form-text">รองรับเฉพาะไฟล์ PDF ขนาดไม่เกิน 10 MB</div>
+                <div class="form-text">เมื่อบันทึก ระบบจะส่ง PDF ที่แนบไปยัง SharePoint ด้วย หากส่งไม่สำเร็จ ไฟล์และข้อมูล PM ยังคงอยู่ในระบบ</div>
             </div>
 
             <div class="d-flex gap-2">
