@@ -3,6 +3,7 @@
 class SharePointClient
 {
     private const GRAPH = 'https://graph.microsoft.com/v1.0';
+    public const DEVICE_DEMO_NAME = 'Master-List-Devices-DEMO-20261005-073010-1e030d.xlsx';
     private array $config;
     private $transport;
     private ?string $token = null;
@@ -64,6 +65,19 @@ class SharePointClient
         if (strlen($csv) > 10 * 1024 * 1024) throw new RuntimeException('รายงานเกินขนาด 10 MB ที่ระบบรองรับ');
         $filename = 'PM-records-' . gmdate('Ymd-His') . '-' . bin2hex(random_bytes(8)) . '.csv';
         return $this->graph('PUT', $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode($filename) . ':/content', $csv, 'text/csv; charset=utf-8');
+    }
+
+    public function syncDeviceDemo(array $devices): array
+    {
+        if (!$this->canExport()) throw new RuntimeException('กรุณาตั้งค่าการเชื่อมต่อ SharePoint ก่อน');
+        $path = $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::DEVICE_DEMO_NAME);
+        $item = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
+        if (($item['name'] ?? '') !== self::DEVICE_DEMO_NAME || empty($item['id']) || empty($item['eTag']) || ($item['parentReference']['id'] ?? '') !== $this->config['export_folder_id']) throw new RuntimeException('ไม่พบไฟล์ Excel ทดสอบที่ตรงกับปลายทาง กรุณาตรวจโฟลเดอร์');
+        if (preg_match('/[\r\n]/', $item['eTag'])) throw new RuntimeException('ข้อมูลเวอร์ชันไฟล์ไม่ถูกต้อง');
+        $body = DeviceWorkbook::build($devices);
+        $result = $this->request('PUT', self::GRAPH . $this->drivePath() . '/items/' . rawurlencode($item['id']) . '/content', ['Authorization: Bearer ' . $this->accessToken(), 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'If-Match: ' . $item['eTag']], $body);
+        if (($result['id'] ?? '') !== $item['id']) throw new RuntimeException('ยังยืนยันผลอัปเดต Excel ไม่ได้ กรุณาตรวจไฟล์ปลายทางก่อนส่งซ้ำ');
+        return $result;
     }
 
     public function exportTable(string $type, array $rows): array
@@ -149,6 +163,8 @@ class SharePointClient
                 401 => 'ยืนยันตัวตน Microsoft ไม่สำเร็จ กรุณาตรวจสอบ Client ID และอายุ Client Secret',
                 403 => 'ไม่มีสิทธิ์ SharePoint กรุณาตรวจสอบ Admin consent และสิทธิ์ของ Site',
                 404 => 'ไม่พบ Site, Document Library หรือโฟลเดอร์ที่ระบุ',
+                412 => 'ไฟล์ Excel ถูกแก้ไขระหว่างส่งข้อมูล กรุณาตรวจไฟล์แล้วลองใหม่',
+                423 => 'ไฟล์ Excel ถูกล็อก กรุณาปิดไฟล์แล้วลองใหม่',
                 429 => 'Microsoft จำกัดจำนวนคำขอ กรุณารอสักครู่แล้วลองใหม่',
                 default => 'เชื่อมต่อ Microsoft ไม่สำเร็จ กรุณาลองใหม่ภายหลัง',
             };

@@ -4,6 +4,9 @@
 
 ## สิ่งที่ใช้งานได้
 
+- หน้า `/devices` มีปุ่ม admin “อัปเดต Excel ทดสอบบน SharePoint” อัปเดตไฟล์ `Master-List-Devices-DEMO-20261005-073010-1e030d.xlsx` เดิมในโฟลเดอร์ส่งออก โดยสร้าง workbook ทั้งไฟล์ใหม่จากแม่แบบ `app/Templates/devices-demo.xlsx` และทะเบียนทั้งหมด ไม่อิงตัวกรองหน้าจอ ไม่ใช่การ merge กับการแก้ไขใน Excel: ข้อมูล/ชีต/สูตรที่เพิ่มเองใน DEMO จะถูกแทนที่ ต้องใช้ไฟล์ DEMO โดยเฉพาะเท่านั้น ไม่ใช่ Master จริง และยังไม่ส่งอัตโนมัติเมื่อบันทึกอุปกรณ์
+- คำขอส่ง If-Match ตาม eTag ที่อ่านก่อนสร้างไฟล์ หาก Microsoft ตอบ 412 หรือ 423 จะแจ้งความขัดแย้ง/ไฟล์ล็อก ไม่ retry อัตโนมัติ ไม่แก้ข้อมูล MySQL ใช้ PHP PharData และ DOM จาก PHP เดิม ไม่ต้องเปิด ZipArchive
+
 - หน้า SharePoint มีปุ่มส่งทะเบียนอุปกรณ์ ประเภทอุปกรณ์ แผนก และแผน PM แยกประเภท หรือส่งทั้ง 4 ประเภท แต่ละครั้งสร้าง CSV ใหม่ในโฟลเดอร์ส่งออกเดิม รวมรายการปิดใช้งานด้วย ข้อมูลหลักยังอยู่ใน MySQL และไม่มีการซิงก์อัตโนมัติ หากส่งสำเร็จเพียงบางประเภทจะแจ้งผลแยกกันเพื่อส่งซ้ำเฉพาะที่ขาด
 - CSV มีเฉพาะคอลัมน์ทะเบียนที่กำหนด ไม่ส่งรหัสผ่านหรือข้อมูลบัญชีอื่น ชื่อไฟล์ขึ้นต้น `devices-`, `device_types-`, `departments-`, `pm_schedules-` สำหรับ Serial Number ที่มีศูนย์นำหน้า ให้ใช้ Excel Import CSV แล้วตั้งคอลัมน์เป็น Text เพื่อป้องกัน Excel แปลงเป็นตัวเลข
 
@@ -57,6 +60,7 @@ HTTP 401: ตรวจ Client ID/Secret และวันหมดอายุ;
 
 ```text
 php tests/sharepoint.php
+php tests/device_workbook.php
 php tests/sharepoint_tables.php
 php tests/sharepoint_pdf.php
 php tests/search.php

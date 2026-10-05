@@ -46,6 +46,15 @@ function pageUrl(int $page, string $sort, string $dir): string
 
 <?php $searchPath = '/devices'; $searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง'; $resultCount = $totalDevices; require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="card-modern">
+    <?php if ($currentUser['user_role'] === 'admin'): ?>
+    <div class="p-3 border-bottom">
+        <form method="post" action="<?= APP_URL ?>/devices/sync-excel">
+            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+            <button class="btn btn-outline-primary" type="submit">อัปเดต Excel ทดสอบบน SharePoint</button>
+        </form>
+        <p class="small text-muted mt-2 mb-0">ส่งทะเบียนทั้งหมด รวมรายการนอกผลค้นหา ไปแทนข้อมูลในไฟล์ DEMO เดิมทั้งไฟล์ การแก้ไขในไฟล์ DEMO จะถูกแทนด้วยข้อมูลจาก Intranet ไม่กระทบ Master List จริง</p>
+    </div>
+    <?php endif; ?>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 table-modern">
             <thead>

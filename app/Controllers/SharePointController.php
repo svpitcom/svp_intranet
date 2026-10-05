@@ -33,6 +33,18 @@ class SharePointController extends Controller
         $this->redirect('/sharepoint');
     }
 
+    public function syncDevices(): void
+    {
+        try {
+            $devices = (new Device())->allWithDevice();
+            (new SharePointClient())->syncDeviceDemo($devices);
+            Session::flash('success', 'อัปเดต Excel ทดสอบบน SharePoint แล้ว ' . count($devices) . ' รายการ');
+        } catch (Throwable $e) {
+            Session::flash('error', $e instanceof RuntimeException && !$e instanceof PDOException ? $e->getMessage() : 'อัปเดต Excel ไม่สำเร็จ กรุณาตรวจสอบไฟล์ปลายทางก่อนลองใหม่');
+        }
+        $this->redirect('/devices');
+    }
+
     public function exportTables(): void
     {
         $type = $this->input('type', '');
