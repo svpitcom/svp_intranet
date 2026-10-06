@@ -45,6 +45,59 @@ class SharePointController extends Controller
         $this->redirect('/devices');
     }
 
+    public function importDevices(): void
+    {
+        try {
+            $client = new SharePointClient();
+            $download = $client->downloadDeviceDemo();
+            $rows = DeviceWorkbook::parse($download['bytes']);
+            $result = DeviceWorkbook::import($rows, Database::connect());
+            $message = 'นำเข้าจาก Excel แล้ว: เพิ่ม ' . $result['created'] . ' รายการ, แก้ไข ' . $result['updated'] . ' รายการ';
+            try {
+                $client->syncDeviceDemo((new Device())->allWithDevice(), $download['eTag']);
+                $message .= ' และอัปเดต Excel ให้แสดงรหัสใหม่จาก Intranet แล้ว';
+                Session::flash('success', $message);
+            } catch (Throwable $e) {
+                Session::flash('error', $message . ' แต่ยังอัปเดต Excel กลับไม่สำเร็จ กรุณากด “อัปเดต Excel” ภายหลัง');
+            }
+        } catch (Throwable $e) {
+            Session::flash('error', $e instanceof RuntimeException && !$e instanceof PDOException ? $e->getMessage() : 'นำเข้าจาก Excel ไม่สำเร็จ ข้อมูลใน Intranet ยังไม่เปลี่ยน');
+        }
+        $this->redirect('/devices');
+    }
+
+    public function syncUsers(): void
+    {
+        try {
+            $users = (new User())->allWithDepartmentAndPosition();
+            (new SharePointClient())->syncUserDemo($users);
+            Session::flash('success', 'อัปเดต Excel รายชื่อผู้ใช้งาน DEMO แล้ว ' . count($users) . ' รายการ');
+        } catch (Throwable $e) {
+            Session::flash('error', $e instanceof RuntimeException && !$e instanceof PDOException ? $e->getMessage() : 'อัปเดต Excel ผู้ใช้งานไม่สำเร็จ');
+        }
+        $this->redirect('/users');
+    }
+
+    public function importUsers(): void
+    {
+        try {
+            $client = new SharePointClient();
+            $download = $client->downloadUserDemo();
+            $rows = UserWorkbook::parse($download['bytes']);
+            $result = UserWorkbook::import($rows, Database::connect(), (int)$this->currentUser()['svp_user_id']);
+            $message = 'นำเข้าการแก้ไขรายชื่อผู้ใช้งานแล้ว ' . $result['updated'] . ' รายการ';
+            try {
+                $client->syncUserDemo((new User())->allWithDepartmentAndPosition(), $download['eTag']);
+                Session::flash('success', $message . ' และอัปเดต Excel กลับแล้ว');
+            } catch (Throwable $e) {
+                Session::flash('error', $message . ' แต่เขียน ID/ข้อมูลกลับ Excel ไม่สำเร็จ กรุณาตรวจไฟล์ก่อนกดอัปเดต');
+            }
+        } catch (Throwable $e) {
+            Session::flash('error', $e instanceof RuntimeException && !$e instanceof PDOException ? $e->getMessage() : 'นำเข้ารายชื่อผู้ใช้งานไม่สำเร็จ ข้อมูลเดิมยังไม่เปลี่ยน');
+        }
+        $this->redirect('/users');
+    }
+
     public function exportTables(): void
     {
         $type = $this->input('type', '');

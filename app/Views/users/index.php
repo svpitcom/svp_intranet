@@ -1,6 +1,9 @@
 <!-- User Management -->
 <?php $currentUser = Session::get('user'); ?>
 
+<?php if (Session::get('success')): ?><div class="alert-modern alert-success-modern"><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars(Session::get('success')) ?></div><?php endif; ?>
+<?php if (Session::get('error')): ?><div class="alert-modern alert-danger-modern"><i class="bi bi-exclamation-circle-fill"></i> <?= htmlspecialchars(Session::get('error')) ?></div><?php endif; ?>
+
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
         <h4 class="mb-0 fw-bold">จัดการผู้ใช้งาน</h4>
@@ -12,6 +15,20 @@
         </a>
     <?php endif; ?>
 </div>
+
+<?php if ($currentUser['user_role'] === 'admin'): ?>
+<div class="card-modern p-3 mb-3">
+    <form method="post" action="<?= APP_URL ?>/users/sync-excel" class="d-inline" onsubmit="return confirm('อัปเดตไฟล์ Excel DEMO ด้วยรายชื่อทั้งหมดจาก Intranet หรือไม่? ข้อมูลที่แก้ไว้ใน Excel จะถูกแทนที่');">
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+        <button class="btn btn-outline-primary" type="submit">อัปเดต Excel ทดสอบบน SharePoint</button>
+    </form>
+    <form method="post" action="<?= APP_URL ?>/users/import-excel" class="d-inline ms-2" onsubmit="return confirm('นำการแก้ไขจาก Excel มาอัปเดตบัญชีผู้ใช้งานเดิมใน Intranet หรือไม่?');">
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+        <button class="btn btn-outline-success" type="submit">นำเข้าการแก้ไขจาก Excel</button>
+    </form>
+    <p class="small text-muted mt-2 mb-0">ครั้งแรกกดอัปเดตเพื่อสร้างไฟล์ <?= htmlspecialchars(SharePointClient::USER_DEMO_NAME, ENT_QUOTES, 'UTF-8') ?> ใน SharePoint ก่อน ไฟล์มีข้อมูลบัญชีแต่ไม่มีรหัสผ่าน การนำเข้าปรับปรุงเฉพาะ ID ที่มีอยู่; เพิ่มบัญชีใหม่ผ่านปุ่ม “เพิ่มผู้ใช้” และลบแถวใน Excel จะไม่ลบบัญชีในระบบ</p>
+</div>
+<?php endif; ?>
 
 <!-- ===== Search box (realtime) ===== -->
 <div class="search-box mb-3">

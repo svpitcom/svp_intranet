@@ -52,7 +52,11 @@ function pageUrl(int $page, string $sort, string $dir): string
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
             <button class="btn btn-outline-primary" type="submit">อัปเดต Excel ทดสอบบน SharePoint</button>
         </form>
-        <p class="small text-muted mt-2 mb-0">ส่งทะเบียนทั้งหมด รวมรายการนอกผลค้นหา ไปแทนข้อมูลในไฟล์ DEMO เดิมทั้งไฟล์ การแก้ไขในไฟล์ DEMO จะถูกแทนด้วยข้อมูลจาก Intranet ไม่กระทบ Master List จริง</p>
+        <form method="post" action="<?= APP_URL ?>/devices/import-excel" class="mt-2" onsubmit="return confirm('นำข้อมูลจาก Excel มาเพิ่มหรือแก้ไขทะเบียนใน Intranet ใช่ไหม? ถ้าใช้รหัสอุปกรณ์เดิม ระบบจะแก้รายการนั้น หากเว้นรหัส ระบบจะเพิ่มรายการใหม่');">
+            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+            <button class="btn btn-outline-success" type="submit">นำเข้าการแก้ไขจาก Excel</button>
+        </form>
+        <p class="small text-muted mt-2 mb-0">ส่งออกจะอัปเดตไฟล์ DEMO ด้วยข้อมูลทั้งหมดจาก Intranet ส่วนการนำเข้าจะเพิ่มแถวที่เว้นรหัสอุปกรณ์ หรือแก้รายการเดิมตามรหัส ตรวจประเภท แผนก และชื่อผู้รับผิดชอบให้ตรงกับข้อมูลใน Intranet ก่อนนำเข้า ระบบไม่นำการลบแถวไปลบอุปกรณ์</p>
     </div>
     <?php endif; ?>
     <div class="table-responsive">

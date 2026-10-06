@@ -1,6 +1,9 @@
 <?php
 return [
+    'POST /devices/import-excel' => ['SharePointController', 'importDevices', ['auth', 'role:admin']],
     'POST /devices/sync-excel' => ['SharePointController', 'syncDevices', ['auth', 'role:admin']],
+    'POST /users/sync-excel' => ['SharePointController', 'syncUsers', ['auth', 'role:admin']],
+    'POST /users/import-excel' => ['SharePointController', 'importUsers', ['auth', 'role:admin']],
     'POST /sharepoint/export-tables' => ['SharePointController', 'exportTables', ['auth', 'role:admin']],
     'POST /pm-records/{id}/sharepoint' => ['PmRecordController', 'retryPdf', ['auth', 'role:admin']],
     // App-only SharePoint metadata and exports are restricted to administrators.

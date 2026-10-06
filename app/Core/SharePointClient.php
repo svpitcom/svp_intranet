@@ -4,6 +4,7 @@ class SharePointClient
 {
     private const GRAPH = 'https://graph.microsoft.com/v1.0';
     public const DEVICE_DEMO_NAME = 'Master-List-Devices-DEMO-20261005-073010-1e030d.xlsx';
+    public const USER_DEMO_NAME = 'Master-List-Users-DEMO-20261006.xlsx';
     private array $config;
     private $transport;
     private ?string $token = null;
@@ -67,17 +68,79 @@ class SharePointClient
         return $this->graph('PUT', $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode($filename) . ':/content', $csv, 'text/csv; charset=utf-8');
     }
 
-    public function syncDeviceDemo(array $devices): array
+    public function syncDeviceDemo(array $devices, ?string $expectedETag = null): array
     {
         if (!$this->canExport()) throw new RuntimeException('กรุณาตั้งค่าการเชื่อมต่อ SharePoint ก่อน');
         $path = $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::DEVICE_DEMO_NAME);
         $item = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
         if (($item['name'] ?? '') !== self::DEVICE_DEMO_NAME || empty($item['id']) || empty($item['eTag']) || ($item['parentReference']['id'] ?? '') !== $this->config['export_folder_id']) throw new RuntimeException('ไม่พบไฟล์ Excel ทดสอบที่ตรงกับปลายทาง กรุณาตรวจโฟลเดอร์');
+        if ($expectedETag !== null && !hash_equals($expectedETag, (string) $item['eTag'])) throw new RuntimeException('Excel ถูกแก้ไขหลังจากดาวน์โหลดนำเข้า กรุณาตรวจไฟล์แล้วกดนำเข้าอีกครั้ง');
         if (preg_match('/[\r\n]/', $item['eTag'])) throw new RuntimeException('ข้อมูลเวอร์ชันไฟล์ไม่ถูกต้อง');
         $body = DeviceWorkbook::build($devices);
         $result = $this->request('PUT', self::GRAPH . $this->drivePath() . '/items/' . rawurlencode($item['id']) . '/content', ['Authorization: Bearer ' . $this->accessToken(), 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'If-Match: ' . $item['eTag']], $body);
         if (($result['id'] ?? '') !== $item['id']) throw new RuntimeException('ยังยืนยันผลอัปเดต Excel ไม่ได้ กรุณาตรวจไฟล์ปลายทางก่อนส่งซ้ำ');
         return $result;
+    }
+
+    /** Upload the dedicated user workbook. This contains account metadata only, never passwords. */
+    public function syncUserDemo(array $users, ?string $expectedETag = null): array
+    {
+        if (!$this->canExport()) throw new RuntimeException('กรุณาตั้งค่าการเชื่อมต่อ SharePoint ก่อน');
+        $body = UserWorkbook::build($users);
+        $target = $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::USER_DEMO_NAME) . ':/content';
+        if ($expectedETag === null) {
+            $result = $this->request('PUT', self::GRAPH . $target, ['Authorization: Bearer ' . $this->accessToken(), 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'], $body);
+        } else {
+            $path = $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::USER_DEMO_NAME);
+            $item = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
+            if (($item['name'] ?? '') !== self::USER_DEMO_NAME || empty($item['id']) || empty($item['eTag']) || ($item['parentReference']['id'] ?? '') !== $this->config['export_folder_id']) throw new RuntimeException('ไม่พบไฟล์ Excel ผู้ใช้งาน DEMO ที่ต้องการอัปเดต');
+            if (preg_match('/[\r\n]/', (string)$item['eTag'])) throw new RuntimeException('ข้อมูลเวอร์ชันไฟล์ Excel ผู้ใช้งานไม่ถูกต้อง');
+            if (!hash_equals($expectedETag, (string)$item['eTag'])) throw new RuntimeException('Excel ผู้ใช้งานถูกแก้ไขหลังดาวน์โหลด กรุณานำเข้าอีกครั้ง');
+            $result = $this->request('PUT', self::GRAPH . $this->drivePath() . '/items/' . rawurlencode($item['id']) . '/content', ['Authorization: Bearer ' . $this->accessToken(), 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'If-Match: ' . $expectedETag], $body);
+        }
+        if (empty($result['id']) || (isset($result['name']) && $result['name'] !== self::USER_DEMO_NAME)) throw new RuntimeException('SharePoint ยังไม่ยืนยันไฟล์ผู้ใช้งานที่ส่งออก');
+        return $result;
+    }
+
+    /** @return array{bytes: string, eTag: string} */
+    public function downloadUserDemo(): array
+    {
+        if (!$this->canExport()) throw new RuntimeException('กรุณาตั้งค่าการเชื่อมต่อ SharePoint ก่อน');
+        $path = $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::USER_DEMO_NAME);
+        $item = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
+        if (($item['name'] ?? '') !== self::USER_DEMO_NAME || empty($item['id']) || empty($item['eTag']) || ($item['parentReference']['id'] ?? '') !== $this->config['export_folder_id']) throw new RuntimeException('ไม่พบไฟล์ Excel ผู้ใช้งาน DEMO');
+        if (preg_match('/[\r\n]/', (string)$item['eTag'])) throw new RuntimeException('ข้อมูลเวอร์ชันไฟล์ Excel ผู้ใช้งานไม่ถูกต้อง');
+        $response = ($this->transport)('GET', self::GRAPH . $this->drivePath() . '/items/' . rawurlencode($item['id']) . '/content', ['Authorization: Bearer ' . $this->accessToken()], '');
+        if ((int)($response['status'] ?? 0) !== 302) throw new RuntimeException('SharePoint ยังไม่ส่งลิงก์ดาวน์โหลดไฟล์ผู้ใช้งาน');
+        $url = $response['headers']['location'] ?? $response['location'] ?? '';
+        $parts = is_string($url) ? parse_url($url) : false;
+        if (!$parts || strtolower($parts['scheme'] ?? '') !== 'https' || empty($parts['host']) || isset($parts['user']) || isset($parts['pass'])) throw new RuntimeException('ลิงก์ดาวน์โหลดจาก Microsoft ไม่ถูกต้อง');
+        $file = ($this->transport)('GET', $url, [], '');
+        if ((int)($file['status'] ?? 0) !== 200 || !is_string($file['body'] ?? null) || strlen($file['body']) > 10*1024*1024) throw new RuntimeException('ดาวน์โหลดไฟล์ Excel ผู้ใช้งานไม่สำเร็จหรือไฟล์ใหญ่เกิน 10 MB');
+        $latest = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
+        if (($latest['eTag'] ?? '') !== $item['eTag']) throw new RuntimeException('ไฟล์ Excel ผู้ใช้งานเปลี่ยนระหว่างดาวน์โหลด กรุณานำเข้าอีกครั้ง');
+        return ['bytes'=>$file['body'],'eTag'=>(string)$latest['eTag']];
+    }
+
+    /** @return array{bytes: string, eTag: string} */
+    public function downloadDeviceDemo(): array
+    {
+        if (!$this->canExport()) throw new RuntimeException('กรุณาตั้งค่าการเชื่อมต่อ SharePoint ก่อน');
+        $path = $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::DEVICE_DEMO_NAME);
+        $item = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
+        if (($item['name'] ?? '') !== self::DEVICE_DEMO_NAME || empty($item['id']) || empty($item['eTag']) || ($item['parentReference']['id'] ?? '') !== $this->config['export_folder_id']) throw new RuntimeException('ไม่พบไฟล์ DEMO ที่ต้องการนำเข้า');
+        $headers = ['Authorization: Bearer ' . $this->accessToken()];
+        $response = ($this->transport)('GET', self::GRAPH . $this->drivePath() . '/items/' . rawurlencode($item['id']) . '/content', $headers, '');
+        if ((int) ($response['status'] ?? 0) !== 302) throw new RuntimeException('SharePoint ยังไม่ส่งลิงก์ดาวน์โหลดไฟล์ (HTTP ' . (int) ($response['status'] ?? 0) . ')');
+        $url = $response['headers']['location'] ?? $response['location'] ?? '';
+        $parts = is_string($url) ? parse_url($url) : false;
+        if (!$parts || strtolower($parts['scheme'] ?? '') !== 'https' || empty($parts['host']) || isset($parts['user']) || isset($parts['pass'])) throw new RuntimeException('ลิงก์ดาวน์โหลดจาก Microsoft ไม่ถูกต้อง');
+        $file = ($this->transport)('GET', $url, [], '');
+        if ((int) ($file['status'] ?? 0) !== 200 || !is_string($file['body'] ?? null)) throw new RuntimeException('ดาวน์โหลดไฟล์ Excel จาก SharePoint ไม่สำเร็จ');
+        if (strlen($file['body']) > 10 * 1024 * 1024) throw new RuntimeException('ไฟล์ Excel ใหญ่เกิน 10 MB');
+        $latest = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
+        if (($item['eTag'] ?? '') !== ($latest['eTag'] ?? '')) throw new RuntimeException('ไฟล์ Excel เปลี่ยนระหว่างดาวน์โหลด กรุณากดนำเข้าอีกครั้ง');
+        return ['bytes' => $file['body'], 'eTag' => (string) ($latest['eTag'] ?? '')];
     }
 
     public function exportTable(string $type, array $rows): array
@@ -178,17 +241,26 @@ class SharePointClient
     private static function curlRequest(string $method, string $url, array $headers, string $body): array
     {
         if (!extension_loaded('curl')) throw new RuntimeException('กรุณาเปิด PHP extension curl บนเซิร์ฟเวอร์');
+        $responseHeaders = [];
         $ch = curl_init($url);
         curl_setopt_array($ch, [CURLOPT_CUSTOMREQUEST => $method, CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_TIMEOUT => 30,
             CURLOPT_SSL_VERIFYPEER => true, CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS]);
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+            CURLOPT_HEADERFUNCTION => static function ($handle, string $line) use (&$responseHeaders): int {
+                $length = strlen($line);
+                if (str_contains($line, ':')) {
+                    [$name, $value] = explode(':', $line, 2);
+                    $responseHeaders[strtolower(trim($name))] = trim($value);
+                }
+                return $length;
+            }]);
         if ($method !== 'GET') curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         $result = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         if ($result === false) throw new RuntimeException('ติดต่อ Microsoft ไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตและใบรับรอง CA ของ PHP');
-        return ['status' => $status, 'body' => $result];
+        return ['status' => $status, 'body' => $result, 'headers' => $responseHeaders];
     }
 }
