@@ -1,6 +1,14 @@
 <?php
 class SharePointController extends Controller
 {
+    private function destinationClient(): SharePointClient
+    {
+        return (new SharePointClient())->forDepartment($this->input('department_target', ''));
+    }
+    private function itClient(): SharePointClient
+    {
+        return (new SharePointClient())->forDepartment('IT');
+    }
     public function index(): void
     {
         $client = new SharePointClient();
@@ -23,7 +31,7 @@ class SharePointController extends Controller
     public function export(): void
     {
         try {
-            $client = new SharePointClient();
+            $client = $this->destinationClient();
             if (!$client->canExport()) throw new RuntimeException('กรุณาตั้งค่าการเชื่อมต่อและโฟลเดอร์ส่งออกก่อน');
             $result = $client->exportRecords((new PmRecord())->allWithRelations());
             Session::flash('success', 'ส่งออกประวัติ PM ไปยัง SharePoint แล้ว: ' . ($result['name'] ?? 'รายงาน CSV'));
@@ -37,7 +45,7 @@ class SharePointController extends Controller
     {
         try {
             $devices = (new Device())->allWithDevice();
-            (new SharePointClient())->syncDeviceDemo($devices);
+            $this->itClient()->syncDeviceDemo($devices);
             Session::flash('success', 'อัปเดต Excel ทดสอบบน SharePoint แล้ว ' . count($devices) . ' รายการ');
         } catch (Throwable $e) {
             Session::flash('error', $e instanceof RuntimeException && !$e instanceof PDOException ? $e->getMessage() : 'อัปเดต Excel ไม่สำเร็จ กรุณาตรวจสอบไฟล์ปลายทางก่อนลองใหม่');
@@ -48,7 +56,7 @@ class SharePointController extends Controller
     public function importDevices(): void
     {
         try {
-            $client = new SharePointClient();
+            $client = $this->itClient();
             $download = $client->downloadDeviceDemo();
             $rows = DeviceWorkbook::parse($download['bytes']);
             $result = DeviceWorkbook::import($rows, Database::connect());
@@ -70,7 +78,7 @@ class SharePointController extends Controller
     {
         try {
             $users = (new User())->allWithDepartmentAndPosition();
-            (new SharePointClient())->syncUserDemo($users);
+            $this->itClient()->syncUserDemo($users);
             Session::flash('success', 'อัปเดต Excel รายชื่อผู้ใช้งาน DEMO แล้ว ' . count($users) . ' รายการ');
         } catch (Throwable $e) {
             Session::flash('error', $e instanceof RuntimeException && !$e instanceof PDOException ? $e->getMessage() : 'อัปเดต Excel ผู้ใช้งานไม่สำเร็จ');
@@ -81,7 +89,7 @@ class SharePointController extends Controller
     public function importUsers(): void
     {
         try {
-            $client = new SharePointClient();
+            $client = $this->itClient();
             $download = $client->downloadUserDemo();
             $rows = UserWorkbook::parse($download['bytes']);
             $result = UserWorkbook::import($rows, Database::connect(), (int)$this->currentUser()['svp_user_id']);
@@ -106,7 +114,13 @@ class SharePointController extends Controller
             $this->redirect('/sharepoint');
             return;
         }
-        $client = new SharePointClient();
+        try {
+            $client = in_array($type, ['devices', 'device_types'], true) ? $this->itClient() : $this->destinationClient();
+        } catch (RuntimeException $e) {
+            Session::flash('error', $e->getMessage());
+            $this->redirect('/sharepoint');
+            return;
+        }
         if (!$client->canExport()) {
             Session::flash('error', 'กรุณาตั้งค่าการเชื่อมต่อและโฟลเดอร์ส่งออกก่อน');
             $this->redirect('/sharepoint');
@@ -117,7 +131,8 @@ class SharePointController extends Controller
         foreach ($types as $key) {
             try {
                 $rows = SharePointTables::rows($key);
-                $client->exportTable($key, $rows);
+                $target = $type === 'all' && in_array($key, ['devices', 'device_types'], true) ? $this->itClient() : $client;
+                $target->exportTable($key, $rows);
                 $sent[] = SharePointTables::LABELS[$key] . ' (' . count($rows) . ' รายการ)';
             } catch (Throwable $e) {
                 $failed[] = SharePointTables::LABELS[$key];

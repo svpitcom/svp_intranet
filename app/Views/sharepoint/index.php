@@ -14,8 +14,10 @@
 <?php endif; ?>
 <div class="card mb-4"><div class="card-body">
     <h2 class="h5">ส่งออกข้อมูลทะเบียนและแผน PM</h2>
-    <p>ส่งข้อมูลทั้งหมด รวมรายการที่ปิดใช้งาน เป็น CSV ภาษาไทยแยกประเภท เปิดด้วย Excel ได้ ไฟล์จะอยู่ในโฟลเดอร์เดียวกับรายงาน PM บน SharePoint</p>
+    <p class="small text-muted">ทะเบียนและประเภทอุปกรณ์ส่งเข้า IT เสมอ ส่วนแผนกและแผน PM ใช้โฟลเดอร์ที่เลือก</p>
+    <p>ส่งข้อมูลทั้งหมด รวมรายการที่ปิดใช้งาน เป็น CSV ภาษาไทยแยกประเภท เปิดด้วย Excel ได้ ไฟล์จะอยู่ในโฟลเดอร์ปลายทางที่เลือกบน SharePoint</p>
     <form method="post" action="<?= APP_URL ?>/sharepoint/export-tables" class="d-flex flex-wrap gap-2">
+        <?php require BASE_PATH . '/app/Views/partials/sharepoint_destination.php'; ?>
         <input type="hidden" name="_csrf" value="<?= $esc(Session::csrfToken()) ?>">
         <?php foreach (SharePointTables::LABELS as $type => $label): ?>
             <button name="type" value="<?= $esc($type) ?>" class="btn btn-outline-primary" <?= !$canExport ? 'disabled' : '' ?>><?= $esc($label) ?></button>
@@ -28,6 +30,7 @@
     <h2 class="h5">ส่งออกประวัติ PM</h2>
     <p>สร้างไฟล์ CSV ใหม่จากประวัติ PM ทั้งหมด เปิดด้วย Excel ได้ โดยไม่รวมไฟล์แนบ แต่ละครั้งเป็นสำเนาข้อมูล ณ เวลาที่ส่งออก</p>
     <form method="post" action="<?= APP_URL ?>/sharepoint/export">
+        <?php require BASE_PATH . '/app/Views/partials/sharepoint_destination.php'; ?>
         <input type="hidden" name="_csrf" value="<?= $esc(Session::csrfToken()) ?>">
         <button class="btn btn-primary" <?= !$canExport ? 'disabled' : '' ?>>ส่งประวัติ PM ไป SharePoint</button>
     </form>

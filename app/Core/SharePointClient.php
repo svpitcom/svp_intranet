@@ -9,6 +9,21 @@ class SharePointClient
     private $transport;
     private ?string $token = null;
     private int $expires = 0;
+    private bool $departmentTarget = false;
+
+    /** Select only server-configured destinations, never a submitted arbitrary folder ID. */
+    public function forDepartment(string $department): self
+    {
+        if ($department === '') return $this;
+        $id = trim((string)($this->config['department_folders'][$department] ?? ''));
+        if ($id === '' || preg_match('/[<>\r\n]/', $id)) throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์แผนกที่เลือก');
+        $folder = $this->graph('GET', $this->drivePath() . '/items/' . rawurlencode($id) . '?$select=id,name,folder,parentReference');
+        if (($folder['id'] ?? '') !== $id || !isset($folder['folder']) || ($folder['parentReference']['driveId'] ?? '') !== $this->config['drive_id']) throw new RuntimeException('ปลายทางแผนกไม่ใช่โฟลเดอร์ใน Document Library ที่ตั้งค่า');
+        $client = clone $this;
+        $client->config['export_folder_id'] = $id;
+        $client->departmentTarget = true;
+        return $client;
+    }
 
     public function __construct(?array $config = null, ?callable $transport = null)
     {
@@ -33,6 +48,32 @@ class SharePointClient
     public function site(): array
     {
         return $this->graph('GET', '/sites/' . rawurlencode($this->config['site_id']) . '?$select=id,displayName,webUrl');
+    }
+
+    /** Resolve only items inside configured DCC, including nested folders. */
+    public function dccItem(string $id = ''): array
+    {
+        $root=trim((string)($this->config['department_folders']['DCC']??''));
+        if ($root==='') throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ DCC');
+        $id=$id===''?$root:$id;
+        if (strlen($id)>255) throw new RuntimeException('รหัสไฟล์ไม่ถูกต้อง');
+        $read=fn($itemId)=>$this->graph('GET',$this->drivePath().'/items/'.rawurlencode($itemId).'?$select=id,name,webUrl,folder,file,parentReference');
+        $item=$read($id); $node=$item; $visited=[];
+        for ($depth=0;$depth<32;$depth++) {
+            if (($node['parentReference']['driveId']??'')!==$this->config['drive_id']) break;
+            if (($node['id']??'')===$root && isset($node['folder'])) return $item;
+            $parent=$node['parentReference']['id']??'';
+            if ($parent==='' || isset($visited[$parent])) break;
+            $visited[$parent]=true; $node=$read($parent);
+        }
+        throw new RuntimeException('ไฟล์หรือโฟลเดอร์นี้ไม่ได้อยู่ภายใน DCC');
+    }
+
+    public function dccFiles(string $folder = '', string $cursor = ''): array
+    {
+        $item=$this->dccItem($folder);
+        if (!isset($item['folder'])) throw new RuntimeException('ปลายทางไม่ใช่โฟลเดอร์');
+        return $this->files($item['id'],$cursor)+['folder'=>$item];
     }
 
     /** Only the configured site's document library is accessible. */
@@ -71,6 +112,11 @@ class SharePointClient
     public function syncDeviceDemo(array $devices, ?string $expectedETag = null): array
     {
         if (!$this->canExport()) throw new RuntimeException('กรุณาตั้งค่าการเชื่อมต่อ SharePoint ก่อน');
+        if ($this->departmentTarget && $expectedETag === null) {
+            $result = $this->graph('PUT', $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::DEVICE_DEMO_NAME) . ':/content', DeviceWorkbook::build($devices), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            if (empty($result['id'])) throw new RuntimeException('SharePoint ยังไม่ยืนยันไฟล์อุปกรณ์ที่ส่งออก');
+            return $result;
+        }
         $path = $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . ':/' . rawurlencode(self::DEVICE_DEMO_NAME);
         $item = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
         if (($item['name'] ?? '') !== self::DEVICE_DEMO_NAME || empty($item['id']) || empty($item['eTag']) || ($item['parentReference']['id'] ?? '') !== $this->config['export_folder_id']) throw new RuntimeException('ไม่พบไฟล์ Excel ทดสอบที่ตรงกับปลายทาง กรุณาตรวจโฟลเดอร์');

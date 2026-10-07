@@ -1,6 +1,6 @@
 <?php
 $navUser = Session::get('user');
-$sectionName = 'ผู้ใช้งาน';
+$sectionName = 'หน้าแรก';
 foreach ($navGroups as $items) {
     foreach ($items as [$path, $label]) {
         if ($currentPath === $path || str_starts_with($currentPath, $path . '/')) $sectionName = $label;

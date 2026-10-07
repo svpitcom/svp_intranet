@@ -1,5 +1,11 @@
 <?php
 return [
+    'GET /document-control' => ['DocumentControlController', 'index', ['auth', 'documentControl']],
+    'GET /document-control/files' => ['DocumentControlController', 'files', ['auth', 'documentControl']],
+    'GET /document-control/create' => ['DocumentControlController', 'create', ['auth', 'documentControl']],
+    'POST /document-control/create' => ['DocumentControlController', 'store', ['auth', 'documentControl']],
+    'GET /document-control/{id}/edit' => ['DocumentControlController', 'edit', ['auth', 'documentControl']],
+    'POST /document-control/{id}/edit' => ['DocumentControlController', 'update', ['auth', 'documentControl']],
     'POST /devices/import-excel' => ['SharePointController', 'importDevices', ['auth', 'role:admin']],
     'POST /devices/sync-excel' => ['SharePointController', 'syncDevices', ['auth', 'role:admin']],
     'POST /users/sync-excel' => ['SharePointController', 'syncUsers', ['auth', 'role:admin']],
@@ -16,7 +22,7 @@ return [
     'POST /login'  => ['AuthController', 'login'],
     'POST /logout' => ['AuthController', 'logout', ['auth']],
     // Home
-    'GET /'        => ['UserController', 'index', ['auth']],
+    'GET /'        => ['DashboardController', 'index', ['auth']],
     // Users
     'GET /users'              => ['UserController', 'index', ['auth']],
     'GET /users/create'       => ['UserController', 'create', ['auth', 'role:admin']],

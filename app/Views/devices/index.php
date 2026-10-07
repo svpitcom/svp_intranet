@@ -48,7 +48,8 @@ function pageUrl(int $page, string $sort, string $dir): string
 <div class="card-modern">
     <?php if ($currentUser['user_role'] === 'admin'): ?>
     <div class="p-3 border-bottom">
-        <form method="post" action="<?= APP_URL ?>/devices/sync-excel">
+        <p class="small text-muted">ปลายทาง Excel: SharePoint / IT · ส่งออกและนำเข้าจากโฟลเดอร์ IT โดยอัตโนมัติ</p>
+        <form method="post" action="<?= APP_URL ?>/devices/sync-excel" onsubmit="return confirm('อัปเดต Excel ในโฟลเดอร์ IT ด้วยข้อมูลทั้งหมดจาก Intranet? ข้อมูลที่แก้ไว้ในไฟล์นั้นจะถูกแทนที่');">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
             <button class="btn btn-outline-primary" type="submit">อัปเดต Excel ทดสอบบน SharePoint</button>
         </form>

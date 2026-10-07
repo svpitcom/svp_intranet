@@ -1,12 +1,17 @@
 <?php
 $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $basePath = rtrim(parse_url(APP_URL, PHP_URL_PATH) ?: '', '/');
+if ($basePath !== '' && $currentPath === $basePath) $currentPath = '/';
 if ($basePath !== '' && str_starts_with($currentPath, $basePath . '/')) $currentPath = substr($currentPath, strlen($basePath));
 $navGroups = [
+    'ภาพรวม' => [['/', 'หน้าแรก', 'house-door']],
     'บุคลากร' => [['/users', 'ผู้ใช้งาน', 'people'], ['/departments', 'แผนก', 'diagram-3'], ['/positions', 'ตำแหน่ง', 'person-badge']],
     'อุปกรณ์' => [['/devices', 'ทะเบียนอุปกรณ์', 'laptop'], ['/device_types', 'ประเภทอุปกรณ์', 'grid']],
     'งานบำรุงรักษา' => [['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
 ];
+if (DocumentControlAccess::allows(Session::get('user'))) {
+    $navGroups['เอกสาร'] = [['/document-control', 'Document Control', 'file-earmark-check']];
+}
 if ((Session::get('user')['user_role'] ?? '') === 'admin') {
     $navGroups['เชื่อมต่อระบบ'] = [['/sharepoint', 'SharePoint', 'cloud']];
 }
@@ -25,7 +30,7 @@ if ((Session::get('user')['user_role'] ?? '') === 'admin') {
             <div class="nav-group-label"><?= $heading ?></div>
             <ul class="nav flex-column">
             <?php foreach ($items as [$path, $label, $icon]):
-                $active = $currentPath === $path || str_starts_with($currentPath, $path . '/') || ($path === '/users' && $currentPath === '/');
+                $active = $currentPath === $path || ($path !== '/' && str_starts_with($currentPath, $path . '/'));
             ?>
                 <li class="nav-item"><a class="nav-link-modern <?= $active ? 'active' : '' ?>" href="<?= APP_URL . $path ?>" <?= $active ? 'aria-current="page"' : '' ?>>
                     <i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span>

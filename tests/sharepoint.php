@@ -1,6 +1,8 @@
 <?php
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 require __DIR__ . '/regression.php';
+// View configuration must stay isolated from production .env and credentials.
+function env(string $key, $default = null) { return $default; }
 $start = $checks;
 $config = ['tenant_id' => 'example.onmicrosoft.com', 'client_id' => 'test-app', 'client_secret' => 'private-secret', 'site_id' => 'host,site,web', 'drive_id' => 'drive', 'export_folder_id' => 'exports'];
 $calls = [];

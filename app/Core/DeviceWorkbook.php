@@ -7,6 +7,8 @@ class DeviceWorkbook
     public static function build(array $devices): string
     {
         if (count($devices) > 10000) throw new RuntimeException('รองรับไม่เกิน 10,000 อุปกรณ์');
+        // Excel always uses numeric device-ID order, independent of screen/name sorting.
+        usort($devices, static fn(array $a, array $b): int => (int)($a['svp_device_id'] ?? 0) <=> (int)($b['svp_device_id'] ?? 0));
         $temp = tempnam(sys_get_temp_dir(), 'svp-xlsx-');
         if ($temp === false) throw new RuntimeException('สร้างไฟล์ชั่วคราวไม่สำเร็จ');
         $path = $temp . '.zip';

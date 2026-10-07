@@ -18,6 +18,7 @@
 
 <?php if ($currentUser['user_role'] === 'admin'): ?>
 <div class="card-modern p-3 mb-3">
+    <p class="small text-muted">ปลายทาง Excel: SharePoint / IT · ส่งออกและนำเข้าจากโฟลเดอร์ IT โดยอัตโนมัติ</p>
     <form method="post" action="<?= APP_URL ?>/users/sync-excel" class="d-inline" onsubmit="return confirm('อัปเดตไฟล์ Excel DEMO ด้วยรายชื่อทั้งหมดจาก Intranet หรือไม่? ข้อมูลที่แก้ไว้ใน Excel จะถูกแทนที่');">
         <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
         <button class="btn btn-outline-primary" type="submit">อัปเดต Excel ทดสอบบน SharePoint</button>
