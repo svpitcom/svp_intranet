@@ -25,8 +25,8 @@
 :root {
   --ink: #172e3e;
   --muted: #687b88;
-  --accent: #087f79;
-  --accent-dark: #06655f;
+  --accent: #196eae;
+  --accent-dark: #12578d;
   --line: #dfe7eb;
   --surface: #fff;
   --canvas: #f3f6f8;
@@ -34,10 +34,10 @@
   --bs-body-font-family: Sarabun, system-ui, sans-serif;
   --bs-body-color: var(--ink);
   --bs-body-bg: var(--canvas);
-  --bs-primary: #087f79;
-  --bs-primary-rgb: 8, 127, 121;
-  --bs-link-color: #087f79;
-  --bs-link-color-rgb: 8, 127, 121;
+  --bs-primary: #196eae;
+  --bs-primary-rgb: 25, 110, 174;
+  --bs-link-color: #196eae;
+  --bs-link-color-rgb: 25, 110, 174;
   --bs-border-color: var(--line);
 }
 body {
@@ -64,7 +64,7 @@ textarea {
   touch-action: manipulation;
 }
 :focus-visible {
-  outline: 3px solid #30b9ae;
+  outline: 3px solid #58a8df;
   outline-offset: 3px;
 }
 .text-muted {
@@ -85,7 +85,7 @@ textarea {
 /* Workspace shell */
 .app-sidebar {
   --bs-offcanvas-width: var(--sidebar-width);
-  background: #132c3b !important;
+  background: #12334e !important;
   color: #d5e2e8;
   height: 100vh;
   height: 100dvh;
@@ -102,7 +102,7 @@ textarea {
   overflow-x: hidden;
   overscroll-behavior-y: contain;
   scrollbar-width: thin;
-  scrollbar-color: #709497 #132c3b;
+  scrollbar-color: #7199b8 #12334e;
 }
 .app-sidebar .sidebar-body > nav,
 .app-sidebar .sidebar-note {
@@ -130,8 +130,8 @@ textarea {
   justify-content: center;
   width: 43px;
   height: 43px;
-  background: #d8f4e9;
-  color: #163e3c;
+  background: #e0effb;
+  color: #173f60;
   border-radius: 12px;
   font-size: 22px;
   font-weight: 700;
@@ -139,7 +139,7 @@ textarea {
   padding-right: 3px;
 }
 .brand-symbol span {
-  color: #087f79;
+  color: #196eae;
 }
 .brand-lockup strong {
   display: block;
@@ -193,18 +193,18 @@ textarea {
   color: #fff;
 }
 .nav-link-modern.active {
-  background: #214d52;
-  color: #dcfff1;
+  background: #1c527d;
+  color: #eef7ff;
 }
 .nav-link-modern.active i {
-  color: #8be0c3;
+  color: #8fc9f2;
 }
 .nav-indicator {
   margin-left: auto;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #8be0c3;
+  background: #8fc9f2;
 }
 .sidebar-note {
   margin-top: auto;
@@ -215,7 +215,7 @@ textarea {
 .sidebar-note-mark {
   display: block;
   width: 31px;
-  border-top: 2px solid #709497;
+  border-top: 2px solid #7199b8;
   padding-top: 9px;
   margin-bottom: 8px;
   letter-spacing: 2px;
@@ -271,8 +271,8 @@ textarea {
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: #e2efec;
-  color: #177366;
+  background: #e4eff8;
+  color: #19649e;
   font-weight: 700;
 }
 .user-identity {
@@ -423,12 +423,12 @@ textarea {
   border-color: #b7cbd3;
 }
 .btn-outline-primary {
-  --bs-btn-color: #087f79;
-  --bs-btn-border-color: #bddbd6;
-  --bs-btn-hover-bg: #e2f3ee;
-  --bs-btn-hover-color: #06655f;
-  --bs-btn-hover-border-color: #81bfb2;
-  --bs-btn-active-bg: #087f79;
+  --bs-btn-color: #196eae;
+  --bs-btn-border-color: #bed5e8;
+  --bs-btn-hover-bg: #e8f2fa;
+  --bs-btn-hover-color: #12578d;
+  --bs-btn-hover-border-color: #83b5db;
+  --bs-btn-active-bg: #196eae;
 }
 .btn-outline-danger {
   --bs-btn-color: #b1484e;
@@ -445,10 +445,10 @@ textarea {
   --bs-btn-hover-border-color: #91bfae;
 }
 .btn-success {
-  --bs-btn-bg: #087f79;
-  --bs-btn-border-color: #087f79;
-  --bs-btn-hover-bg: #06655f;
-  --bs-btn-hover-border-color: #06655f;
+  --bs-btn-bg: #196eae;
+  --bs-btn-border-color: #196eae;
+  --bs-btn-hover-bg: #12578d;
+  --bs-btn-hover-border-color: #12578d;
 }
 .btn-sm {
   padding: 7px 11px;
@@ -467,9 +467,9 @@ textarea {
   margin: 2px;
 }
 .btn-icon:hover {
-  background: #e6f4ef;
+  background: #e8f2fa;
   color: var(--accent);
-  border-color: #bad9d0;
+  border-color: #bed5e8;
 }
 .btn-icon-danger:hover {
   background: #fbeaec;
@@ -498,7 +498,7 @@ textarea {
   --bs-table-color: var(--ink);
   --bs-table-bg: #fff;
   --bs-table-striped-bg: #fafdfe;
-  --bs-table-hover-bg: #f0f8f5;
+  --bs-table-hover-bg: #f0f6fc;
   font-size: 13px;
   margin-bottom: 0;
   vertical-align: middle;
@@ -647,8 +647,8 @@ textarea {
   outline: none;
 }
 .search-input:focus {
-  border-color: #6cbaac;
-  box-shadow: 0 0 0 3px #087f7912;
+  border-color: #7baed4;
+  box-shadow: 0 0 0 3px #196eae12;
 }
 .search-clear,
 .search-spinner {
@@ -709,7 +709,7 @@ textarea {
   background: #fff;
 }
 .page-btn:hover {
-  background: #e7f4f0;
+  background: #e8f2fa;
   color: var(--accent);
 }
 .page-btn.active {
@@ -977,7 +977,7 @@ textarea {
   align-items: center;
   gap: 9px;
   margin-bottom: 20px;
-  color: #087f79;
+  color: #196eae;
   font-size: 13px;
   font-weight: 600;
 }
@@ -1007,8 +1007,8 @@ textarea {
 }
 .form-control:focus,
 .form-select:focus {
-  border-color: #69b8a8;
-  box-shadow: 0 0 0 3px #087f7912;
+  border-color: #7baed4;
+  box-shadow: 0 0 0 3px #196eae12;
 }
 .form-text {
   font-size: 12px;
@@ -1039,8 +1039,8 @@ textarea {
   border-color: var(--accent);
 }
 .form-control[type="file"]::file-selector-button {
-  background: #eef5f4;
-  color: #42776b;
+  background: #edf4fa;
+  color: #37678d;
 }
 .switch-modern {
   display: flex;
@@ -1082,7 +1082,7 @@ textarea {
   transform: translateX(17px);
 }
 .switch-modern input:focus-visible + .switch-track {
-  outline: 3px solid #3ebda9;
+  outline: 3px solid #58a8df;
   outline-offset: 3px;
 }
 .switch-text {
@@ -1138,7 +1138,7 @@ textarea {
   justify-content: space-between;
   min-height: 650px;
   padding: 55px 60px;
-  background: #132c3b;
+  background: #12334e;
   color: #fff;
 }
 .auth-story::before,
@@ -1148,7 +1148,7 @@ textarea {
   z-index: -1;
   width: 600px;
   height: 600px;
-  border: 1px solid #3d616c;
+  border: 1px solid #3a6385;
   border-radius: 50%;
   right: -270px;
   bottom: -300px;
@@ -1158,8 +1158,8 @@ textarea {
   height: 450px;
   right: -195px;
   bottom: -225px;
-  background: #19414a;
-  border-color: #477e80;
+  background: #194a71;
+  border-color: #4c80a8;
 }
 .auth-story-copy {
   padding: 65px 0;
@@ -1173,7 +1173,7 @@ textarea {
   margin-bottom: 19px;
 }
 .auth-story .eyebrow {
-  color: #88d7be;
+  color: #98cbed;
 }
 .auth-story h1 {
   font-size: clamp(30px, 3vw, 46px);
@@ -1245,8 +1245,8 @@ textarea {
   top: 50%;
   transform: translateY(-50%);
   border: 0;
-  background: #eef5f3;
-  color: #397c6c;
+  background: #edf4fa;
+  color: #37678d;
   border-radius: 5px;
   font-size: 11px;
   padding: 5px 9px;
