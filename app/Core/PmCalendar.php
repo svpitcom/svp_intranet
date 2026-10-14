@@ -1,6 +1,17 @@
 <?php
 class PmCalendar
 {
+    public static function buildYear(array $schedules, $year, ?DateTimeImmutable $today = null): array
+    {
+        $today ??= new DateTimeImmutable('today', new DateTimeZone('Asia/Bangkok'));
+        $year = filter_var($year, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1900, 'max_range' => 2100]]) ?: (int)$today->format('Y');
+        $months = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $months[] = self::build($schedules, sprintf('%04d-%02d', $year, $month), $today);
+        }
+        return ['year' => $year, 'months' => $months, 'count' => array_sum(array_column($months, 'count'))];
+    }
+
     public static function build(array $schedules, $month, ?DateTimeImmutable $today = null): array
     {
         $today = $today ?? new DateTimeImmutable('today');

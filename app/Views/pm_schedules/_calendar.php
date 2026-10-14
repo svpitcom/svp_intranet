@@ -25,7 +25,7 @@ $canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
         <div class="pm-calendar-grid">
             <?php foreach (['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'] as $weekday): ?><div class="pm-weekday"><?= $weekday ?></div><?php endforeach; ?>
             <?php foreach ($calendar['days'] as $day): ?>
-                <section class="pm-calendar-day <?= !$day['inMonth'] ? 'outside' : '' ?> <?= $day['today'] ? 'is-today' : '' ?>" aria-label="<?= $day['date']->format('d/m/Y') ?>">
+                <section id="pm-day-<?= $day['date']->format('Y-m-d') ?>" class="pm-calendar-day <?= !$day['inMonth'] ? 'outside' : '' ?> <?= $day['today'] ? 'is-today' : '' ?>" aria-label="<?= $day['date']->format('d/m/Y') ?>">
                     <time class="pm-day-number" datetime="<?= $day['date']->format('Y-m-d') ?>" <?= $day['today'] ? 'aria-current="date"' : '' ?>><?= $day['date']->format('j') ?></time>
                     <?php foreach ($day['events'] as $event): $status = isset($calendarStatuses[$event['pm_status']]) ? $event['pm_status'] : 'normal'; ?>
                         <article class="pm-calendar-event <?= $status ?>">

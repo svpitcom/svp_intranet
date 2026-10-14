@@ -1,9 +1,11 @@
 <?php
 $currentUser = Session::get('user');
 $planYear = (int) date('Y');
-$pmView = ($_GET['view'] ?? '') === 'calendar' ? 'calendar' : 'table';
+$pmView = in_array($_GET['view'] ?? '', ['calendar', 'year'], true) ? $_GET['view'] : 'table';
 $calendar = PmCalendar::build($schedules, $_GET['month'] ?? null);
+$annual = $pmView === 'year' ? PmCalendar::buildYear($schedules, $_GET['year'] ?? substr($calendar['month'], 0, 4)) : null;
 $searchExtra = ['view'=>$pmView, 'month'=>$calendar['month']];
+if ($annual) $searchExtra['year'] = $annual['year'];
 $tableSchedules = $tableSchedules ?? $schedules;
 $currentPage = $currentPage ?? 1;
 $totalPages = $totalPages ?? 1;
@@ -26,7 +28,10 @@ $pageUrl = static fn(int $page): string => PmCalendar::url('table', $calendar['m
     <a class="<?= $pmView === 'table' ? 'active' : '' ?>" <?= $pmView === 'table' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('table', $calendar['month'], Search::term())) ?>">ตารางทั้งหมด</a>
     <a class="<?= $pmView === 'calendar' ? 'active' : '' ?>" <?= $pmView === 'calendar' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('calendar', $calendar['month'], Search::term())) ?>">ปฏิทิน</a>
 </nav>
-<?php if ($pmView === 'calendar'): ?>
+<div class="mb-3"><a class="btn <?= $pmView === 'year' ? 'btn-primary' : 'btn-outline-primary' ?>" <?= $pmView === 'year' ? 'aria-current="page"' : '' ?> href="<?= htmlspecialchars(PmCalendar::url('year', $calendar['month'], Search::term())) ?>">ปฏิทินรายปี · 12 เดือน</a></div>
+<?php if ($pmView === 'year'): ?>
+    <?php require __DIR__ . '/_year.php'; ?>
+<?php elseif ($pmView === 'calendar'): ?>
     <?php require __DIR__ . '/_calendar.php'; ?>
 <?php else: ?>
 <div class="table-responsive">
