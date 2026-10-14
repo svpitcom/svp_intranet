@@ -53,14 +53,22 @@ class PmSchedule extends Model
 
             if ($dueYear === $year) {
                 $schedule['plan_current_year'] = $due;
-                $schedule['plan_next_year'] = (new DateTimeImmutable($due))
-                    ->modify('+' . (int) $schedule['frequency_days'] . ' days')->format('Y-m-d');
-                $schedule['plan_next_projected'] = true;
             } elseif ($dueYear === $year + 1) {
-                $schedule['plan_next_year'] = $due;
                 if ($completed) {
                     $schedule['plan_current_year'] = $completed;
                     $schedule['plan_current_done'] = true;
+                }
+            }
+            $frequency = (int)($schedule['frequency_days'] ?? 0);
+            if ($dueYear && $frequency > 0 && $dueYear <= $year + 1) {
+                $base = new DateTimeImmutable($due);
+                $start = new DateTimeImmutable(($year + 1) . '-01-01');
+                $days = $base < $start ? (int)$base->diff($start)->days : 0;
+                $steps = (int)ceil($days / $frequency);
+                $projected = $base->modify('+' . ($steps * $frequency) . ' days')->format('Y-m-d');
+                if ((int)substr($projected,0,4) === $year + 1) {
+                    $schedule['plan_next_year'] = $projected;
+                    $schedule['plan_next_projected'] = $projected !== $due;
                 }
             }
         }

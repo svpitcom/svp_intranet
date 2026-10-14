@@ -19,7 +19,7 @@ $canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
             </form>
         </div>
     </div>
-    <div class="pm-calendar-legend"><span class="pm-status overdue">เกินกำหนด</span><span class="pm-status soon">ใกล้ครบกำหนด</span><span class="pm-status normal">ปกติ</span><span>ปีถัดไปเป็นวันคาดการณ์ตามรอบ PM จนกว่าจะบันทึกงานปีนี้</span></div>
+    <div class="pm-calendar-legend"><span class="pm-status overdue">เกินกำหนด</span><span class="pm-status soon">ใกล้ครบกำหนด</span><span class="pm-status normal">ปกติ</span><span>รอบหลังวันครบกำหนดจริงเป็นวันคาดการณ์ และอาจเปลี่ยนตามวันที่ทำ PM</span></div>
     <?php if (!$calendar['count']): ?><p class="pm-calendar-empty" role="status">ไม่มีแผนที่ครบกำหนดในเดือนนี้<?= Search::term() !== '' ? 'ตามคำค้นที่เลือก' : '' ?> ลองเปลี่ยนเดือนหรือดูตารางทั้งหมด</p><?php endif; ?>
     <div class="pm-calendar-scroll" tabindex="0" role="region" aria-label="ปฏิทินรายเดือน เลื่อนแนวนอนเพื่อดูวันทั้งหมด">
         <div class="pm-calendar-grid">
@@ -29,7 +29,7 @@ $canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
                     <time class="pm-day-number" datetime="<?= $day['date']->format('Y-m-d') ?>" <?= $day['today'] ? 'aria-current="date"' : '' ?>><?= $day['date']->format('j') ?></time>
                     <?php foreach ($day['events'] as $event): $status = isset($calendarStatuses[$event['pm_status']]) ? $event['pm_status'] : 'normal'; ?>
                         <article class="pm-calendar-event <?= $status ?>">
-                            <span class="pm-event-status"><?= !empty($event['calendar_projection']) ? 'แผนปีถัดไป (คาดการณ์)' : $calendarStatuses[$status] ?></span>
+                            <span class="pm-event-status"><?= !empty($event['calendar_projection']) ? 'รอบถัดไป (คาดการณ์)' : $calendarStatuses[$status] ?></span>
                             <?php if (!empty($event['calendar_projection'])): ?>
                                 <span class="pm-event-title"><?= htmlspecialchars($event['pm_title']) ?></span>
                             <?php else: ?>

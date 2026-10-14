@@ -85,7 +85,7 @@
                 $labelMap = ['overdue' => 'เกินกำหนด', 'soon' => 'ใกล้ครบกำหนด', 'normal' => 'ปกติ'];
                 ?>
                 <tr>
-                    <td><?= htmlspecialchars($s['svp_device_name']) ?></td>
+                    <td><?= htmlspecialchars($s['svp_device_name']) ?><br>ครบกำหนด <?= htmlspecialchars($s['next_pm_date']) ?></td>
                     <td><?= htmlspecialchars($s['pm_title']) ?></td>
                     <td>ทุก <?= (int) $s['frequency_days'] ?> วัน</td>
                     <td><?= htmlspecialchars(trim(($s['first_name'] ?? '') . ' ' . ($s['last_name'] ?? '')) ?: '-') ?></td>

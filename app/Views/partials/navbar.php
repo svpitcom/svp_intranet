@@ -7,6 +7,7 @@ foreach ($navGroups as $items) {
     }
 }
 $roleNames = ['admin' => 'ผู้ดูแลระบบ', 'manager' => 'ผู้จัดการ', 'user' => 'ผู้ใช้งาน'];
+if (str_starts_with($currentPath, '/work/')) $sectionName = 'รายละเอียดงาน / คำขอ';
 ?>
 <header class="app-topbar">
     <div class="d-flex align-items-center gap-3">

@@ -8,9 +8,16 @@ require BASE_PATH . '/app/Core/Session.php';
 require BASE_PATH . '/app/Core/Search.php';
 require BASE_PATH . '/app/Core/Validation.php';
 require BASE_PATH . '/app/Core/PmCalendar.php';
+require BASE_PATH . '/app/Core/Portal.php';
+require BASE_PATH . '/app/Core/DocumentControlAccess.php';
+require BASE_PATH . '/app/Core/Model.php';
+require BASE_PATH . '/app/Models/Device.php';
+require BASE_PATH . '/app/Models/WorkItem.php';
+require BASE_PATH . '/app/Models/Announcement.php';
 set_error_handler(function ($level, $message, $file, $line) { throw new ErrorException($message, 0, $level, $file, $line); });
 $view = $argv[1] ?? 'users/index';
 $allowed = ['users/index','users/form','departments/index','departments/form','positions/index','positions/form','device_types/index','device_types/form','devices/index','devices/form','pm_schedules/index','pm_schedules/form','pm_records/index','pm_records/create'];
+$allowed = array_merge($allowed, ['work/index','work/form','work/show','announcements/index','announcements/form','announcements/show','notifications/index']);
 if (!in_array($view, $allowed, true)) throw new RuntimeException('Unknown fixture');
 $person = ['svp_user_id'=>1,'first_name'=>'สมชาย','last_name'=>'ตัวอย่าง','username'=>'sample.user','email'=>'sample@example.com','user_role'=>'admin','is_active'=>1,'svp_department_name'=>'เทคโนโลยีสารสนเทศ','position_name'=>'เจ้าหน้าที่ IT'];
 $_SESSION = ['user'=>$person];
@@ -31,6 +38,17 @@ if ($view === 'positions/form') unset($positions);
 if ($view === 'device_types/form') unset($devicetypes);
 if ($view === 'pm_records/create') $schedule = $scheduleSample;
 $totalUsers=2; $totalDevices=1; $currentPage=1; $totalPages=1; $perPage=10; $sort='svp_user_id'; $dir='asc'; $search='';
+$kind='request'; $q=$status=$error=''; $data=[]; $people=$users; $id=null;
+if($view==='work/index') $kind='ticket';
+$item=['id'=>1,'kind'=>'ticket','title'=>'ตรวจสอบเครื่องพิมพ์ฝ่ายผลิต','description'=>'เครื่องพิมพ์ไม่ดึงกระดาษ กรุณาตรวจสอบก่อนเปลี่ยนกะ','category'=>'it','priority'=>'high','status'=>'open','location'=>'ฝ่ายผลิต','due_date'=>Portal::today(),'updated_at'=>Portal::now(),'created_at'=>Portal::now(),'requester_id'=>2,'assignee_id'=>null,'approver_id'=>1,'version'=>1,'resolution'=>null,'attachment_path'=>null,'first_name'=>'วิภา','last_name'=>'ตัวอย่าง'];
+$rows=[$item]; $total=31; $pages=3; $page=1; $size=15; $offset=0; $actions=['assign','start','cancel'];
+$events=[['action'=>'create','created_at'=>Portal::now(),'first_name'=>'วิภา','last_name'=>'ตัวอย่าง','body'=>'สร้างรายการ']];
+$manage=true; $readers=[];
+if(str_starts_with($view,'announcements/')) {
+    $item=['id'=>1,'title'=>'แจ้งกำหนดบำรุงรักษาประจำเดือน','body'=>"ฝ่ายซ่อมบำรุงจะเข้าตรวจสอบอุปกรณ์ตามแผน\nกรุณาเตรียมพื้นที่และแจ้งข้อขัดข้องก่อนวันนัดหมาย",'status'=>'published','publish_date'=>Portal::today(),'expires_date'=>null,'pinned'=>1,'version'=>1,'read_at'=>null];
+    $rows=[$item];
+}
+if($view==='notifications/index') $rows=[['work_id'=>1,'message'=>'อัปเดตงานซ่อม #1 มีผู้รับผิดชอบแล้ว','created_at'=>Portal::now(),'read_at'=>null]];
 ob_start(); require BASE_PATH . '/app/Views/' . $view . '.php'; $content=ob_get_clean();
 ob_start(); require BASE_PATH . '/app/Views/layouts/main.php'; $html=ob_get_clean();
 // Fixture pages never submit data to production or run live AJAX searches.

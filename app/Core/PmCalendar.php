@@ -15,7 +15,18 @@ class PmCalendar
             if (is_string($date) && Validation::date($date)) $byDate[$date][] = $schedule;
             $projection = $schedule['plan_next_projected'] ?? false;
             $nextYearDate = $schedule['plan_next_year'] ?? '';
-            if ($projection && is_string($nextYearDate) && Validation::date($nextYearDate) && $nextYearDate !== $date) {
+            $frequency = (int)($schedule['frequency_days'] ?? 0);
+            if ($frequency > 0 && is_string($date) && Validation::date($date)) {
+                $base = new DateTimeImmutable($date);
+                $daysToMonth = $base < $first ? (int)$base->diff($first)->days : 0;
+                $steps = max(1, (int)ceil($daysToMonth / $frequency));
+                for ($occurrence = $base->modify('+' . ($steps * $frequency) . ' days'); $occurrence <= $last; $occurrence = $occurrence->modify('+' . $frequency . ' days')) {
+                    $projectedEvent = $schedule;
+                    $projectedEvent['calendar_projection'] = true;
+                    $projectedEvent['pm_status'] = 'normal';
+                    $byDate[$occurrence->format('Y-m-d')][] = $projectedEvent;
+                }
+            } elseif ($projection && is_string($nextYearDate) && Validation::date($nextYearDate) && $nextYearDate !== $date) {
                 $projectedEvent = $schedule;
                 $projectedEvent['calendar_projection'] = true;
                 $byDate[$nextYearDate][] = $projectedEvent;

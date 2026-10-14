@@ -7,7 +7,7 @@
 
             <div class="mb-3">
                 <label class="form-label">วันที่ทำ</label>
-                <input type="date" name="performed_date" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                <input type="date" name="performed_date" class="form-control" value="<?= Portal::today() ?>" max="<?= Portal::today() ?>" required>
             </div>
 
             <div class="mb-3">
@@ -19,6 +19,8 @@
                 </select>
             </div>
 
+            <p class="form-text">ทำได้บางส่วนหรือพบปัญหาจะคงกำหนดเดิมไว้ เพื่อติดตามจนทำครบ หากต้องซ่อมเพิ่มเติมให้สร้างรายการแจ้งซ่อม</p>
+            <a href="<?= APP_URL ?>/tickets/create" class="mb-3 d-inline-block">แจ้งซ่อมเพิ่มเติม</a>
             <?php if (!empty($schedule['checklist'])): ?>
                 <div class="mb-3">
                     <label class="form-label">รายการตรวจเช็คอ้างอิง</label>

@@ -2,6 +2,16 @@
 class Device extends Model
 {
     protected string $table = 'device';
+    public const GROUPS = ['it'=>'อุปกรณ์ IT','machine'=>'เครื่องจักร','unclassified'=>'ยังไม่จัดกลุ่ม'];
+    public static function listPath(string $group): string
+    {
+        return match($group) { 'machine'=>'/machines', 'it'=>'/it-devices', default=>'/devices' };
+    }
+
+    public static function groupFilter($value): string
+    {
+        return is_string($value) && isset(self::GROUPS[$value]) ? $value : '';
+    }
 
     private const SORTABLE_COLUMNS = [
         'svp_device_id',
@@ -19,7 +29,7 @@ class Device extends Model
 
     public function allWithDevice(): array
     {
-        $sql = "SELECT dv.svp_device_id, dv.svp_device_name, dv.brand_name, dv.model_name, dv.serial_number, dv.is_active,
+        $sql = "SELECT dv.svp_device_id, dv.svp_device_name, dv.brand_name, dv.model_name, dv.serial_number, dv.is_active, dv.asset_group,
                        dt.device_type_name, d.svp_department_name, u.first_name, u.last_name
                 FROM device dv
                 LEFT JOIN device_type dt ON dt.device_type_id = dv.device_type_id
@@ -40,19 +50,20 @@ class Device extends Model
     }
 
     /** นับจำนวนอุปกรณ์ทั้งหมด (ใช้คำนวณจำนวนหน้า) */
-    public function countAll(string $search = ''): int
+    public function countAll(string $search = '', string $group = ''): int
     {
-        [$where, $params] = $this->searchClause($search);
+        [$where, $params] = $this->searchClause($search, $group);
         return (int) $this->query("SELECT COUNT(*) FROM device dv
             LEFT JOIN device_type dt ON dt.device_type_id = dv.device_type_id
             LEFT JOIN department d ON d.svp_department_id = dv.svp_department_id
             LEFT JOIN users u ON u.svp_user_id = dv.svp_user_id {$where}", $params)->fetchColumn();
     }
 
-    private function searchClause(string $search): array
+    private function searchClause(string $search, string $group = ''): array
     {
         $tokens = preg_split('/\s+/u', trim($search), -1, PREG_SPLIT_NO_EMPTY) ?: [];
         $groups = $params = [];
+        if (self::groupFilter($group) !== '') { $groups[] = 'dv.asset_group=:asset_group'; $params['asset_group']=$group; }
         $columns = ['dv.svp_device_name', 'dv.brand_name', 'dv.model_name', 'dv.serial_number', 'dt.device_type_name', 'd.svp_department_name', 'u.first_name', 'u.last_name'];
         foreach ($tokens as $tokenIndex => $token) {
             $conditions = [];
@@ -70,7 +81,7 @@ class Device extends Model
      * ดึงรายการอุปกรณ์แบบแบ่งหน้า พร้อม sort
      * $page เริ่มที่ 1, $perPage = จำนวนแถวต่อหน้า
      */
-    public function paginate(int $page = 1, int $perPage = 10, string $sort = 'svp_device_id', string $dir = 'asc', string $search = ''): array
+    public function paginate(int $page = 1, int $perPage = 10, string $sort = 'svp_device_id', string $dir = 'asc', string $search = '', string $group = ''): array
     {
         if (!in_array($sort, self::SORTABLE_COLUMNS, true)) {
             $sort = 'svp_device_id';
@@ -86,8 +97,8 @@ class Device extends Model
             default                => "dv.{$sort}",
         };
 
-        [$where, $params] = $this->searchClause($search);
-        $sql = "SELECT dv.svp_device_id, dv.svp_device_name, dv.brand_name, dv.model_name, dv.serial_number, dv.is_active,
+        [$where, $params] = $this->searchClause($search, $group);
+        $sql = "SELECT dv.svp_device_id, dv.svp_device_name, dv.brand_name, dv.model_name, dv.serial_number, dv.is_active, dv.asset_group,
                        dt.device_type_name, d.svp_department_name, u.first_name, u.last_name
                 FROM device dv
                 LEFT JOIN device_type dt ON dt.device_type_id = dv.device_type_id

@@ -4,6 +4,12 @@ class DeviceController extends Controller
 {
     public function index(): void
     {
+        $this->listing(Device::groupFilter($this->input('group','')));
+    }
+    public function machines(): void { $this->listing('machine'); }
+    public function itDevices(): void { $this->listing('it'); }
+    private function listing(string $group): void
+    {
         $perPage = 10;
         $page = max(1, (int) $this->input('page', 1));
         $sort = $this->input('sort', 'svp_device_id');
@@ -11,14 +17,15 @@ class DeviceController extends Controller
 
         $deviceModel = new Device();
         $search = Search::term();
-        $totalDevices = $deviceModel->countAll($search);
+        $totalDevices = $deviceModel->countAll($search, $group);
         $totalPages = max(1, (int) ceil($totalDevices / $perPage));
         $page = min($page, $totalPages); // กันเผลอเข้าเลขหน้าที่เกินจำนวนจริง
 
-        $devices = $deviceModel->paginate($page, $perPage, $sort, $dir, $search);
+        $devices = $deviceModel->paginate($page, $perPage, $sort, $dir, $search, $group);
 
         $this->view('devices/index', [
             'devices'      => $devices,
+            'group'        => $group,
             'totalDevices' => $totalDevices,
             'currentPage'  => $page,
             'totalPages'   => $totalPages,
@@ -31,6 +38,7 @@ class DeviceController extends Controller
     {
         $this->view('devices/form', [
             'device'      => null,
+            'defaultGroup'=> Device::groupFilter($this->input('group','')) ?: 'unclassified',
             'deviceTypes' => (new DeviceType())->all(),
             'departments' => (new Department())->all(),
             'users'       => (new User())->all(),
@@ -42,10 +50,11 @@ class DeviceController extends Controller
         $errors = $this->validate();
         if ($errors) {
             Session::flash('errors', implode(' / ', $errors));
-            $this->redirect('/devices/create');
+            $this->redirect('/devices/create?group=' . rawurlencode(Device::groupFilter($this->input('asset_group',''))));
         }
 
         (new Device())->insert([
+            'asset_group'        => $this->input('asset_group','unclassified'),
             'svp_device_name'    => $this->input('svp_device_name'),
             'brand_name'         => $this->input('brand_name'),
             'model_name'         => $this->input('model_name'),
@@ -57,7 +66,7 @@ class DeviceController extends Controller
         ]);
 
         Session::flash('success', 'เพิ่มอุปกรณ์เรียบร้อยแล้ว');
-        $this->redirect('/devices');
+        $this->redirect(Device::listPath($this->input('asset_group','unclassified')));
     }
 
     public function edit(string $id): void
@@ -91,6 +100,7 @@ class DeviceController extends Controller
         }
 
         (new Device())->update($id, [
+            'asset_group'        => $this->input('asset_group','unclassified'),
             'svp_device_name'    => $this->input('svp_device_name'),
             'brand_name'         => $this->input('brand_name'),
             'model_name'         => $this->input('model_name'),
@@ -102,19 +112,23 @@ class DeviceController extends Controller
         ]);
 
         Session::flash('success', 'บันทึกการแก้ไขเรียบร้อยแล้ว');
-        $this->redirect('/devices');
+        $this->redirect(Device::listPath($this->input('asset_group','unclassified')));
     }
 
     public function destroy(string $id): void
     {
+        $device = (new Device())->findByDeviceId((int)$id);
         (new Device())->delete((int) $id);
         Session::flash('success', 'ลบอุปกรณ์เรียบร้อยแล้ว');
-        $this->redirect('/devices');
+        $this->redirect(Device::listPath($device['asset_group']??''));
     }
 
     private function validate(): array
     {
         $errors = [];
+        if (!isset(Device::GROUPS[$this->input('asset_group','unclassified')])) {
+            $errors[] = 'กรุณาเลือกกลุ่มอุปกรณ์ที่ถูกต้อง';
+        }
 
         if (!$this->input('svp_device_name')) {
             $errors[] = 'กรุณากรอกชื่ออุปกรณ์';

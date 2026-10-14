@@ -7,6 +7,8 @@ $cards = [
     ['upcoming', 'แผน PM ภายใน 7 วัน', 'calendar2-check', '/pm-schedules', 'teal'],
 ];
 $shortcuts = [
+    ['/tickets/create', 'แจ้งซ่อม', 'แจ้งปัญหาและติดตามจนปิดงาน', 'tools'],
+    ['/requests/create', 'ยื่นคำขอ', 'ส่งคำขอให้ผู้อนุมัติพิจารณา', 'clipboard-check'],
     ['/devices', 'ทะเบียนอุปกรณ์', 'ค้นหาอุปกรณ์และผู้รับผิดชอบ', 'laptop'],
     ['/users', 'รายชื่อผู้ใช้งาน', 'ข้อมูลบุคลากรในองค์กร', 'people'],
     ['/pm-schedules', 'แผนบำรุงรักษา', 'ตรวจสอบกำหนดและบันทึก PM', 'calendar2-check'],
@@ -35,6 +37,18 @@ if (($user['user_role'] ?? '') === 'admin') {
         <a class="dash-stat" href="<?= APP_URL . $path ?>"><span class="dash-icon <?= $color ?>"><i class="bi bi-<?= $icon ?>" aria-hidden="true"></i></span><strong><?= number_format($stats[$key]) ?></strong><span><?= $label ?></span></a>
         <?php endforeach; ?>
     </div>
+    <?php if (isset($workStats)): ?>
+    <div class="dash-section-heading"><h2>งานที่เกี่ยวข้องกับคุณ</h2><span>ตามสิทธิ์การเข้าถึง</span></div>
+    <div class="dash-stats">
+        <?php foreach ([['ticket','งานซ่อมที่ยังไม่ปิด','/tickets','tools'],['request','คำขอที่รอผล','/requests','clipboard'],['approval','รอคุณอนุมัติ','/requests?status=pending&amp;approval=1','clipboard-check'],['unread','แจ้งเตือนยังไม่อ่าน','/notifications','bell']] as [$key,$label,$path,$icon]): ?>
+        <a class="dash-stat" href="<?= APP_URL . $path ?>"><span class="dash-icon blue"><i class="bi bi-<?= $icon ?>" aria-hidden="true"></i></span><strong><?= number_format($workStats[$key]) ?></strong><span><?= $label ?></span></a>
+        <?php endforeach; ?>
+    </div>
+    <section class="dash-panel mb-4" aria-labelledby="dash-news-title"><div class="dash-panel-heading"><h2 id="dash-news-title">ประกาศล่าสุด</h2><a href="<?= APP_URL ?>/announcements">ดูทั้งหมด</a></div>
+        <?php if (empty($announcements)): ?><p class="text-muted">ยังไม่มีประกาศสำหรับคุณ</p><?php endif; ?>
+        <?php foreach (($announcements ?? []) as $news): ?><article class="border-bottom py-3"><h3 class="h6"><a href="<?= APP_URL ?>/announcements/<?= (int)$news['id'] ?>"><?= $escape($news['title']) ?></a></h3><p class="text-muted mb-0"><?= $escape(mb_substr($news['body'],0,160)) ?></p></article><?php endforeach; ?>
+    </section>
+    <?php endif; ?>
     <div class="dash-columns">
         <section class="dash-panel" aria-labelledby="dash-pm-title">
             <div class="dash-panel-heading"><div><h2 id="dash-pm-title">งาน PM ที่ควรติดตาม</h2><p>เกินกำหนดและครบกำหนดใน 7 วันรวมวันนี้ · แสดงสูงสุด 6 รายการ</p></div><a href="<?= APP_URL ?>/pm-schedules">ดูทั้งหมด <span aria-hidden="true">↗</span></a></div>

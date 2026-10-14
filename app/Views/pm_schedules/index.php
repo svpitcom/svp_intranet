@@ -54,7 +54,7 @@ $pageUrl = static fn(int $page): string => PmCalendar::url('table', $calendar['m
                 [$badgeClass, $badgeLabel] = $badgeMap[$s['pm_status']];
                 ?>
                 <tr>
-                    <td><?= htmlspecialchars($s['svp_device_name']) ?></td>
+                    <td><?= htmlspecialchars($s['svp_device_name']) ?><small class="d-block text-muted">ครบกำหนดจริง <?= htmlspecialchars($s['next_pm_date']) ?></small></td>
                     <td><?= htmlspecialchars($s['pm_title']) ?></td>
                     <td>ทุก <?= (int) $s['frequency_days'] ?> วัน</td>
                     <td><?= htmlspecialchars(trim(($s['first_name'] ?? '') . ' ' . ($s['last_name'] ?? '')) ?: '-') ?></td>
@@ -64,7 +64,7 @@ $pageUrl = static fn(int $page): string => PmCalendar::url('table', $calendar['m
                     </td>
                     <td>
                         <?= htmlspecialchars($s['plan_next_year'] ?? '-') ?>
-                        <?php if (!empty($s['plan_next_projected'])): ?><small class="text-muted d-block">คาดการณ์ตามรอบ PM</small><?php endif; ?>
+                        <?php if (!empty($s['plan_next_projected'])): ?><small class="text-muted d-block">รอบแรกของปี (คาดการณ์)</small><?php endif; ?>
                     </td>
                     <td><span class="badge <?= $badgeClass ?>"><?= $badgeLabel ?></span></td>
                     <td class="text-end">

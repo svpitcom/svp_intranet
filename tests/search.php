@@ -28,6 +28,7 @@ $db->exec('CREATE TABLE device (svp_device_id INTEGER PRIMARY KEY, svp_device_na
 $db->exec("INSERT INTO device_type VALUES (1,'Notebook'); INSERT INTO department VALUES (1,'ฝ่ายบัญชี'); INSERT INTO users VALUES (1,'สมชาย','ตัวอย่าง')");
 $insert = $db->prepare('INSERT INTO device VALUES (?,?,?,?,?,1,1,1,1)');
 for ($i=1;$i<=12;$i++) $insert->execute([$i, 'Device ' . $i, 'Lenovo', 'ThinkPad', $i===12?'TARGET_100%':'SERIAL-' . $i]);
+$db->exec("ALTER TABLE device ADD COLUMN asset_group TEXT NOT NULL DEFAULT 'it'");
 $device = new Device();
 check($device->countAll() === 12, 'unfiltered device count');
 check(count($device->paginate(1,10)) === 10, 'unfiltered first page');
@@ -42,4 +43,13 @@ $_GET = ['search'=>'"><script>alert(1)</script>','sort'=>'name','dir'=>'desc','p
 $html = render('partials/search', ['searchPath'=>'/devices','searchPlaceholder'=>'ค้นหาอุปกรณ์','resultCount'=>0]);
 check(!str_contains($html, '<script>'), 'search field and summary escaped');
 check(!str_contains($html, 'name="page"') && str_contains($html, 'name="sort"'), 'new search resets page but keeps sort');
+$db->exec("UPDATE device SET asset_group='machine' WHERE svp_device_id=12");
+check($device->countAll('', 'it')===11 && $device->countAll('', 'machine')===1,'device groups have distinct counts');
+check($device->countAll('TARGET','it')===0 && $device->countAll('TARGET','machine')===1,'search respects selected group');
+check(count($device->paginate(2,10,'svp_device_id','asc','','it'))===1,'pagination respects group count');
+check($device->paginate(1,10,'svp_device_id','asc','','machine')[0]['asset_group']==='machine','group returned with device');
+check(Device::groupFilter(['machine'])==='' && Device::groupFilter('bad')==='','invalid filters ignored');
+$_GET=['group'=>'machine','search'=>'TARGET'];
+$html=render('devices/index',['devices'=>$device->paginate(1,10,'svp_device_id','asc','TARGET','machine'),'totalDevices'=>1,'currentPage'=>1,'totalPages'=>1,'sort'=>'svp_device_id','dir'=>'asc','group'=>'machine']);
+check(str_contains($html,'name="group" value="machine"')&&str_contains($html,'&group=machine'),'search and sort retain group');
 echo 'PASS: ' . ($checks-$startChecks) . " search checks (isolated SQLite)\n";

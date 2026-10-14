@@ -4,10 +4,11 @@ $basePath = rtrim(parse_url(APP_URL, PHP_URL_PATH) ?: '', '/');
 if ($basePath !== '' && $currentPath === $basePath) $currentPath = '/';
 if ($basePath !== '' && str_starts_with($currentPath, $basePath . '/')) $currentPath = substr($currentPath, strlen($basePath));
 $navGroups = [
-    'ภาพรวม' => [['/', 'หน้าแรก', 'house-door']],
+    'ภาพรวม' => [['/', 'หน้าแรก', 'house-door'], ['/announcements', 'ประกาศภายใน', 'megaphone'], ['/notifications', 'การแจ้งเตือน', 'bell']],
     'บุคลากร' => [['/users', 'ผู้ใช้งาน', 'people'], ['/departments', 'แผนก', 'diagram-3'], ['/positions', 'ตำแหน่ง', 'person-badge']],
-    'อุปกรณ์' => [['/devices', 'ทะเบียนอุปกรณ์', 'laptop'], ['/device_types', 'ประเภทอุปกรณ์', 'grid']],
-    'งานบำรุงรักษา' => [['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
+    'อุปกรณ์' => [['/it-devices', 'อุปกรณ์ IT', 'laptop'], ['/machines', 'เครื่องจักร', 'gear'], ['/devices', 'ทะเบียนรวม', 'list-ul'], ['/device_types', 'ประเภทอุปกรณ์', 'grid']],
+    'งานบำรุงรักษา' => [['/tickets', 'แจ้งซ่อม / ติดตามงาน', 'tools'], ['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
+    'คำขอและอนุมัติ' => [['/requests', 'คำขออนุมัติ', 'clipboard-check']],
 ];
 if (DocumentControlAccess::allows(Session::get('user'))) {
     $navGroups['เอกสาร'] = [['/document-control', 'Document Control', 'file-earmark-check']];

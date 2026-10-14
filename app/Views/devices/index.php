@@ -1,8 +1,9 @@
 <?php
 $currentUser = Session::get('user');
 $nextDir = $dir === 'asc' ? 'desc' : 'asc';
+$group = $group ?? Device::groupFilter($_GET['group'] ?? '');
 
-function sortLink(string $column, string $label, string $sort, string $dir, string $nextDir): string
+$sortLink = function(string $column, string $label, string $sort, string $dir, string $nextDir) use ($group): string
 {
     $icon = '<i class="bi bi-arrow-down-up sort-icon-idle"></i>';
     if ($sort === $column) {
@@ -10,15 +11,16 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
             ? '<i class="bi bi-sort-up-alt sort-icon-active"></i>'
             : '<i class="bi bi-sort-down sort-icon-active"></i>';
     }
-    $url = APP_URL . '/devices?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc') . Search::suffix();
+    $url = APP_URL . Device::listPath($group) . '?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc') . Search::suffix();
+    $url .= '&group=' . urlencode($group);
     return '<a href="' . $url . '" class="sort-link">' . htmlspecialchars($label) . ' ' . $icon . '</a>';
-}
+};
 
 /** สร้าง URL หน้าอื่น โดยคง sort/dir เดิมไว้เสมอ */
-function pageUrl(int $page, string $sort, string $dir): string
+$pageUrl = function(int $page, string $sort, string $dir) use ($group): string
 {
-    return APP_URL . '/devices?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . $page . Search::suffix();
-}
+    return APP_URL . Device::listPath($group) . '?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . $page . Search::suffix() . '&group=' . urlencode($group);
+};
 ?>
 
 <?php if (Session::get('success')): ?>
@@ -34,19 +36,24 @@ function pageUrl(int $page, string $sort, string $dir): string
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h4 class="mb-0 fw-bold">จัดการอุปกรณ์</h4>
+        <h4 class="mb-0 fw-bold"><?= Device::GROUPS[$group] ?? 'ทะเบียนอุปกรณ์รวม' ?></h4>
         <span class="text-muted small">ทั้งหมด <?= number_format($totalDevices) ?> รายการ</span>
     </div>
     <?php if ($currentUser['user_role'] === 'admin'): ?>
-        <a href="<?= APP_URL ?>/devices/create" class="btn-primary-modern btn-sm">
-            <i class="bi bi-plus-lg"></i> เพิ่มอุปกรณ์
+        <a href="<?= APP_URL ?>/devices/create?group=<?= htmlspecialchars($group) ?>" class="btn-primary-modern btn-sm">
+            <i class="bi bi-plus-lg"></i> <?= $group==='machine'?'เพิ่มเครื่องจักร':'เพิ่มอุปกรณ์' ?>
         </a>
     <?php endif; ?>
 </div>
 
-<?php $searchPath = '/devices'; $searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง'; $resultCount = $totalDevices; require BASE_PATH . '/app/Views/partials/search.php'; ?>
+<?php if(!in_array($group,['it','machine'],true)): ?><nav class="d-flex flex-wrap gap-2 mb-3" aria-label="กลุ่มอุปกรณ์">
+<?php foreach([''=>'ทั้งหมด'] + Device::GROUPS as $key=>$label): ?>
+    <a class="btn btn-<?= $group===$key?'primary':'outline-primary' ?>" <?= $group===$key?'aria-current="page"':'' ?> href="<?= APP_URL ?>/devices?group=<?= $key ?><?= Search::suffix() ?>"><?= $label ?></a>
+<?php endforeach; ?>
+</nav><?php endif; ?>
+<?php $searchExtra=['group'=>$group]; $searchPath = Device::listPath($group); $searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง'; $resultCount = $totalDevices; require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="card-modern">
-    <?php if ($currentUser['user_role'] === 'admin'): ?>
+    <?php if ($currentUser['user_role'] === 'admin' && $group === ''): ?>
     <div class="p-3 border-bottom">
         <p class="small text-muted">ปลายทาง Excel: SharePoint / IT · ส่งออกและนำเข้าจากโฟลเดอร์ IT โดยอัตโนมัติ</p>
         <form method="post" action="<?= APP_URL ?>/devices/sync-excel" onsubmit="return confirm('อัปเดต Excel ในโฟลเดอร์ IT ด้วยข้อมูลทั้งหมดจาก Intranet? ข้อมูลที่แก้ไว้ในไฟล์นั้นจะถูกแทนที่');">
@@ -65,14 +72,15 @@ function pageUrl(int $page, string $sort, string $dir): string
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th><?= sortLink('svp_device_name', 'ชื่ออุปกรณ์', $sort, $dir, $nextDir) ?></th>
-                    <th><?= sortLink('brand_name', 'ยี่ห้อ', $sort, $dir, $nextDir) ?></th>
+                    <th><?= $sortLink('svp_device_name', 'ชื่ออุปกรณ์', $sort, $dir, $nextDir) ?></th>
+                    <th><?= $sortLink('brand_name', 'ยี่ห้อ', $sort, $dir, $nextDir) ?></th>
                     <th>โมเดล</th>
+                    <th>กลุ่ม</th>
                     <th>SerialNumber</th>
-                    <th><?= sortLink('device_type_name', 'ประเภทอุปกรณ์', $sort, $dir, $nextDir) ?></th>
-                    <th><?= sortLink('svp_department_name', 'แผนก', $sort, $dir, $nextDir) ?></th>
+                    <th><?= $sortLink('device_type_name', 'ประเภทอุปกรณ์', $sort, $dir, $nextDir) ?></th>
+                    <th><?= $sortLink('svp_department_name', 'แผนก', $sort, $dir, $nextDir) ?></th>
                     <th>พนักงานใช้งาน</th>
-                    <th><?= sortLink('is_active', 'สถานะ', $sort, $dir, $nextDir) ?></th>
+                    <th><?= $sortLink('is_active', 'สถานะ', $sort, $dir, $nextDir) ?></th>
                     <?php if ($currentUser['user_role'] === 'admin'): ?><th class="text-end">จัดการ</th><?php endif; ?>
                 </tr>
             </thead>
@@ -82,12 +90,13 @@ function pageUrl(int $page, string $sort, string $dir): string
                         <td class="text-muted"><?= htmlspecialchars($dv['svp_device_id']) ?></td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <span class="device-icon"><i class="bi bi-laptop"></i></span>
+                                <span class="device-icon"><i class="bi bi-<?= ($dv['asset_group']??'')==='machine'?'gear':'laptop' ?>"></i></span>
                                 <span class="fw-medium"><?= htmlspecialchars($dv['svp_device_name']) ?></span>
                             </div>
                         </td>
                         <td><?= htmlspecialchars($dv['brand_name'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($dv['model_name'] ?? '-') ?></td>
+                        <td><span class="badge bg-secondary"><?= Device::GROUPS[$dv['asset_group']??'unclassified']??'ยังไม่จัดกลุ่ม' ?></span></td>
                         <td><span class="code-chip"><?= htmlspecialchars($dv['serial_number'] ?? '-') ?></span></td>
                         <td><?= htmlspecialchars($dv['device_type_name'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($dv['svp_department_name'] ?? '-') ?></td>
@@ -117,7 +126,7 @@ function pageUrl(int $page, string $sort, string $dir): string
                 <?php endforeach; ?>
                 <?php if (empty($devices)): ?>
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-5">
+                        <td colspan="11" class="text-center text-muted py-5">
                             <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i>
                             ยังไม่มีข้อมูลอุปกรณ์
                         </td>
@@ -134,7 +143,7 @@ function pageUrl(int $page, string $sort, string $dir): string
             </span>
 
             <div class="pagination-controls">
-                <a href="<?= pageUrl(max(1, $currentPage - 1), $sort, $dir) ?>"
+                <a href="<?= $pageUrl(max(1, $currentPage - 1), $sort, $dir) ?>"
                     class="page-btn <?= $currentPage <= 1 ? 'disabled' : '' ?>">
                     <i class="bi bi-chevron-left"></i>
                 </a>
@@ -145,20 +154,20 @@ function pageUrl(int $page, string $sort, string $dir): string
                 ?>
 
                 <?php if ($startPage > 1): ?>
-                    <a href="<?= pageUrl(1, $sort, $dir) ?>" class="page-btn">1</a>
+                    <a href="<?= $pageUrl(1, $sort, $dir) ?>" class="page-btn">1</a>
                     <?php if ($startPage > 2): ?><span class="page-dots">...</span><?php endif; ?>
                 <?php endif; ?>
 
                 <?php for ($p = $startPage; $p <= $endPage; $p++): ?>
-                    <a href="<?= pageUrl($p, $sort, $dir) ?>" class="page-btn <?= $p === $currentPage ? 'active' : '' ?>"><?= $p ?></a>
+                    <a href="<?= $pageUrl($p, $sort, $dir) ?>" class="page-btn <?= $p === $currentPage ? 'active' : '' ?>"><?= $p ?></a>
                 <?php endfor; ?>
 
                 <?php if ($endPage < $totalPages): ?>
                     <?php if ($endPage < $totalPages - 1): ?><span class="page-dots">...</span><?php endif; ?>
-                    <a href="<?= pageUrl($totalPages, $sort, $dir) ?>" class="page-btn"><?= $totalPages ?></a>
+                    <a href="<?= $pageUrl($totalPages, $sort, $dir) ?>" class="page-btn"><?= $totalPages ?></a>
                 <?php endif; ?>
 
-                <a href="<?= pageUrl(min($totalPages, $currentPage + 1), $sort, $dir) ?>"
+                <a href="<?= $pageUrl(min($totalPages, $currentPage + 1), $sort, $dir) ?>"
                     class="page-btn <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
                     <i class="bi bi-chevron-right"></i>
                 </a>

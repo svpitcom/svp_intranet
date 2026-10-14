@@ -109,6 +109,9 @@ class UserController extends Controller
             $this->redirect('/users');
         }
         $errors = $this->validate(isUpdate: true, id: $id);
+        if ($id === (int)$this->currentUser()['svp_user_id'] && ($this->input('user_role') !== 'admin' || !$this->input('is_active'))) {
+            $errors[] = 'ไม่สามารถลดสิทธิ์หรือปิดใช้งานบัญชีผู้ดูแลที่กำลังใช้งานได้';
+        }
         if ($errors) {
             Session::flash('errors', implode(' / ', $errors));
             $this->redirect("/users/{$id}/edit");

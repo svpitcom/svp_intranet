@@ -33,8 +33,8 @@ class PmRecordController extends Controller
             Session::flash('error', 'ไม่พบแผน PM นี้');
             $this->redirect('/pm-schedules');
         }
-        if (!Validation::date($performedDate)) {
-            Session::flash('error', 'วันที่ทำ PM ไม่ถูกต้อง');
+        if (!Validation::date($performedDate) || $performedDate > Portal::today()) {
+            Session::flash('error', 'วันที่ทำ PM ไม่ถูกต้องหรือเป็นวันในอนาคต');
             $this->redirect("/pm-schedules/{$scheduleId}/record");
         }
         if (!in_array($this->input('result_status'), ['completed', 'partial', 'issue_found'], true)) {
@@ -74,7 +74,9 @@ class PmRecordController extends Controller
                 'attachment_path'             => $attachmentPath,
             ]);
 
-            (new PmSchedule())->markCompleted($scheduleId, $performedDate);
+            if ($this->input('result_status') === 'completed') {
+                (new PmSchedule())->markCompleted($scheduleId, $performedDate);
+            }
             $db->commit();
         } catch (Throwable $e) {
             if ($db->inTransaction()) $db->rollBack();
