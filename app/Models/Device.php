@@ -2,10 +2,14 @@
 class Device extends Model
 {
     protected string $table = 'device';
-    public const GROUPS = ['it'=>'อุปกรณ์ IT','machine'=>'เครื่องจักร','unclassified'=>'ยังไม่จัดกลุ่ม'];
+    public const GROUPS = ['it' => 'อุปกรณ์ IT', 'machine' => 'เครื่องจักร', 'unclassified' => 'ยังไม่จัดกลุ่ม'];
     public static function listPath(string $group): string
     {
-        return match($group) { 'machine'=>'/machines', 'it'=>'/it-devices', default=>'/devices' };
+        return match ($group) {
+            'machine' => '/machines',
+            'it' => '/it-devices',
+            default => '/devices'
+        };
     }
 
     public static function groupFilter($value): string
@@ -63,14 +67,17 @@ class Device extends Model
     {
         $tokens = preg_split('/\s+/u', trim($search), -1, PREG_SPLIT_NO_EMPTY) ?: [];
         $groups = $params = [];
-        if (self::groupFilter($group) !== '') { $groups[] = 'dv.asset_group=:asset_group'; $params['asset_group']=$group; }
+        if (self::groupFilter($group) !== '') {
+            $groups[] = 'dv.asset_group=:asset_group';
+            $params['asset_group'] = $group;
+        }
         $columns = ['dv.svp_device_name', 'dv.brand_name', 'dv.model_name', 'dv.serial_number', 'dt.device_type_name', 'd.svp_department_name', 'u.first_name', 'u.last_name'];
         foreach ($tokens as $tokenIndex => $token) {
             $conditions = [];
             foreach ($columns as $columnIndex => $column) {
                 $name = 'search_' . $tokenIndex . '_' . $columnIndex;
                 $conditions[] = "{$column} LIKE :{$name} ESCAPE '!'";
-                $params[$name] = '%' . strtr($token, ['!'=>'!!', '%'=>'!%', '_'=>'!_']) . '%';
+                $params[$name] = '%' . strtr($token, ['!' => '!!', '%' => '!%', '_' => '!_']) . '%';
             }
             $groups[] = '(' . implode(' OR ', $conditions) . ')';
         }

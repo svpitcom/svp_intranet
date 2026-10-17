@@ -6,7 +6,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
-        <h4 class="mb-0 fw-bold">จัดการผู้ใช้งาน</h4>
+        <h4 class="mb-0 fw-bold"><?= DccWorkspace::restricted($currentUser) ? 'รายชื่อผู้ใช้งาน' : 'จัดการผู้ใช้งาน' ?></h4>
         <span class="text-muted small" id="user-count-label">ทั้งหมด <?= number_format($totalUsers) ?> รายการ</span>
     </div>
     <?php if ($currentUser['user_role'] === 'admin'): ?>

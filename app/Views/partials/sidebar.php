@@ -10,11 +10,18 @@ $navGroups = [
     'งานบำรุงรักษา' => [['/tickets', 'แจ้งซ่อม / ติดตามงาน', 'tools'], ['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
     'คำขอและอนุมัติ' => [['/requests', 'คำขออนุมัติ', 'clipboard-check']],
 ];
+if (DccWorkspace::restricted(Session::get('user'))) {
+    $navGroups = [
+        'พื้นที่ทำงาน DCC' => [['/', 'หน้าแรก DCC', 'house-door'], ['/users', 'รายชื่อผู้ใช้งาน', 'people']],
+    ];
+}
 if (DocumentControlAccess::allows(Session::get('user'))) {
     $navGroups['เอกสาร'] = [['/document-control', 'Document Control', 'file-earmark-check']];
 }
 if ((Session::get('user')['user_role'] ?? '') === 'admin') {
     $navGroups['เชื่อมต่อระบบ'] = [['/sharepoint', 'SharePoint', 'cloud']];
+} elseif (DccWorkspace::restricted(Session::get('user')) && DocumentControlAccess::allows(Session::get('user'))) {
+    $navGroups['เชื่อมต่อระบบ'] = [['/document-control/files', 'SharePoint DCC', 'cloud']];
 }
 ?>
 <aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="app-sidebar" aria-labelledby="sidebar-title">
@@ -32,6 +39,7 @@ if ((Session::get('user')['user_role'] ?? '') === 'admin') {
             <ul class="nav flex-column">
             <?php foreach ($items as [$path, $label, $icon]):
                 $active = $currentPath === $path || ($path !== '/' && str_starts_with($currentPath, $path . '/'));
+                if ($path === '/document-control' && $currentPath === '/document-control/files' && DccWorkspace::restricted(Session::get('user'))) $active = false;
             ?>
                 <li class="nav-item"><a class="nav-link-modern <?= $active ? 'active' : '' ?>" href="<?= APP_URL . $path ?>" <?= $active ? 'aria-current="page"' : '' ?>>
                     <i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span>

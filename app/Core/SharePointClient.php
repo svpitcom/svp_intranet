@@ -1,4 +1,5 @@
 <?php
+
 /** Server-side Microsoft Graph client. Credentials and tokens never reach the browser. */
 class SharePointClient
 {
@@ -53,27 +54,30 @@ class SharePointClient
     /** Resolve only items inside configured DCC, including nested folders. */
     public function dccItem(string $id = ''): array
     {
-        $root=trim((string)($this->config['department_folders']['DCC']??''));
-        if ($root==='') throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ DCC');
-        $id=$id===''?$root:$id;
-        if (strlen($id)>255) throw new RuntimeException('รหัสไฟล์ไม่ถูกต้อง');
-        $read=fn($itemId)=>$this->graph('GET',$this->drivePath().'/items/'.rawurlencode($itemId).'?$select=id,name,webUrl,folder,file,parentReference');
-        $item=$read($id); $node=$item; $visited=[];
-        for ($depth=0;$depth<32;$depth++) {
-            if (($node['parentReference']['driveId']??'')!==$this->config['drive_id']) break;
-            if (($node['id']??'')===$root && isset($node['folder'])) return $item;
-            $parent=$node['parentReference']['id']??'';
-            if ($parent==='' || isset($visited[$parent])) break;
-            $visited[$parent]=true; $node=$read($parent);
+        $root = trim((string)($this->config['department_folders']['DCC'] ?? ''));
+        if ($root === '') throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ DCC');
+        $id = $id === '' ? $root : $id;
+        if (strlen($id) > 255) throw new RuntimeException('รหัสไฟล์ไม่ถูกต้อง');
+        $read = fn($itemId) => $this->graph('GET', $this->drivePath() . '/items/' . rawurlencode($itemId) . '?$select=id,name,webUrl,folder,file,parentReference');
+        $item = $read($id);
+        $node = $item;
+        $visited = [];
+        for ($depth = 0; $depth < 32; $depth++) {
+            if (($node['parentReference']['driveId'] ?? '') !== $this->config['drive_id']) break;
+            if (($node['id'] ?? '') === $root && isset($node['folder'])) return $item;
+            $parent = $node['parentReference']['id'] ?? '';
+            if ($parent === '' || isset($visited[$parent])) break;
+            $visited[$parent] = true;
+            $node = $read($parent);
         }
         throw new RuntimeException('ไฟล์หรือโฟลเดอร์นี้ไม่ได้อยู่ภายใน DCC');
     }
 
     public function dccFiles(string $folder = '', string $cursor = ''): array
     {
-        $item=$this->dccItem($folder);
+        $item = $this->dccItem($folder);
         if (!isset($item['folder'])) throw new RuntimeException('ปลายทางไม่ใช่โฟลเดอร์');
-        return $this->files($item['id'],$cursor)+['folder'=>$item];
+        return $this->files($item['id'], $cursor) + ['folder' => $item];
     }
 
     /** Only the configured site's document library is accessible. */
@@ -162,10 +166,10 @@ class SharePointClient
         $parts = is_string($url) ? parse_url($url) : false;
         if (!$parts || strtolower($parts['scheme'] ?? '') !== 'https' || empty($parts['host']) || isset($parts['user']) || isset($parts['pass'])) throw new RuntimeException('ลิงก์ดาวน์โหลดจาก Microsoft ไม่ถูกต้อง');
         $file = ($this->transport)('GET', $url, [], '');
-        if ((int)($file['status'] ?? 0) !== 200 || !is_string($file['body'] ?? null) || strlen($file['body']) > 10*1024*1024) throw new RuntimeException('ดาวน์โหลดไฟล์ Excel ผู้ใช้งานไม่สำเร็จหรือไฟล์ใหญ่เกิน 10 MB');
+        if ((int)($file['status'] ?? 0) !== 200 || !is_string($file['body'] ?? null) || strlen($file['body']) > 10 * 1024 * 1024) throw new RuntimeException('ดาวน์โหลดไฟล์ Excel ผู้ใช้งานไม่สำเร็จหรือไฟล์ใหญ่เกิน 10 MB');
         $latest = $this->graph('GET', $path . '?$select=id,name,eTag,parentReference');
         if (($latest['eTag'] ?? '') !== $item['eTag']) throw new RuntimeException('ไฟล์ Excel ผู้ใช้งานเปลี่ยนระหว่างดาวน์โหลด กรุณานำเข้าอีกครั้ง');
-        return ['bytes'=>$file['body'],'eTag'=>(string)$latest['eTag']];
+        return ['bytes' => $file['body'], 'eTag' => (string)$latest['eTag']];
     }
 
     /** @return array{bytes: string, eTag: string} */
@@ -247,8 +251,10 @@ class SharePointClient
         $tenant = $this->config['tenant_id'];
         if (!preg_match('/^[a-zA-Z0-9.-]+$/D', $tenant) || in_array(strtolower($tenant), ['common', 'organizations', 'consumers'], true)) throw new RuntimeException('Tenant ID ไม่ถูกต้อง');
         $data = $this->request('POST', 'https://login.microsoftonline.com/' . rawurlencode($tenant) . '/oauth2/v2.0/token', ['Content-Type: application/x-www-form-urlencoded'], http_build_query([
-            'client_id' => $this->config['client_id'], 'client_secret' => $this->config['client_secret'],
-            'scope' => 'https://graph.microsoft.com/.default', 'grant_type' => 'client_credentials',
+            'client_id' => $this->config['client_id'],
+            'client_secret' => $this->config['client_secret'],
+            'scope' => 'https://graph.microsoft.com/.default',
+            'grant_type' => 'client_credentials',
         ], '', '&', PHP_QUERY_RFC3986));
         if (empty($data['access_token']) || !is_string($data['access_token']) || preg_match('/[\r\n]/', $data['access_token'])) throw new RuntimeException('Microsoft ไม่ส่ง access token ที่ใช้ได้');
         $this->token = $data['access_token'];
@@ -289,10 +295,15 @@ class SharePointClient
         if (!extension_loaded('curl')) throw new RuntimeException('กรุณาเปิด PHP extension curl บนเซิร์ฟเวอร์');
         $responseHeaders = [];
         $ch = curl_init($url);
-        curl_setopt_array($ch, [CURLOPT_CUSTOMREQUEST => $method, CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => false,
-            CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_TIMEOUT => 30,
-            CURLOPT_SSL_VERIFYPEER => true, CURLOPT_SSL_VERIFYHOST => 2,
+        curl_setopt_array($ch, [
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
             CURLOPT_HEADERFUNCTION => static function ($handle, string $line) use (&$responseHeaders): int {
                 $length = strlen($line);
@@ -301,7 +312,8 @@ class SharePointClient
                     $responseHeaders[strtolower(trim($name))] = trim($value);
                 }
                 return $length;
-            }]);
+            }
+        ]);
         if ($method !== 'GET') curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         $result = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);

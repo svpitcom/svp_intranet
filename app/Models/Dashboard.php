@@ -4,12 +4,14 @@ class Dashboard extends Model
     public function overview(string $today): array
     {
         $until = (new DateTimeImmutable($today))->modify('+6 days')->format('Y-m-d');
-        $stats = $this->query("SELECT
+        $stats = $this->query(
+            "SELECT
             (SELECT COUNT(*) FROM users WHERE is_active = 1) AS users,
             (SELECT COUNT(*) FROM device WHERE is_active = 1) AS devices,
             (SELECT COUNT(*) FROM pm_schedule WHERE is_active = 1 AND next_pm_date < :today) AS overdue,
             (SELECT COUNT(*) FROM pm_schedule WHERE is_active = 1 AND next_pm_date >= :start AND next_pm_date <= :until) AS upcoming",
-            ['today' => $today, 'start' => $today, 'until' => $until])->fetch();
+            ['today' => $today, 'start' => $today, 'until' => $until]
+        )->fetch();
         $schedules = $this->query("SELECT ps.pm_schedule_id, ps.pm_title, ps.next_pm_date,
                 dv.svp_device_name, u.first_name, u.last_name
             FROM pm_schedule ps

@@ -3,6 +3,7 @@
     <div>
         <h1 class="h3 fw-bold">ไฟล์ใน SharePoint DCC</h1>
         <p class="text-muted mb-0">เลือกไฟล์เพื่อลงทะเบียนเอกสาร หรือเปิดจัดการไฟล์ใน SharePoint</p>
+        <p class="small text-muted mt-2 mb-0">หน้านี้แสดงเฉพาะโฟลเดอร์ DCC และโฟลเดอร์ย่อย การเปิดหรืออัปโหลดใน SharePoint ต้องเข้าสู่ระบบ Microsoft 365 และมีสิทธิ์ของบัญชีนั้น</p>
     </div><a class="btn btn-outline-secondary" href="<?= APP_URL ?>/document-control">กลับทะเบียนเอกสาร</a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger" role="alert"><?= $esc($error) ?></div><a class="btn btn-outline-primary" href="<?= APP_URL ?>/document-control/files">ลองเชื่อมต่ออีกครั้ง</a><?php else: ?>

@@ -1,4 +1,5 @@
 <?php
+
 /** Explicit export columns: never export arbitrary database fields. */
 class SharePointTables
 {

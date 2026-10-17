@@ -51,15 +51,20 @@ class PmCalendar
             $count += count($events);
             $days[] = ['date' => $day, 'inMonth' => $inMonth, 'today' => $day->format('Y-m-d') === $today->format('Y-m-d'), 'events' => $events];
         }
-        $names = [1=>'มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-        return ['month'=>$first->format('Y-m'), 'label'=>$names[(int)$first->format('n')] . ' ' . ((int)$first->format('Y') + 543), 'days'=>$days, 'count'=>$count,
-            'previous'=>$first->format('Y-m') > '1900-01' ? $first->modify('-1 month')->format('Y-m') : null,
-            'next'=>$first->format('Y-m') < '2100-12' ? $first->modify('+1 month')->format('Y-m') : null,
-            'current'=>$today->format('Y-m')];
+        $names = [1 => 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        return [
+            'month' => $first->format('Y-m'),
+            'label' => $names[(int)$first->format('n')] . ' ' . ((int)$first->format('Y') + 543),
+            'days' => $days,
+            'count' => $count,
+            'previous' => $first->format('Y-m') > '1900-01' ? $first->modify('-1 month')->format('Y-m') : null,
+            'next' => $first->format('Y-m') < '2100-12' ? $first->modify('+1 month')->format('Y-m') : null,
+            'current' => $today->format('Y-m')
+        ];
     }
 
     public static function url(string $view, string $month, string $search): string
     {
-        return APP_URL . '/pm-schedules?' . http_build_query(['view'=>$view, 'month'=>$month, 'search'=>$search]);
+        return APP_URL . '/pm-schedules?' . http_build_query(['view' => $view, 'month' => $month, 'search' => $search]);
     }
 }

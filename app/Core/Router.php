@@ -31,6 +31,11 @@ class Router
                 foreach ($middlewares as $middleware) {
                     $this->runMiddleware($middleware);
                 }
+                if (!DccWorkspace::allows(Session::get('user'), $pattern)) {
+                    http_response_code(403);
+                    require BASE_PATH . '/app/Views/errors/403.php';
+                    return;
+                }
                 if ($method === 'POST' && !Session::validCsrf($_POST['_csrf'] ?? null)) {
                     http_response_code(403);
                     echo 'คำขอหมดอายุหรือไม่ถูกต้อง กรุณาโหลดหน้าใหม่แล้วลองอีกครั้ง';

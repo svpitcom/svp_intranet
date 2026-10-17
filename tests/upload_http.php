@@ -17,7 +17,10 @@ if (PHP_SAPI === 'cli-server') {
     }
     return;
 }
-if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
 $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $error);
 if (!$socket) throw new RuntimeException($error);
 $address = stream_socket_get_name($socket, false);
@@ -27,7 +30,8 @@ $fixture = tempnam(sys_get_temp_dir(), 'svp-pdf-');
 $process = proc_open([PHP_BINARY, '-d', 'upload_tmp_dir=' . sys_get_temp_dir(), '-d', 'upload_max_filesize=12M', '-d', 'post_max_size=14M', '-S', $address, __FILE__], [0 => ['pipe', 'r'], 1 => ['file', $log, 'a'], 2 => ['file', $log, 'a']], $pipes, __DIR__);
 if (!is_resource($process)) throw new RuntimeException('Unable to start upload test server');
 fclose($pipes[0]);
-function requestUpload(string $address, string $fixture): array {
+function requestUpload(string $address, string $fixture): array
+{
     $curl = curl_init('http://' . $address . '/');
     curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_POST => true, CURLOPT_POSTFIELDS => ['document' => new CURLFile($fixture, 'application/pdf', 'report.pdf')]]);
     $body = curl_exec($curl);
@@ -38,7 +42,10 @@ function requestUpload(string $address, string $fixture): array {
 try {
     for ($i = 0; $i < 50; $i++) {
         $connection = @stream_socket_client('tcp://' . $address, $errno, $error, 0.1);
-        if ($connection) { fclose($connection); break; }
+        if ($connection) {
+            fclose($connection);
+            break;
+        }
         usleep(100000);
     }
     file_put_contents($fixture, "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n");

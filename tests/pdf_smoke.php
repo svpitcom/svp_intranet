@@ -1,5 +1,8 @@
 <?php
-if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
 require dirname(__DIR__) . '/vendor/autoload.php';
 define('BASE_PATH', dirname(__DIR__));
 $cache = sys_get_temp_dir() . '/svp-pdf-' . bin2hex(random_bytes(8));

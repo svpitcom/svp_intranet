@@ -66,7 +66,7 @@ class PmSchedule extends Model
                 $days = $base < $start ? (int)$base->diff($start)->days : 0;
                 $steps = (int)ceil($days / $frequency);
                 $projected = $base->modify('+' . ($steps * $frequency) . ' days')->format('Y-m-d');
-                if ((int)substr($projected,0,4) === $year + 1) {
+                if ((int)substr($projected, 0, 4) === $year + 1) {
                     $schedule['plan_next_year'] = $projected;
                     $schedule['plan_next_projected'] = $projected !== $due;
                 }
