@@ -8,6 +8,7 @@ $start = $checks;
 $db = new TestPDO('sqlite::memory:', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
 Database::$db = $db;
 $db->exec('CREATE TABLE controlled_documents (id INTEGER PRIMARY KEY AUTOINCREMENT,code TEXT UNIQUE,title TEXT,revision TEXT,department_id INTEGER,status TEXT,effective_date TEXT,review_date TEXT,file_item_id TEXT,file_name TEXT,file_url TEXT,notes TEXT,version INTEGER,updated_by INTEGER,created_at TEXT,updated_at TEXT); CREATE TABLE controlled_document_history (id INTEGER PRIMARY KEY AUTOINCREMENT,document_id INTEGER,snapshot TEXT,changed_by INTEGER,changed_at TEXT); CREATE TABLE department (svp_department_id INTEGER,svp_department_name TEXT); CREATE TABLE users (svp_user_id INTEGER,first_name TEXT,last_name TEXT)');
+$db->exec("ALTER TABLE controlled_documents ADD category TEXT NOT NULL DEFAULT ''");
 $data = ['code' => 'DCC-001', 'title' => '<script>alert(1)</script>', 'revision' => '00', 'department_id' => null, 'status' => 'draft', 'effective_date' => null, 'review_date' => null, 'file_item_id' => '', 'file_name' => '', 'file_url' => '', 'notes' => 'Initial'];
 check(DocumentControlInput::validate($data) === [], 'draft can be saved without file');
 $bad = $data;

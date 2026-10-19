@@ -16,6 +16,12 @@ class DeviceController extends Controller
     }
     private function listing(string $group): void
     {
+        if (($group === 'machine' && !MachineAccess::allows($this->currentUser()))
+            || ($group === 'it' && !ItDeviceAccess::allows($this->currentUser()))) {
+            http_response_code(403);
+            require BASE_PATH . '/app/Views/errors/403.php';
+            return;
+        }
         $perPage = 10;
         $page = max(1, (int) $this->input('page', 1));
         $sort = $this->input('sort', 'svp_device_id');

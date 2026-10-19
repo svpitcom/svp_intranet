@@ -162,6 +162,10 @@ textarea {
 .sidebar-body nav {
   width: 100%;
 }
+.dcc-nav-group > summary { list-style: none; cursor: pointer; }
+.dcc-nav-group > summary::-webkit-details-marker { display: none; }
+.dcc-nav-group .dcc-nav-chevron { margin-left: auto; font-size: 12px; }
+.dcc-nav-group[open] > summary .dcc-nav-chevron { transform: rotate(90deg); }
 .nav-group-label {
   padding: 18px 14px 9px;
   font-size: 11px;

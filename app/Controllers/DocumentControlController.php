@@ -5,8 +5,14 @@ class DocumentControlController extends Controller
     {
         $q = mb_substr($this->input('q', ''), 0, 200);
         $status = $this->input('status', '');
-        $data = (new ControlledDocument())->listing($q, $status, (int)$this->input('page', '1'));
-        $this->view('document_control/index', $data + compact('q', 'status'));
+        $category = $this->input('category', '');
+        if ($category !== '' && $category !== 'UNSORTED' && !isset(DocumentCategory::LABELS[$category])) {
+            http_response_code(400);
+            echo 'ไม่พบหมวดเอกสาร';
+            return;
+        }
+        $data = (new ControlledDocument())->listing($q, $status, (int)$this->input('page', '1'), $category);
+        $this->view('document_control/index', $data + compact('q', 'status', 'category'));
     }
 
     public function files(): void
@@ -17,7 +23,10 @@ class DocumentControlController extends Controller
         $error = '';
         $documentId = max(0, (int)$this->input('document_id', '0'));
         try {
-            $result = (new SharePointClient())->dccFiles($this->input('folder', ''), $this->input('cursor', ''));
+            $client = new SharePointClient();
+            $folderId = $this->input('folder', '');
+            if ($folderId === '' && $this->input('category', '') !== '') $folderId = DocumentCategory::folder($client, $this->input('category', ''));
+            $result = $client->dccFiles($folderId, $this->input('cursor', ''));
             $items = $result['items'];
             $cursor = $result['cursor'];
             $folder = $result['folder'];
@@ -46,6 +55,7 @@ class DocumentControlController extends Controller
             return;
         }
         $error = '';
+        if ($id === null) $document['category'] = isset(DocumentCategory::LABELS[$this->input('category', '')]) ? $this->input('category', '') : '';
         if ($this->input('file', '') !== '') {
             try {
                 $item = (new SharePointClient())->dccItem($this->input('file', ''));
@@ -82,6 +92,7 @@ class DocumentControlController extends Controller
         $data = [];
         foreach (['code', 'title', 'revision', 'status', 'effective_date', 'review_date', 'notes', 'file_item_id'] as $key) $data[$key] = $this->input($key, '');
         $data['department_id'] = $this->input('department_id', '');
+        $data['category'] = $this->input('category', '');
         $version = (int)$this->input('version', '0');
         $data['file_name'] = '';
         $data['file_url'] = '';

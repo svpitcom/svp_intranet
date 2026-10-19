@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS controlled_documents (
  title VARCHAR(255) NOT NULL,
  revision VARCHAR(30) NOT NULL,
  department_id INT NULL,
+ category VARCHAR(30) NOT NULL DEFAULT '',
  status VARCHAR(20) NOT NULL DEFAULT 'draft',
  effective_date DATE NULL,
  review_date DATE NULL,

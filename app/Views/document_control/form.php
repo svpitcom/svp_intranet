@@ -9,6 +9,7 @@
     <input type="hidden" name="_csrf" value="<?= $esc(Session::csrfToken()) ?>"><input type="hidden" name="version" value="<?= (int)$document['version'] ?>"><input type="hidden" name="file_item_id" value="<?= $esc($document['file_item_id']) ?>">
     <h2 class="h5 mb-3">ข้อมูลทะเบียน</h2>
     <div class="row g-3">
+        <div class="col-12"><label class="form-label" for="doc-category">หมวดทะเบียนตามโฟลเดอร์ (แยกจากแผนกเจ้าของ)</label><select class="form-select" name="category" id="doc-category"><option value="">ยังไม่จัดหมวด</option><?php foreach (DocumentCategory::LABELS as $key=>$label): ?><option value="<?= $key ?>" <?= ($document['category'] ?? '') === $key ? 'selected' : '' ?>><?= $esc($label) ?></option><?php endforeach; ?></select></div>
         <?php foreach (['code' => ['รหัสเอกสาร', 80], 'title' => ['ชื่อเอกสาร', 255], 'revision' => ['Revision', 30]] as $key => [$label, $limit]): ?><div class="<?= $key === 'title' ? 'col-md-6' : 'col-md-3' ?>"><label class="form-label" for="doc-<?= $key ?>"><?= $label ?> *</label><input id="doc-<?= $key ?>" name="<?= $key ?>" class="form-control" maxlength="<?= $limit ?>" required value="<?= $esc($document[$key]) ?>"></div><?php endforeach; ?>
         <div class="col-md-6"><label class="form-label" for="doc-department">แผนกเจ้าของเอกสาร</label><select class="form-select" name="department_id" id="doc-department">
                 <option value="">ส่วนกลาง / ไม่ระบุ</option><?php foreach ($departments as $department): ?><option value="<?= (int)$department['svp_department_id'] ?>" <?= (string)$document['department_id'] === (string)$department['svp_department_id'] ? 'selected' : '' ?>><?= $esc($department['svp_department_name']) ?></option><?php endforeach; ?>
@@ -39,5 +40,6 @@
                 <dl class="row mt-3 mb-0"><?php foreach (['code' => 'รหัส', 'title' => 'ชื่อ', 'revision' => 'Revision', 'department_id' => 'รหัสแผนก', 'effective_date' => 'วันที่มีผล', 'review_date' => 'วันทบทวน', 'file_name' => 'ไฟล์', 'notes' => 'รายละเอียด'] as $key => $label): ?><dt class="col-sm-3"><?= $label ?></dt>
                         <dd class="col-sm-9" style="white-space:pre-wrap"><?= $esc($snapshot[$key] ?? '—') ?></dd><?php endforeach; ?>
                 </dl>
+                <?php if (isset($snapshot['category'])): ?><p class="small text-muted mt-2">หมวดทะเบียน: <?= $esc(DocumentCategory::LABELS[$snapshot['category']] ?? 'ยังไม่จัดหมวด') ?><?= isset($snapshot['_migration']) ? ' · จัดหมวดอัตโนมัติจากข้อมูลเดิม' : '' ?></p><?php endif; ?>
             </details><?php endforeach; ?>
     </div><?php endif; ?>

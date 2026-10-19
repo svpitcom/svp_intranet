@@ -4,13 +4,17 @@ class ControlledDocument extends Model
     protected string $table = 'controlled_documents';
     public const STATUSES = ['draft' => 'ฉบับร่าง', 'active' => 'ใช้งาน', 'obsolete' => 'ยกเลิกใช้'];
 
-    public function listing(string $q, string $status, int $page): array
+    public function listing(string $q, string $status, int $page, string $category = ''): array
     {
         $where = ' WHERE 1=1';
         $params = [];
+        if ($category !== '') {
+            $where .= ' AND c.category=:category';
+            $params['category'] = $category === 'UNSORTED' ? '' : $category;
+        }
         if ($q !== '') {
             $where .= " AND (c.code LIKE :q1 OR c.title LIKE :q2)";
-            $params = ['q1' => '%' . $q . '%', 'q2' => '%' . $q . '%'];
+            $params += ['q1' => '%' . $q . '%', 'q2' => '%' . $q . '%'];
         }
         if (isset(self::STATUSES[$status])) {
             $where .= ' AND c.status=:status';
@@ -22,8 +26,11 @@ class ControlledDocument extends Model
         $offset = ($page - 1) * 25;
         $rows = $this->query('SELECT c.*, d.svp_department_name FROM controlled_documents c LEFT JOIN department d ON d.svp_department_id=c.department_id' . $where . ' ORDER BY c.updated_at DESC, c.id DESC LIMIT 25 OFFSET ' . $offset, $params)->fetchAll();
         $counts = array_fill_keys(array_keys(self::STATUSES), 0);
-        foreach ($this->query('SELECT status, COUNT(*) AS amount FROM controlled_documents GROUP BY status') as $r) $counts[$r['status']] = (int)$r['amount'];
-        return compact('rows', 'total', 'pages', 'page', 'counts');
+        $countWhere = $category === '' ? '' : ' WHERE category=:category';
+        foreach ($this->query('SELECT status, COUNT(*) AS amount FROM controlled_documents' . $countWhere . ' GROUP BY status', $category === '' ? [] : ['category' => $category === 'UNSORTED' ? '' : $category]) as $r) $counts[$r['status']] = (int)$r['amount'];
+        $categoryCounts = [];
+        foreach ($this->query('SELECT category, COUNT(*) AS amount FROM controlled_documents GROUP BY category') as $r) $categoryCounts[$r['category']] = (int)$r['amount'];
+        return compact('rows', 'total', 'pages', 'page', 'counts', 'categoryCounts');
     }
 
     public function history(int $id): array

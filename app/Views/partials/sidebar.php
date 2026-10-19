@@ -10,6 +10,12 @@ $navGroups = [
     'งานบำรุงรักษา' => [['/tickets', 'แจ้งซ่อม / ติดตามงาน', 'tools'], ['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
     'คำขอและอนุมัติ' => [['/requests', 'คำขออนุมัติ', 'clipboard-check']],
 ];
+if (!MachineAccess::allows(Session::get('user'))) {
+    $navGroups['อุปกรณ์'] = array_values(array_filter($navGroups['อุปกรณ์'], static fn(array $item): bool => $item[0] !== '/machines'));
+}
+if (!ItDeviceAccess::allows(Session::get('user'))) {
+    $navGroups['อุปกรณ์'] = array_values(array_filter($navGroups['อุปกรณ์'], static fn(array $item): bool => $item[0] !== '/it-devices'));
+}
 if (DccWorkspace::restricted(Session::get('user'))) {
     $navGroups = [
         'พื้นที่ทำงาน DCC' => [['/', 'หน้าแรก DCC', 'house-door'], ['/users', 'รายชื่อผู้ใช้งาน', 'people']],
@@ -34,21 +40,37 @@ if ((Session::get('user')['user_role'] ?? '') === 'admin') {
     </div>
     <div class="offcanvas-body sidebar-body">
         <nav aria-label="เมนูหลัก">
-        <?php foreach ($navGroups as $heading => $items): ?>
-            <div class="nav-group-label"><?= $heading ?></div>
-            <ul class="nav flex-column">
-            <?php foreach ($items as [$path, $label, $icon]):
-                $active = $currentPath === $path || ($path !== '/' && str_starts_with($currentPath, $path . '/'));
-                if ($path === '/document-control' && $currentPath === '/document-control/files' && DccWorkspace::restricted(Session::get('user'))) $active = false;
-            ?>
-                <li class="nav-item"><a class="nav-link-modern <?= $active ? 'active' : '' ?>" href="<?= APP_URL . $path ?>" <?= $active ? 'aria-current="page"' : '' ?>>
-                    <i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span>
-                    <?php if ($active): ?><span class="nav-indicator" aria-hidden="true"></span><?php endif; ?>
-                </a></li>
+            <?php foreach ($navGroups as $heading => $items): ?>
+                <div class="nav-group-label"><?= $heading ?></div>
+                <ul class="nav flex-column">
+                    <?php foreach ($items as [$path, $label, $icon]):
+                        $active = $currentPath === $path || ($path !== '/' && str_starts_with($currentPath, $path . '/'));
+                        if ($path === '/document-control' && $currentPath === '/document-control/files' && DccWorkspace::restricted(Session::get('user'))) $active = false;
+                    ?>
+                        <li class="nav-item">
+                            <?php if ($path === '/document-control'): ?>
+                                <details class="dcc-nav-group" <?= $active ? 'open' : '' ?>>
+                                    <summary class="nav-link-modern <?= $active ? 'active' : '' ?>"><i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span><i class="bi bi-chevron-right dcc-nav-chevron" aria-hidden="true"></i></summary>
+                                    <div class="ms-3 me-2 mb-2">
+                                        <?php foreach (['' => '0.รวมทะเบียนเอกสาร'] + DocumentCategory::LABELS as $categoryKey => $categoryLabel): ?>
+                                            <?php $categoryActive = $currentPath === '/document-control' && ($_GET['category'] ?? '') === $categoryKey; ?>
+                                            <a class="nav-link-modern py-1 small <?= $categoryActive ? 'active' : '' ?>" <?= $categoryActive ? 'aria-current="page"' : '' ?> href="<?= APP_URL ?>/document-control?category=<?= rawurlencode($categoryKey) ?>"><?= htmlspecialchars($categoryLabel, ENT_QUOTES, 'UTF-8') ?></a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </details>
+                            <?php else: ?>
+                                <a class="nav-link-modern <?= $active ? 'active' : '' ?>" href="<?= APP_URL . $path ?>" <?= $active ? 'aria-current="page"' : '' ?>>
+                                    <i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span>
+                                    <?php if ($active): ?><span class="nav-indicator" aria-hidden="true"></span><?php endif; ?>
+                                </a>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             <?php endforeach; ?>
-            </ul>
-        <?php endforeach; ?>
         </nav>
-        <div class="sidebar-note"><span class="sidebar-note-mark">SVP</span><p>ดูแลคน ดูแลอุปกรณ์<br><strong>ให้ทุกวันทำงานได้ดีขึ้น</strong></p></div>
+        <div class="sidebar-note"><span class="sidebar-note-mark">SVP</span>
+            <p>ดูแลคน ดูแลอุปกรณ์<br><strong>ให้ทุกวันทำงานได้ดีขึ้น</strong></p>
+        </div>
     </div>
 </aside>

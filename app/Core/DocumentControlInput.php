@@ -4,6 +4,7 @@ class DocumentControlInput
     public static function validate(array $data): array
     {
         $errors = [];
+        if (($data['category'] ?? '') !== '' && !isset(DocumentCategory::LABELS[$data['category']])) $errors[] = 'หมวดเอกสารไม่ถูกต้อง';
         foreach (['code' => 80, 'title' => 255, 'revision' => 30] as $key => $limit) {
             if (trim($data[$key] ?? '') === '' || mb_strlen($data[$key]) > $limit) $errors[] = 'กรุณากรอกรหัสเอกสาร ชื่อ และ Revision ให้ครบ (ไม่เกิน 80, 255 และ 30 ตัวอักษร)';
         }
