@@ -17,7 +17,8 @@ class DeviceController extends Controller
     private function listing(string $group): void
     {
         if (($group === 'machine' && !MachineAccess::allows($this->currentUser()))
-            || ($group === 'it' && !ItDeviceAccess::allows($this->currentUser()))) {
+            || ($group === 'it' && !ItDeviceAccess::allows($this->currentUser()))
+        ) {
             http_response_code(403);
             require BASE_PATH . '/app/Views/errors/403.php';
             return;

@@ -11,11 +11,18 @@ final class DccWorkspace
     {
         if (!self::restricted($user)) return true;
         return in_array($route, [
-            'GET /', 'GET /login', 'POST /login', 'POST /logout',
-            'GET /users', 'GET /users/search',
-            'GET /document-control', 'GET /document-control/files',
-            'GET /document-control/create', 'POST /document-control/create',
-            'GET /document-control/{id}/edit', 'POST /document-control/{id}/edit',
+            'GET /',
+            'GET /login',
+            'POST /login',
+            'POST /logout',
+            'GET /users',
+            'GET /users/search',
+            'GET /document-control',
+            'GET /document-control/files',
+            'GET /document-control/create',
+            'POST /document-control/create',
+            'GET /document-control/{id}/edit',
+            'POST /document-control/{id}/edit',
         ], true);
     }
 }
