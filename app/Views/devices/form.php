@@ -36,7 +36,7 @@ $errors = Session::get('errors');
         <div class="mb-3">
             <label for="asset_group" class="form-label-modern">กลุ่มอุปกรณ์</label>
             <select id="asset_group" name="asset_group" class="form-select" required>
-                <?php foreach(Device::GROUPS as $key=>$label): ?><option value="<?= $key ?>" <?= ($device['asset_group']??$defaultGroup??'unclassified')===$key?'selected':'' ?>><?= $label ?></option><?php endforeach; ?>
+                <?php foreach (Device::GROUPS as $key => $label): ?><option value="<?= $key ?>" <?= ($device['asset_group'] ?? $defaultGroup ?? 'unclassified') === $key ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?>
             </select>
             <small class="text-muted">เลือกกลุ่มหลัก ส่วนประเภทอุปกรณ์ใช้ระบุชนิดย่อย เช่น Laptop หรือเครื่องฉีดพลาสติก</small>
         </div>
@@ -146,7 +146,7 @@ $errors = Session::get('errors');
         <button type="submit" class="btn-primary-modern">
             <i class="bi bi-check-lg"></i> <?= $isEdit ? 'บันทึกการแก้ไข' : 'เพิ่มอุปกรณ์' ?>
         </button>
-        <a href="<?= APP_URL . Device::listPath($device['asset_group']??$defaultGroup??'') ?>" class="btn-secondary-modern">ยกเลิก</a>
+        <a href="<?= APP_URL . Device::listPath($device['asset_group'] ?? $defaultGroup ?? '') ?>" class="btn-secondary-modern">ยกเลิก</a>
     </div>
-<input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
 </form>

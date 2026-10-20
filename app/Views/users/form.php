@@ -106,5 +106,5 @@
         </button>
         <a href="<?= APP_URL ?>/users" class="btn-secondary-modern">ยกเลิก</a>
     </div>
-<input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
 </form>

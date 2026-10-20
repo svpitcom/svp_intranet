@@ -11,7 +11,10 @@
     <?php endif; ?>
 </div>
 
-<?php $searchPath = '/departments'; $searchPlaceholder = 'รหัสแผนก หรือชื่อแผนก'; $resultCount = count($departments); require BASE_PATH . '/app/Views/partials/search.php'; ?>
+<?php $searchPath = '/departments';
+$searchPlaceholder = 'รหัสแผนก หรือชื่อแผนก';
+$resultCount = count($departments);
+require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="card-modern">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 table-modern">
@@ -44,7 +47,7 @@
                                     <button type="submit" class="btn-icon btn-icon-danger" title="ลบ">
                                         <i class="bi bi-trash3"></i>
                                     </button>
-                                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+                                    <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                                 </form>
                             </td>
                         <?php endif; ?>

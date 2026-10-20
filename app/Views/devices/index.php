@@ -3,8 +3,7 @@ $currentUser = Session::get('user');
 $nextDir = $dir === 'asc' ? 'desc' : 'asc';
 $group = $group ?? Device::groupFilter($_GET['group'] ?? '');
 
-$sortLink = function(string $column, string $label, string $sort, string $dir, string $nextDir) use ($group): string
-{
+$sortLink = function (string $column, string $label, string $sort, string $dir, string $nextDir) use ($group): string {
     $icon = '<i class="bi bi-arrow-down-up sort-icon-idle"></i>';
     if ($sort === $column) {
         $icon = $dir === 'asc'
@@ -17,8 +16,7 @@ $sortLink = function(string $column, string $label, string $sort, string $dir, s
 };
 
 /** สร้าง URL หน้าอื่น โดยคง sort/dir เดิมไว้เสมอ */
-$pageUrl = function(int $page, string $sort, string $dir) use ($group): string
-{
+$pageUrl = function (int $page, string $sort, string $dir) use ($group): string {
     return APP_URL . Device::listPath($group) . '?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . $page . Search::suffix() . '&group=' . urlencode($group);
 };
 ?>
@@ -41,31 +39,35 @@ $pageUrl = function(int $page, string $sort, string $dir) use ($group): string
     </div>
     <?php if ($currentUser['user_role'] === 'admin'): ?>
         <a href="<?= APP_URL ?>/devices/create?group=<?= htmlspecialchars($group) ?>" class="btn-primary-modern btn-sm">
-            <i class="bi bi-plus-lg"></i> <?= $group==='machine'?'เพิ่มเครื่องจักร':'เพิ่มอุปกรณ์' ?>
+            <i class="bi bi-plus-lg"></i> <?= $group === 'machine' ? 'เพิ่มเครื่องจักร' : 'เพิ่มอุปกรณ์' ?>
         </a>
     <?php endif; ?>
 </div>
 
-<?php if(!in_array($group,['it','machine'],true)): ?><nav class="d-flex flex-wrap gap-2 mb-3" aria-label="กลุ่มอุปกรณ์">
-<?php foreach([''=>'ทั้งหมด'] + Device::GROUPS as $key=>$label): ?>
-    <a class="btn btn-<?= $group===$key?'primary':'outline-primary' ?>" <?= $group===$key?'aria-current="page"':'' ?> href="<?= APP_URL ?>/devices?group=<?= $key ?><?= Search::suffix() ?>"><?= $label ?></a>
-<?php endforeach; ?>
-</nav><?php endif; ?>
-<?php $searchExtra=['group'=>$group]; $searchPath = Device::listPath($group); $searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง'; $resultCount = $totalDevices; require BASE_PATH . '/app/Views/partials/search.php'; ?>
+<?php if (!in_array($group, ['it', 'machine'], true)): ?><nav class="d-flex flex-wrap gap-2 mb-3" aria-label="กลุ่มอุปกรณ์">
+        <?php foreach (['' => 'ทั้งหมด'] + Device::GROUPS as $key => $label): ?>
+            <a class="btn btn-<?= $group === $key ? 'primary' : 'outline-primary' ?>" <?= $group === $key ? 'aria-current="page"' : '' ?> href="<?= APP_URL ?>/devices?group=<?= $key ?><?= Search::suffix() ?>"><?= $label ?></a>
+        <?php endforeach; ?>
+    </nav><?php endif; ?>
+<?php $searchExtra = ['group' => $group];
+$searchPath = Device::listPath($group);
+$searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง';
+$resultCount = $totalDevices;
+require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="card-modern">
     <?php if ($currentUser['user_role'] === 'admin' && $group === ''): ?>
-    <div class="p-3 border-bottom">
-        <p class="small text-muted">ปลายทาง Excel: SharePoint / IT · ส่งออกและนำเข้าจากโฟลเดอร์ IT โดยอัตโนมัติ</p>
-        <form method="post" action="<?= APP_URL ?>/devices/sync-excel" onsubmit="return confirm('อัปเดต Excel ในโฟลเดอร์ IT ด้วยข้อมูลทั้งหมดจาก Intranet? ข้อมูลที่แก้ไว้ในไฟล์นั้นจะถูกแทนที่');">
-            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
-            <button class="btn btn-outline-primary" type="submit">อัปเดต Excel ทดสอบบน SharePoint</button>
-        </form>
-        <form method="post" action="<?= APP_URL ?>/devices/import-excel" class="mt-2" onsubmit="return confirm('นำข้อมูลจาก Excel มาเพิ่มหรือแก้ไขทะเบียนใน Intranet ใช่ไหม? ถ้าใช้รหัสอุปกรณ์เดิม ระบบจะแก้รายการนั้น หากเว้นรหัส ระบบจะเพิ่มรายการใหม่');">
-            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
-            <button class="btn btn-outline-success" type="submit">นำเข้าการแก้ไขจาก Excel</button>
-        </form>
-        <p class="small text-muted mt-2 mb-0">ส่งออกจะอัปเดตไฟล์ DEMO ด้วยข้อมูลทั้งหมดจาก Intranet ส่วนการนำเข้าจะเพิ่มแถวที่เว้นรหัสอุปกรณ์ หรือแก้รายการเดิมตามรหัส ตรวจประเภท แผนก และชื่อผู้รับผิดชอบให้ตรงกับข้อมูลใน Intranet ก่อนนำเข้า ระบบไม่นำการลบแถวไปลบอุปกรณ์</p>
-    </div>
+        <div class="p-3 border-bottom">
+            <p class="small text-muted">ปลายทาง Excel: SharePoint / IT · ส่งออกและนำเข้าจากโฟลเดอร์ IT โดยอัตโนมัติ</p>
+            <form method="post" action="<?= APP_URL ?>/devices/sync-excel" onsubmit="return confirm('อัปเดต Excel ในโฟลเดอร์ IT ด้วยข้อมูลทั้งหมดจาก Intranet? ข้อมูลที่แก้ไว้ในไฟล์นั้นจะถูกแทนที่');">
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+                <button class="btn btn-outline-primary" type="submit">อัปเดต Excel ทดสอบบน SharePoint</button>
+            </form>
+            <form method="post" action="<?= APP_URL ?>/devices/import-excel" class="mt-2" onsubmit="return confirm('นำข้อมูลจาก Excel มาเพิ่มหรือแก้ไขทะเบียนใน Intranet ใช่ไหม? ถ้าใช้รหัสอุปกรณ์เดิม ระบบจะแก้รายการนั้น หากเว้นรหัส ระบบจะเพิ่มรายการใหม่');">
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+                <button class="btn btn-outline-success" type="submit">นำเข้าการแก้ไขจาก Excel</button>
+            </form>
+            <p class="small text-muted mt-2 mb-0">ส่งออกจะอัปเดตไฟล์ DEMO ด้วยข้อมูลทั้งหมดจาก Intranet ส่วนการนำเข้าจะเพิ่มแถวที่เว้นรหัสอุปกรณ์ หรือแก้รายการเดิมตามรหัส ตรวจประเภท แผนก และชื่อผู้รับผิดชอบให้ตรงกับข้อมูลใน Intranet ก่อนนำเข้า ระบบไม่นำการลบแถวไปลบอุปกรณ์</p>
+        </div>
     <?php endif; ?>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 table-modern">
@@ -90,13 +92,13 @@ $pageUrl = function(int $page, string $sort, string $dir) use ($group): string
                         <td class="text-muted"><?= htmlspecialchars($dv['svp_device_id']) ?></td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <span class="device-icon"><i class="bi bi-<?= ($dv['asset_group']??'')==='machine'?'gear':'laptop' ?>"></i></span>
+                                <span class="device-icon"><i class="bi bi-<?= ($dv['asset_group'] ?? '') === 'machine' ? 'gear' : 'laptop' ?>"></i></span>
                                 <span class="fw-medium"><?= htmlspecialchars($dv['svp_device_name']) ?></span>
                             </div>
                         </td>
                         <td><?= htmlspecialchars($dv['brand_name'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($dv['model_name'] ?? '-') ?></td>
-                        <td><span class="badge bg-secondary"><?= Device::GROUPS[$dv['asset_group']??'unclassified']??'ยังไม่จัดกลุ่ม' ?></span></td>
+                        <td><span class="badge bg-secondary"><?= Device::GROUPS[$dv['asset_group'] ?? 'unclassified'] ?? 'ยังไม่จัดกลุ่ม' ?></span></td>
                         <td><span class="code-chip"><?= htmlspecialchars($dv['serial_number'] ?? '-') ?></span></td>
                         <td><?= htmlspecialchars($dv['device_type_name'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($dv['svp_department_name'] ?? '-') ?></td>
@@ -118,7 +120,7 @@ $pageUrl = function(int $page, string $sort, string $dir) use ($group): string
                                     <button type="submit" class="btn-icon btn-icon-danger" title="ลบ">
                                         <i class="bi bi-trash3"></i>
                                     </button>
-                                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+                                    <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                                 </form>
                             </td>
                         <?php endif; ?>

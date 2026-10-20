@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        <?php require __DIR__ . '/_fonts.php'; ?>
-
-        * {
+        <?php require __DIR__ . '/_fonts.php'; ?>* {
             box-sizing: border-box;
         }
 

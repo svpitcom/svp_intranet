@@ -1,15 +1,17 @@
 <?php
-$calendarStatuses = ['overdue'=>'เกินกำหนด', 'soon'=>'ใกล้ครบกำหนด', 'normal'=>'ปกติ'];
-$canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
+$calendarStatuses = ['overdue' => 'เกินกำหนด', 'soon' => 'ใกล้ครบกำหนด', 'normal' => 'ปกติ'];
+$canEdit = in_array($currentUser['user_role'], ['admin', 'manager'], true);
 ?>
 <section class="pm-calendar" aria-labelledby="pm-month-title">
     <div class="pm-calendar-toolbar">
-        <div><h2 id="pm-month-title"><?= $calendar['label'] ?></h2><span class="text-muted">ครบกำหนด <?= number_format($calendar['count']) ?> แผนในเดือนนี้</span></div>
+        <div>
+            <h2 id="pm-month-title"><?= $calendar['label'] ?></h2><span class="text-muted">ครบกำหนด <?= number_format($calendar['count']) ?> แผนในเดือนนี้</span>
+        </div>
         <div class="pm-calendar-controls">
-            <?php foreach (['previous'=>'เดือนก่อนหน้า','next'=>'เดือนถัดไป'] as $direction=>$label): ?>
-                <?php if ($calendar[$direction]): ?><a class="btn btn-outline-secondary" aria-label="<?= $label ?>" href="<?= htmlspecialchars(PmCalendar::url('calendar',$calendar[$direction],Search::term())) ?>"><?= $direction === 'previous' ? '‹' : '›' ?></a><?php endif; ?>
+            <?php foreach (['previous' => 'เดือนก่อนหน้า', 'next' => 'เดือนถัดไป'] as $direction => $label): ?>
+                <?php if ($calendar[$direction]): ?><a class="btn btn-outline-secondary" aria-label="<?= $label ?>" href="<?= htmlspecialchars(PmCalendar::url('calendar', $calendar[$direction], Search::term())) ?>"><?= $direction === 'previous' ? '‹' : '›' ?></a><?php endif; ?>
             <?php endforeach; ?>
-            <a class="btn btn-outline-primary" href="<?= htmlspecialchars(PmCalendar::url('calendar',$calendar['current'],Search::term())) ?>">เดือนนี้</a>
+            <a class="btn btn-outline-primary" href="<?= htmlspecialchars(PmCalendar::url('calendar', $calendar['current'], Search::term())) ?>">เดือนนี้</a>
             <form method="GET" action="<?= APP_URL ?>/pm-schedules" class="pm-month-picker">
                 <input type="hidden" name="view" value="calendar">
                 <input type="hidden" name="search" value="<?= htmlspecialchars(Search::term()) ?>">
@@ -23,7 +25,7 @@ $canEdit = in_array($currentUser['user_role'], ['admin','manager'], true);
     <?php if (!$calendar['count']): ?><p class="pm-calendar-empty" role="status">ไม่มีแผนที่ครบกำหนดในเดือนนี้<?= Search::term() !== '' ? 'ตามคำค้นที่เลือก' : '' ?> ลองเปลี่ยนเดือนหรือดูตารางทั้งหมด</p><?php endif; ?>
     <div class="pm-calendar-scroll" tabindex="0" role="region" aria-label="ปฏิทินรายเดือน เลื่อนแนวนอนเพื่อดูวันทั้งหมด">
         <div class="pm-calendar-grid">
-            <?php foreach (['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'] as $weekday): ?><div class="pm-weekday"><?= $weekday ?></div><?php endforeach; ?>
+            <?php foreach (['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'] as $weekday): ?><div class="pm-weekday"><?= $weekday ?></div><?php endforeach; ?>
             <?php foreach ($calendar['days'] as $day): ?>
                 <section id="pm-day-<?= $day['date']->format('Y-m-d') ?>" class="pm-calendar-day <?= !$day['inMonth'] ? 'outside' : '' ?> <?= $day['today'] ? 'is-today' : '' ?>" aria-label="<?= $day['date']->format('d/m/Y') ?>">
                     <time class="pm-day-number" datetime="<?= $day['date']->format('Y-m-d') ?>" <?= $day['today'] ? 'aria-current="date"' : '' ?>><?= $day['date']->format('j') ?></time>

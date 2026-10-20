@@ -1,12 +1,48 @@
-<?php $listPath=$kind==='ticket'?'/tickets':'/requests'; $title=$kind==='ticket'?'แจ้งซ่อมและติดตามงาน':'คำขออนุมัติ'; $available=$kind==='ticket'?['open','in_progress','resolved','closed','cancelled']:['pending','approved','rejected','cancelled']; ?>
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3"><div><h1 class="h3"><?= $title ?></h1><p class="text-muted mb-0">รายการที่คุณมีสิทธิ์ดู พร้อมประวัติการดำเนินการ</p></div><a class="btn btn-primary" href="<?= APP_URL.$listPath ?>/create">+ <?= $kind==='ticket'?'แจ้งซ่อม':'ยื่นคำขอ' ?></a></div>
-<form class="d-flex flex-wrap gap-2 mb-3" method="get" action="<?= APP_URL.$listPath ?>">
+<?php $listPath = $kind === 'ticket' ? '/tickets' : '/requests';
+$title = $kind === 'ticket' ? 'แจ้งซ่อมและติดตามงาน' : 'คำขออนุมัติ';
+$available = $kind === 'ticket' ? ['open', 'in_progress', 'resolved', 'closed', 'cancelled'] : ['pending', 'approved', 'rejected', 'cancelled']; ?>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <div>
+        <h1 class="h3"><?= $title ?></h1>
+        <p class="text-muted mb-0">รายการที่คุณมีสิทธิ์ดู พร้อมประวัติการดำเนินการ</p>
+    </div><a class="btn btn-primary" href="<?= APP_URL . $listPath ?>/create">+ <?= $kind === 'ticket' ? 'แจ้งซ่อม' : 'ยื่นคำขอ' ?></a>
+</div>
+<form class="d-flex flex-wrap gap-2 mb-3" method="get" action="<?= APP_URL . $listPath ?>">
     <label class="visually-hidden" for="work-search">ค้นหางาน</label><input id="work-search" name="q" class="form-control" style="max-width:340px" value="<?= Portal::esc($q) ?>" placeholder="ค้นหาหัวข้อหรือรายละเอียด">
-    <label class="visually-hidden" for="work-status">สถานะ</label><select id="work-status" name="status" class="form-select w-auto"><option value="">ทุกสถานะ</option><?php foreach($available as $key): ?><option value="<?= $key ?>" <?= $status===$key?'selected':'' ?>><?= WorkItem::STATUSES[$key] ?></option><?php endforeach; ?></select>
-    <?php if($kind==='request'): ?><label class="d-flex align-items-center gap-2"><input type="checkbox" name="approval" value="1" <?= !empty($approvalOnly)?'checked':'' ?>> ฉันเป็นผู้อนุมัติ</label><?php endif; ?>
-    <button class="btn btn-primary">ค้นหา</button><a class="btn btn-outline-secondary" href="<?= APP_URL.$listPath ?>">ล้างตัวกรอง</a>
+    <label class="visually-hidden" for="work-status">สถานะ</label><select id="work-status" name="status" class="form-select w-auto">
+        <option value="">ทุกสถานะ</option><?php foreach ($available as $key): ?><option value="<?= $key ?>" <?= $status === $key ? 'selected' : '' ?>><?= WorkItem::STATUSES[$key] ?></option><?php endforeach; ?>
+    </select>
+    <?php if ($kind === 'request'): ?><label class="d-flex align-items-center gap-2"><input type="checkbox" name="approval" value="1" <?= !empty($approvalOnly) ? 'checked' : '' ?>> ฉันเป็นผู้อนุมัติ</label><?php endif; ?>
+    <button class="btn btn-primary">ค้นหา</button><a class="btn btn-outline-secondary" href="<?= APP_URL . $listPath ?>">ล้างตัวกรอง</a>
 </form>
-<div class="card"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>เลขที่ / หัวข้อ</th><th>ผู้ยื่น</th><th>ความเร่งด่วน</th><th>สถานะ</th><th>วันที่ต้องการ</th><th>อัปเดตล่าสุด</th></tr></thead><tbody>
-<?php foreach($rows as $row): ?><tr><td><a href="<?= APP_URL ?>/work/<?= (int)$row['id'] ?>">#<?= (int)$row['id'] ?> <?= Portal::esc($row['title']) ?></a><small class="d-block text-muted"><?= Portal::esc(WorkItem::CATEGORIES[$kind][$row['category']]??$row['category']) ?></small></td><td><?= Portal::esc(trim(($row['first_name']??'').' '.($row['last_name']??''))) ?></td><td><?= Portal::esc(WorkItem::PRIORITIES[$row['priority']]??$row['priority']) ?></td><td><span class="badge bg-<?= in_array($row['status'],['closed','approved'],true)?'success':(in_array($row['status'],['cancelled','rejected'],true)?'secondary':'primary') ?>"><?= Portal::esc(WorkItem::STATUSES[$row['status']]??$row['status']) ?></span></td><td><?= Portal::esc($row['due_date']??'—') ?></td><td><?= Portal::esc($row['updated_at']) ?></td></tr><?php endforeach; ?>
-<?php if(!$rows): ?><tr><td colspan="6" class="text-center py-5 text-muted">ยังไม่มีรายการตามเงื่อนไขนี้</td></tr><?php endif; ?>
-</tbody></table></div><?php $listQuery=compact('q','status'); if(!empty($approvalOnly))$listQuery['approval']='1'; require BASE_PATH.'/app/Views/partials/portal_pagination.php'; ?></div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>เลขที่ / หัวข้อ</th>
+                    <th>ผู้ยื่น</th>
+                    <th>ความเร่งด่วน</th>
+                    <th>สถานะ</th>
+                    <th>วันที่ต้องการ</th>
+                    <th>อัปเดตล่าสุด</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($rows as $row): ?><tr>
+                        <td><a href="<?= APP_URL ?>/work/<?= (int)$row['id'] ?>">#<?= (int)$row['id'] ?> <?= Portal::esc($row['title']) ?></a><small class="d-block text-muted"><?= Portal::esc(WorkItem::CATEGORIES[$kind][$row['category']] ?? $row['category']) ?></small></td>
+                        <td><?= Portal::esc(trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''))) ?></td>
+                        <td><?= Portal::esc(WorkItem::PRIORITIES[$row['priority']] ?? $row['priority']) ?></td>
+                        <td><span class="badge bg-<?= in_array($row['status'], ['closed', 'approved'], true) ? 'success' : (in_array($row['status'], ['cancelled', 'rejected'], true) ? 'secondary' : 'primary') ?>"><?= Portal::esc(WorkItem::STATUSES[$row['status']] ?? $row['status']) ?></span></td>
+                        <td><?= Portal::esc($row['due_date'] ?? '—') ?></td>
+                        <td><?= Portal::esc($row['updated_at']) ?></td>
+                    </tr><?php endforeach; ?>
+                <?php if (!$rows): ?><tr>
+                        <td colspan="6" class="text-center py-5 text-muted">ยังไม่มีรายการตามเงื่อนไขนี้</td>
+                    </tr><?php endif; ?>
+            </tbody>
+        </table>
+    </div><?php $listQuery = compact('q', 'status');
+            if (!empty($approvalOnly)) $listQuery['approval'] = '1';
+            require BASE_PATH . '/app/Views/partials/portal_pagination.php'; ?>
+</div>

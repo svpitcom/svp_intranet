@@ -23,7 +23,10 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
     <?php endif; ?>
 </div>
 
-<?php $searchPath = '/positions'; $searchPlaceholder = 'รหัสตำแหน่ง หรือชื่อตำแหน่ง'; $resultCount = count($positions); require BASE_PATH . '/app/Views/partials/search.php'; ?>
+<?php $searchPath = '/positions';
+$searchPlaceholder = 'รหัสตำแหน่ง หรือชื่อตำแหน่ง';
+$resultCount = count($positions);
+require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="table-responsive">
     <table class="table table-striped table-hover align-middle bg-white">
         <thead class="table-dark">
@@ -44,7 +47,7 @@ function sortLink(string $column, string $label, string $sort, string $dir, stri
                             <form action="<?= APP_URL ?>/positions/<?= $p['svp_position_id'] ?>/delete" method="POST" class="d-inline"
                                 onsubmit="return confirm('ยืนยันการลบตำแหน่งนี้?');">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">ลบ</button>
-                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+                                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                             </form>
                         </td>
                     <?php endif; ?>

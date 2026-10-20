@@ -1,4 +1,6 @@
-<?php $esc = static fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); $category = $category ?? ''; $categoryCounts = $categoryCounts ?? []; ?>
+<?php $esc = static fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+$category = $category ?? '';
+$categoryCounts = $categoryCounts ?? []; ?>
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
     <div><span class="text-muted small">DCC · DOCUMENT CONTROL</span>
         <h1 class="h3 fw-bold mt-2 mb-1">ทะเบียนควบคุมเอกสาร</h1>
@@ -6,10 +8,10 @@
     </div>
     <a class="btn-primary-modern" href="<?= APP_URL ?>/document-control/create?category=<?= $esc($category) ?>"><i class="bi bi-plus-lg"></i> ลงทะเบียนเอกสาร</a>
 </div>
-<?php require __DIR__.'/_categories.php'; ?>
+<?php require __DIR__ . '/_categories.php'; ?>
 <div class="row g-3 mb-4">
     <?php foreach (ControlledDocument::STATUSES as $key => $label): ?>
-        <div class="col-12 col-sm-4"><a class="card-modern p-3 d-block text-decoration-none text-body" href="<?= APP_URL ?>/document-control?<?= $esc(http_build_query(['category'=>$category,'status'=>$key,'q'=>$q])) ?>"><span class="small text-muted"><?= $label ?></span><strong class="d-block fs-2 mt-1"><?= number_format($counts[$key]) ?></strong></a></div>
+        <div class="col-12 col-sm-4"><a class="card-modern p-3 d-block text-decoration-none text-body" href="<?= APP_URL ?>/document-control?<?= $esc(http_build_query(['category' => $category, 'status' => $key, 'q' => $q])) ?>"><span class="small text-muted"><?= $label ?></span><strong class="d-block fs-2 mt-1"><?= number_format($counts[$key]) ?></strong></a></div>
     <?php endforeach; ?>
 </div>
 <div class="d-flex flex-wrap gap-2 mb-3"><a class="btn btn-primary" href="<?= APP_URL ?>/document-control">ทะเบียนเอกสาร</a><a class="btn btn-outline-primary" href="<?= APP_URL ?>/document-control/files"><i class="bi bi-cloud"></i> ไฟล์ใน SharePoint DCC</a></div>
@@ -56,6 +58,6 @@
         </table>
     </div>
     <div class="p-3 d-flex justify-content-between align-items-center"><span class="small text-muted">หน้า <?= $page ?> / <?= $pages ?></span>
-        <div><?php if ($page > 1): ?><a class="btn btn-sm btn-outline-secondary" href="?<?= $esc(http_build_query(['category'=>$category, 'q' => $q, 'status' => $status, 'page' => $page - 1])) ?>">ก่อนหน้า</a><?php endif; ?> <?php if ($page < $pages): ?><a class="btn btn-sm btn-outline-secondary" href="?<?= $esc(http_build_query(['category'=>$category, 'q' => $q, 'status' => $status, 'page' => $page + 1])) ?>">ถัดไป</a><?php endif; ?></div>
+        <div><?php if ($page > 1): ?><a class="btn btn-sm btn-outline-secondary" href="?<?= $esc(http_build_query(['category' => $category, 'q' => $q, 'status' => $status, 'page' => $page - 1])) ?>">ก่อนหน้า</a><?php endif; ?> <?php if ($page < $pages): ?><a class="btn btn-sm btn-outline-secondary" href="?<?= $esc(http_build_query(['category' => $category, 'q' => $q, 'status' => $status, 'page' => $page + 1])) ?>">ถัดไป</a><?php endif; ?></div>
     </div>
 </div>

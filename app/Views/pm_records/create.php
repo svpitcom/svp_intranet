@@ -46,7 +46,7 @@
                 <button type="submit" class="btn btn-success">บันทึกว่าทำเสร็จแล้ว</button>
                 <a href="<?= APP_URL ?>/pm-schedules" class="btn btn-outline-secondary">ยกเลิก</a>
             </div>
-        <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
         </form>
     </div>
 

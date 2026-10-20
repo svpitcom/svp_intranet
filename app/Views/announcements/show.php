@@ -1,4 +1,12 @@
-<div class="d-flex flex-wrap justify-content-between gap-2 mb-3"><h1 class="h3"><?= Portal::esc($item['title']) ?></h1><a href="<?= APP_URL ?>/announcements" class="btn btn-outline-secondary">กลับประกาศ</a></div>
-<article class="card p-4"><p class="text-muted"><?= Portal::esc(Announcement::STATUSES[$item['status']].' · '.$item['publish_date'].' · '.($item['svp_department_name']??'ทุกแผนก')) ?></p><div style="white-space:pre-wrap;overflow-wrap:anywhere"><?= Portal::esc($item['body']) ?></div><hr>
-<?php if($item['status']==='published'&&$item['publish_date']<=Portal::today()&&(!$item['expires_date']||$item['expires_date']>=Portal::today())): ?><form method="post" action="<?= APP_URL ?>/announcements/<?= (int)$item['id'] ?>/read"><input type="hidden" name="_csrf" value="<?= Portal::esc(Session::csrfToken()) ?>"><input type="hidden" name="version" value="<?= (int)$item['version'] ?>"><button class="btn btn-success">รับทราบประกาศนี้</button></form><?php endif; ?>
-<?php if(Portal::manager(Session::get('user'))): ?><a class="mt-3" href="<?= APP_URL ?>/announcements/<?= (int)$item['id'] ?>/edit">แก้ไข / เปลี่ยนสถานะประกาศ</a><h2 class="h5 mt-4">ผู้รับทราบ <?= count($readers) ?> คน</h2><ul><?php foreach($readers as $reader): ?><li><?= Portal::esc(($reader['first_name']??'').' '.($reader['last_name']??'').' · '.$reader['read_at']) ?></li><?php endforeach; ?></ul><?php endif; ?></article>
+<div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+    <h1 class="h3"><?= Portal::esc($item['title']) ?></h1><a href="<?= APP_URL ?>/announcements" class="btn btn-outline-secondary">กลับประกาศ</a>
+</div>
+<article class="card p-4">
+    <p class="text-muted"><?= Portal::esc(Announcement::STATUSES[$item['status']] . ' · ' . $item['publish_date'] . ' · ' . ($item['svp_department_name'] ?? 'ทุกแผนก')) ?></p>
+    <div style="white-space:pre-wrap;overflow-wrap:anywhere"><?= Portal::esc($item['body']) ?></div>
+    <hr>
+    <?php if ($item['status'] === 'published' && $item['publish_date'] <= Portal::today() && (!$item['expires_date'] || $item['expires_date'] >= Portal::today())): ?><form method="post" action="<?= APP_URL ?>/announcements/<?= (int)$item['id'] ?>/read"><input type="hidden" name="_csrf" value="<?= Portal::esc(Session::csrfToken()) ?>"><input type="hidden" name="version" value="<?= (int)$item['version'] ?>"><button class="btn btn-success">รับทราบประกาศนี้</button></form><?php endif; ?>
+    <?php if (Portal::manager(Session::get('user'))): ?><a class="mt-3" href="<?= APP_URL ?>/announcements/<?= (int)$item['id'] ?>/edit">แก้ไข / เปลี่ยนสถานะประกาศ</a>
+        <h2 class="h5 mt-4">ผู้รับทราบ <?= count($readers) ?> คน</h2>
+        <ul><?php foreach ($readers as $reader): ?><li><?= Portal::esc(($reader['first_name'] ?? '') . ' ' . ($reader['last_name'] ?? '') . ' · ' . $reader['read_at']) ?></li><?php endforeach; ?></ul><?php endif; ?>
+</article>

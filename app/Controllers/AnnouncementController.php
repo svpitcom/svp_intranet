@@ -19,14 +19,17 @@ class AnnouncementController extends Controller
         }
         $this->view('announcements/show', ['item' => $item, 'readers' => Portal::manager($this->currentUser()) ? $model->readers((int)$id) : []]);
     }
+
     public function create(): void
     {
         $this->form(null);
     }
+
     public function edit(string $id): void
     {
         $this->form((int)$id);
     }
+
     private function form(?int $id, ?array $data = null, string $error = ''): void
     {
         if (!Portal::manager($this->currentUser())) {
@@ -45,14 +48,17 @@ class AnnouncementController extends Controller
         }
         $this->view('announcements/form', compact('id', 'data', 'error') + ['departments' => (new Department())->all()]);
     }
+
     public function store(): void
     {
         $this->save(null);
     }
+
     public function update(string $id): void
     {
         $this->save((int)$id);
     }
+
     private function save(?int $id): void
     {
         $data = [];
@@ -67,6 +73,7 @@ class AnnouncementController extends Controller
         Session::flash('success', 'บันทึกประกาศแล้ว');
         $this->redirect('/announcements/' . $saved);
     }
+    
     public function acknowledge(string $id): void
     {
         try {

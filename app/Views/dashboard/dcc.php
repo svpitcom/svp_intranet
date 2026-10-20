@@ -7,13 +7,18 @@
             <a class="dash-hero-link" href="<?= APP_URL ?>/document-control">เปิดทะเบียนเอกสาร <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
         </div>
     </section>
-    <div class="dash-section-heading"><h2>ภาพรวมทะเบียนเอกสาร</h2><span>ข้อมูล ณ เวลาเปิดหน้านี้</span></div>
+    <div class="dash-section-heading">
+        <h2>ภาพรวมทะเบียนเอกสาร</h2><span>ข้อมูล ณ เวลาเปิดหน้านี้</span>
+    </div>
     <div class="dash-stats">
         <?php foreach (['all' => 'เอกสารทั้งหมด', 'draft' => 'ฉบับร่างรอตรวจสอบ', 'active' => 'เอกสารใช้งาน', 'obsolete' => 'ยกเลิกใช้'] as $status => $label): ?>
             <a class="dash-stat" href="<?= APP_URL ?>/document-control<?= $status === 'all' ? '' : '?status=' . $status ?>"><span class="dash-icon blue"><i class="bi bi-file-earmark-text" aria-hidden="true"></i></span><strong><?= number_format($status === 'all' ? $total : ($counts[$status] ?? 0)) ?></strong><span><?= $label ?></span></a>
         <?php endforeach; ?>
     </div>
-    <section class="dash-panel" aria-labelledby="dcc-shortcuts"><div class="dash-panel-heading"><h2 id="dcc-shortcuts">ทางลัดการทำงาน</h2></div>
+    <section class="dash-panel" aria-labelledby="dcc-shortcuts">
+        <div class="dash-panel-heading">
+            <h2 id="dcc-shortcuts">ทางลัดการทำงาน</h2>
+        </div>
         <div class="dash-shortcuts">
             <a href="<?= APP_URL ?>/document-control/create"><span class="dash-icon blue"><i class="bi bi-file-earmark-plus" aria-hidden="true"></i></span><span><strong>ลงทะเบียนเอกสาร</strong><small>เพิ่มเอกสารและรายละเอียด Revision</small></span></a>
             <a href="<?= APP_URL ?>/document-control/files"><span class="dash-icon blue"><i class="bi bi-folder2-open" aria-hidden="true"></i></span><span><strong>ไฟล์เอกสาร DCC</strong><small>เลือกไฟล์จาก SharePoint ของ DCC</small></span></a>
