@@ -1,0 +1,3546 @@
+{
+    "info": {
+        "name": "SVP Intranet - All Endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "All routes from app/Config/routes.php. HTML/session application, not a JSON REST API. Import the environment and read README_TH.md. Writes are skipped by default; allow exactly one request via allow_write_request. No passwords, secrets or live cookies included."
+    },
+    "auth": {
+        "type": "noauth"
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Only one explicitly selected write request is allowed. Never bulk-run writes.",
+                    "const isLogin = pm.info.requestName === 'POST /login';",
+                    "if (pm.request.method === 'POST' && !isLogin) {",
+                    "    if (pm.environment.get('allow_write_request') !== pm.info.requestName) {",
+                    "        console.warn('Skipped write. Set allow_write_request to this exact request name for one send.');",
+                    "        pm.execution.skipRequest();",
+                    "    } else {",
+                    "        pm.environment.set('allow_write_request', '');",
+                    "    }",
+                    "}",
+                    "const url = pm.variables.replaceIn(pm.request.url.toString());",
+                    "if (/\\{\\{[^}]+\\}\\}/.test(url) || /\\/(?:0)(?:\\/|\\?|$)/.test(url)) {",
+                    "    console.warn('Set a valid existing record ID before sending.');",
+                    "    pm.execution.skipRequest();",
+                    "}",
+                    "if (pm.request.method === 'POST' && !pm.environment.get('csrf_token')) {",
+                    "    console.warn('Run GET /login or an authenticated HTML form to obtain CSRF first.');",
+                    "    pm.execution.skipRequest();",
+                    "}",
+                    "if (isLogin && (!pm.environment.get('username') || !pm.environment.get('password'))) {",
+                    "    console.warn('Set username and password locally in the selected environment.');",
+                    "    pm.execution.skipRequest();",
+                    "}"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "const html = pm.response.text();",
+                    "const token = html.match(/name=[\"']_csrf[\"'][^>]*value=[\"']([a-f0-9]+)[\"']/i);",
+                    "if (token) pm.environment.set('csrf_token', token[1]);",
+                    "pm.test('No server error (not proof of business success)', function () {",
+                    "    pm.expect(pm.response.code).to.be.below(500);",
+                    "});",
+                    "if (pm.response.code === 403) console.warn('Check role/department, record permissions and CSRF/session.');",
+                    "if (pm.response.code === 302) console.info('Inspect Location, then GET the destination and check its flash message. 302 alone does not prove success.');"
+                ]
+            }
+        }
+    ],
+    "item": [
+        {
+            "name": "01 Authentication",
+            "item": [
+                {
+                    "name": "GET /login",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        },
+                        "description": "Handler: AuthController::showLogin\nMiddleware: \nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /login",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        },
+                        "description": "Handler: AuthController::login\nMiddleware: \nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "username",
+                                    "value": "{{username}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "{{password}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Login redirects to home', function () { pm.expect(pm.response.code).to.eql(302); pm.expect(pm.response.headers.get('Location')).to.match(/\\/$/); });"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "02 Home",
+            "item": [
+                {
+                    "name": "GET /",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                ""
+                            ]
+                        },
+                        "description": "Handler: DashboardController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "03 Users",
+            "item": [
+                {
+                    "name": "POST /users/sync-excel",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/sync-excel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "sync-excel"
+                            ]
+                        },
+                        "description": "Handler: SharePointController::syncUsers\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /users/sync-excel' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /users/import-excel",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/import-excel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "import-excel"
+                            ]
+                        },
+                        "description": "Handler: SharePointController::importUsers\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /users/import-excel' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /users",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "svp_user_id",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "dir",
+                                    "value": "asc",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: UserController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /users/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: UserController::create\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /users/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: UserController::store\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /users/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "username",
+                                    "value": "postman_test_user",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "{{new_user_password}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "first_name",
+                                    "value": "Test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "last_name",
+                                    "value": "Postman",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "email",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_position_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "user_role",
+                                    "value": "user",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /users/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/{{user_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{user_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: UserController::edit\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /users/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/{{user_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{user_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: UserController::update\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /users/{id}/edit' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "username",
+                                    "value": "postman_test_user",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "first_name",
+                                    "value": "Test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "last_name",
+                                    "value": "Postman",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "email",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_position_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "user_role",
+                                    "value": "user",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /users/{id}/delete",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/{{user_id}}/delete",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{user_id}}",
+                                "delete"
+                            ]
+                        },
+                        "description": "Handler: UserController::destroy\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /users/{id}/delete' for ONE send only. Read the response destination to verify success.\nDESTRUCTIVE: verify the record ID and backup first. PM schedule deletion can affect records and attachments.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /users/search",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/search",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "svp_user_id",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "dir",
+                                    "value": "asc",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: UserController::search\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "04 Departments",
+            "item": [
+                {
+                    "name": "GET /departments",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/departments",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "departments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DepartmentController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /departments/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/departments/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "departments",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: DepartmentController::create\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /departments/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/departments/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "departments",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: DepartmentController::store\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /departments/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_code_department",
+                                    "value": "TEST",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_department_name",
+                                    "value": "Postman Test",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /departments/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/departments/{{department_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "departments",
+                                "{{department_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: DepartmentController::edit\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /departments/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/departments/{{department_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "departments",
+                                "{{department_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: DepartmentController::update\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /departments/{id}/edit' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_code_department",
+                                    "value": "TEST",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_department_name",
+                                    "value": "Postman Test",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /departments/{id}/delete",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/departments/{{department_id}}/delete",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "departments",
+                                "{{department_id}}",
+                                "delete"
+                            ]
+                        },
+                        "description": "Handler: DepartmentController::destroy\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /departments/{id}/delete' for ONE send only. Read the response destination to verify success.\nDESTRUCTIVE: verify the record ID and backup first. PM schedule deletion can affect records and attachments.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "05 Positions",
+            "item": [
+                {
+                    "name": "GET /positions",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/positions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "positions"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: PositionController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /positions/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/positions/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "positions",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: PositionController::create\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /positions/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/positions/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "positions",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: PositionController::store\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /positions/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "position_name",
+                                    "value": "Postman Test",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /positions/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/positions/{{position_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "positions",
+                                "{{position_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: PositionController::edit\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /positions/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/positions/{{position_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "positions",
+                                "{{position_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: PositionController::update\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /positions/{id}/edit' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "position_name",
+                                    "value": "Postman Test",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /positions/{id}/delete",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/positions/{{position_id}}/delete",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "positions",
+                                "{{position_id}}",
+                                "delete"
+                            ]
+                        },
+                        "description": "Handler: PositionController::destroy\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /positions/{id}/delete' for ONE send only. Read the response destination to verify success.\nDESTRUCTIVE: verify the record ID and backup first. PM schedule deletion can affect records and attachments.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "06 Devices",
+            "item": [
+                {
+                    "name": "POST /devices/import-excel",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices/import-excel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices",
+                                "import-excel"
+                            ]
+                        },
+                        "description": "Handler: SharePointController::importDevices\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /devices/import-excel' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /devices/sync-excel",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices/sync-excel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices",
+                                "sync-excel"
+                            ]
+                        },
+                        "description": "Handler: SharePointController::syncDevices\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /devices/sync-excel' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /devices",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "svp_device_id",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "dir",
+                                    "value": "asc",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "group",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DeviceController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machines",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machines",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machines"
+                            ]
+                        },
+                        "description": "Handler: DeviceController::machines\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nMaintenance department 6 or admin only.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /it-devices",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/it-devices",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "it-devices"
+                            ]
+                        },
+                        "description": "Handler: DeviceController::itDevices\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nIT department 2 or admin only.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /devices/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices",
+                                "create"
+                            ],
+                            "query": [
+                                {
+                                    "key": "group",
+                                    "value": "it",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DeviceController::create\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /devices/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: DeviceController::store\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /devices/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "asset_group",
+                                    "value": "it",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_device_name",
+                                    "value": "POSTMAN-TEST",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "brand_name",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "model_name",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "serial_number",
+                                    "value": "POSTMAN-TEST-001",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "device_type_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_user_id",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /devices/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices/{{device_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices",
+                                "{{device_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: DeviceController::edit\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /devices/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices/{{device_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices",
+                                "{{device_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: DeviceController::update\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /devices/{id}/edit' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "asset_group",
+                                    "value": "it",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_device_name",
+                                    "value": "POSTMAN-TEST",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "brand_name",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "model_name",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "serial_number",
+                                    "value": "POSTMAN-TEST-001",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "device_type_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_user_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /devices/{id}/delete",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/devices/{{device_id}}/delete",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "devices",
+                                "{{device_id}}",
+                                "delete"
+                            ]
+                        },
+                        "description": "Handler: DeviceController::destroy\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /devices/{id}/delete' for ONE send only. Read the response destination to verify success.\nDESTRUCTIVE: verify the record ID and backup first. PM schedule deletion can affect records and attachments.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "07 Device types",
+            "item": [
+                {
+                    "name": "GET /device_types",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/device_types",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "device_types"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DeviceTypeController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /device_types/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/device_types/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "device_types",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: DeviceTypeController::create\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /device_types/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/device_types/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "device_types",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: DeviceTypeController::store\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /device_types/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "device_type_name",
+                                    "value": "Postman Test",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /device_types/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/device_types/{{device_type_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "device_types",
+                                "{{device_type_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: DeviceTypeController::edit\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /device_types/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/device_types/{{device_type_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "device_types",
+                                "{{device_type_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: DeviceTypeController::update\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /device_types/{id}/edit' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "device_type_name",
+                                    "value": "Postman Test",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /device_types/{id}/delete",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/device_types/{{device_type_id}}/delete",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "device_types",
+                                "{{device_type_id}}",
+                                "delete"
+                            ]
+                        },
+                        "description": "Handler: DeviceTypeController::destroy\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /device_types/{id}/delete' for ONE send only. Read the response destination to verify success.\nDESTRUCTIVE: verify the record ID and backup first. PM schedule deletion can affect records and attachments.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "08 PM schedules",
+            "item": [
+                {
+                    "name": "GET /pm-schedules/{id}/attachment",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/{{schedule_id}}/attachment",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "{{schedule_id}}",
+                                "attachment"
+                            ]
+                        },
+                        "description": "Handler: FileController::schedule\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-schedules",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "view",
+                                    "value": "table",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "2026-10",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "year",
+                                    "value": "2026",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: PmScheduleController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-schedules/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: PmScheduleController::create\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /pm-schedules/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: PmScheduleController::store\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /pm-schedules/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_device_id",
+                                    "value": "{{device_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "pm_title",
+                                    "value": "Postman test plan",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "frequency_days",
+                                    "value": "30",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "responsible_user_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "checklist[]",
+                                    "value": "ตรวจสภาพทั่วไป",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "start_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "reference_doc",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true,
+                                    "description": "Optional PDF; choose a local file before enabling."
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-schedules/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/{{schedule_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "{{schedule_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: PmScheduleController::edit\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /pm-schedules/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/{{schedule_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "{{schedule_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: PmScheduleController::update\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /pm-schedules/{id}/edit' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "svp_device_id",
+                                    "value": "{{device_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "pm_title",
+                                    "value": "Postman test plan",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "frequency_days",
+                                    "value": "30",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "responsible_user_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "checklist[]",
+                                    "value": "ตรวจสภาพทั่วไป",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "next_pm_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "reference_doc",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true,
+                                    "description": "Optional PDF; choose a local file before enabling."
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /pm-schedules/{id}/delete",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/{{schedule_id}}/delete",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "{{schedule_id}}",
+                                "delete"
+                            ]
+                        },
+                        "description": "Handler: PmScheduleController::destroy\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /pm-schedules/{id}/delete' for ONE send only. Read the response destination to verify success.\nDESTRUCTIVE: verify the record ID and backup first. PM schedule deletion can affect records and attachments.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-schedules/{id}/record",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/{{schedule_id}}/record",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "{{schedule_id}}",
+                                "record"
+                            ]
+                        },
+                        "description": "Handler: PmRecordController::create\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /pm-schedules/{id}/record",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/{{schedule_id}}/record",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "{{schedule_id}}",
+                                "record"
+                            ]
+                        },
+                        "description": "Handler: PmRecordController::store\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /pm-schedules/{id}/record' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "performed_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "result_status",
+                                    "value": "partial",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "notes",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "pm_attachment",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true,
+                                    "description": "Optional PDF; choose a local file before enabling."
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-schedules/export",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "export"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: ExportController::schedules\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-schedules/{id}/export",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-schedules/{{schedule_id}}/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-schedules",
+                                "{{schedule_id}}",
+                                "export"
+                            ]
+                        },
+                        "description": "Handler: ExportController::scheduleForm\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "09 PM records",
+            "item": [
+                {
+                    "name": "POST /pm-records/{id}/sharepoint",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-records/{{record_id}}/sharepoint",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-records",
+                                "{{record_id}}",
+                                "sharepoint"
+                            ]
+                        },
+                        "description": "Handler: PmRecordController::retryPdf\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /pm-records/{id}/sharepoint' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-records/{id}/attachment",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-records/{{record_id}}/attachment",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-records",
+                                "{{record_id}}",
+                                "attachment"
+                            ]
+                        },
+                        "description": "Handler: FileController::record\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-records",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-records",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-records"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: PmRecordController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-records/export",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-records/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-records",
+                                "export"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: ExportController::records\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "10 Tickets and approvals",
+            "item": [
+                {
+                    "name": "GET /tickets",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/tickets",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "tickets"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "approval",
+                                    "value": "0",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: WorkController::tickets\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /tickets/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/tickets/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "tickets",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: WorkController::newTicket\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /tickets/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/tickets/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "tickets",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: WorkController::createTicket\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /tickets/create' for ONE send only. Read the response destination to verify success.\nRequest approver must be another active manager/admin; user_id is not the logged-in requester.\n",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Test request",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "it",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "priority",
+                                    "value": "normal",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "device_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "due_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approver_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "attachment",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true,
+                                    "description": "Optional PDF; choose a local file before enabling."
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /requests",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/requests",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "requests"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "approval",
+                                    "value": "0",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: WorkController::requests\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /requests/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/requests/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "requests",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: WorkController::newRequest\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /requests/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/requests/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "requests",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: WorkController::createRequest\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /requests/create' for ONE send only. Read the response destination to verify success.\nRequest approver must be another active manager/admin; user_id is not the logged-in requester.\n",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Test request",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "general",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "priority",
+                                    "value": "normal",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "device_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "due_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approver_id",
+                                    "value": "{{user_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "attachment",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true,
+                                    "description": "Optional PDF; choose a local file before enabling."
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /work/{id}",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/work/{{work_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "work",
+                                "{{work_id}}"
+                            ]
+                        },
+                        "description": "Handler: WorkController::show\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('work_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /work/{id}/action",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/work/{{work_id}}/action",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "work",
+                                "{{work_id}}",
+                                "action"
+                            ]
+                        },
+                        "description": "Handler: WorkController::action\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /work/{id}/action' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "action",
+                                    "value": "start",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{work_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "note",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "assignee_id",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /work/{id}/attachment",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/work/{{work_id}}/attachment",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "work",
+                                "{{work_id}}",
+                                "attachment"
+                            ]
+                        },
+                        "description": "Handler: WorkController::attachment\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "11 Announcements",
+            "item": [
+                {
+                    "name": "GET /announcements",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/announcements",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "announcements"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "manage",
+                                    "value": "0",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: AnnouncementController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /announcements/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/announcements/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "announcements",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: AnnouncementController::create\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /announcements/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/announcements/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "announcements",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: AnnouncementController::store\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /announcements/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "body",
+                                    "value": "Test announcement",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "draft",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "publish_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "expires_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "pinned",
+                                    "value": "0",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "0",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /announcements/{id}",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/announcements/{{announcement_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "announcements",
+                                "{{announcement_id}}"
+                            ]
+                        },
+                        "description": "Handler: AnnouncementController::show\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('announcement_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "GET /announcements/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/announcements/{{announcement_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "announcements",
+                                "{{announcement_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: AnnouncementController::edit\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('announcement_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /announcements/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/announcements/{{announcement_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "announcements",
+                                "{{announcement_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: AnnouncementController::update\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /announcements/{id}/edit' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "body",
+                                    "value": "Test announcement",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "draft",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "publish_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "expires_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "pinned",
+                                    "value": "0",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{announcement_version}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /announcements/{id}/read",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/announcements/{{announcement_id}}/read",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "announcements",
+                                "{{announcement_id}}",
+                                "read"
+                            ]
+                        },
+                        "description": "Handler: AnnouncementController::acknowledge\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /announcements/{id}/read' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{announcement_version}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "12 Notifications",
+            "item": [
+                {
+                    "name": "GET /notifications",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: NotificationController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /notifications/read",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/read",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "read"
+                            ]
+                        },
+                        "description": "Handler: NotificationController::read\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /notifications/read' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "13 Document Control",
+            "item": [
+                {
+                    "name": "GET /document-control",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/document-control",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "document-control"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DocumentControlController::index\nMiddleware: auth, documentControl\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nActive DCC department 13 or admin only. Category and department_id are different fields.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /document-control/files",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/document-control/files",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "document-control",
+                                "files"
+                            ],
+                            "query": [
+                                {
+                                    "key": "folder",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "document_id",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DocumentControlController::files\nMiddleware: auth, documentControl\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nActive DCC department 13 or admin only. Category and department_id are different fields.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /document-control/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/document-control/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "document-control",
+                                "create"
+                            ],
+                            "query": [
+                                {
+                                    "key": "category",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "file",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DocumentControlController::create\nMiddleware: auth, documentControl\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nActive DCC department 13 or admin only. Category and department_id are different fields.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /document-control/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/document-control/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "document-control",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: DocumentControlController::store\nMiddleware: auth, documentControl\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /document-control/create' for ONE send only. Read the response destination to verify success.\nActive DCC department 13 or admin only. Category and department_id are different fields.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "code",
+                                    "value": "TEST-POSTMAN-001",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test document",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "revision",
+                                    "value": "00",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "draft",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "effective_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "review_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "notes",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "file_item_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "IT",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "0",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /document-control/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/document-control/{{document_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "document-control",
+                                "{{document_id}}",
+                                "edit"
+                            ],
+                            "query": [
+                                {
+                                    "key": "category",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "file",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: DocumentControlController::edit\nMiddleware: auth, documentControl\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nActive DCC department 13 or admin only. Category and department_id are different fields.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('document_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /document-control/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/document-control/{{document_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "document-control",
+                                "{{document_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: DocumentControlController::update\nMiddleware: auth, documentControl\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /document-control/{id}/edit' for ONE send only. Read the response destination to verify success.\nActive DCC department 13 or admin only. Category and department_id are different fields.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "code",
+                                    "value": "TEST-POSTMAN-001",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test document",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "revision",
+                                    "value": "00",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "draft",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "effective_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "review_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "notes",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "file_item_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "IT",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{document_version}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "14 SharePoint",
+            "item": [
+                {
+                    "name": "POST /sharepoint/export-tables",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/sharepoint/export-tables",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sharepoint",
+                                "export-tables"
+                            ]
+                        },
+                        "description": "Handler: SharePointController::exportTables\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /sharepoint/export-tables' for ONE send only. Read the response destination to verify success.\ndepartment_target: empty = configured default, IT or DCC. Device sync/import always uses IT.\ntype: devices, device_types, departments, pm_schedules or all.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_target",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "devices",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /sharepoint",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/sharepoint",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sharepoint"
+                            ],
+                            "query": [
+                                {
+                                    "key": "folder",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: SharePointController::index\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /sharepoint/export",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/sharepoint/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sharepoint",
+                                "export"
+                            ]
+                        },
+                        "description": "Handler: SharePointController::export\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /sharepoint/export' for ONE send only. Read the response destination to verify success.\ndepartment_target: empty = configured default, IT or DCC. Device sync/import always uses IT.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_target",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "15 KPI",
+            "item": [
+                {
+                    "name": "GET /kpi",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi"
+                            ],
+                            "query": [
+                                {
+                                    "key": "period",
+                                    "value": "{{kpi_period}}",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: KpiController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /kpi/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: KpiController::create\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /kpi/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: KpiController::store\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/create' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "period",
+                                    "value": "{{kpi_period}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test KPI",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "{{department_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "user_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "source",
+                                    "value": "manual",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "direction",
+                                    "value": "higher",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "target",
+                                    "value": "10",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "weight",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "unit",
+                                    "value": "รายการ",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /kpi/{id}/result",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/{{kpi_id}}/result",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "{{kpi_id}}",
+                                "result"
+                            ]
+                        },
+                        "description": "Handler: KpiController::result\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/{id}/result' for ONE send only. Read the response destination to verify success.\nSet kpi_version from the target row's hidden version on GET /kpi (0 only before the first result). Automatic KPIs cannot be manually edited.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "actual",
+                                    "value": "5",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "note",
+                                    "value": "Postman test",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{kpi_version}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /kpi/{id}/history",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/{{kpi_id}}/history",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "{{kpi_id}}",
+                                "history"
+                            ]
+                        },
+                        "description": "Handler: KpiController::history\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "99 Logout",
+            "item": [
+                {
+                    "name": "POST /logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "logout"
+                            ]
+                        },
+                        "description": "Handler: AuthController::logout\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /logout' for ONE send only. Read the response destination to verify success.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        }
+    ]
+}

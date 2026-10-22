@@ -21,6 +21,9 @@ if (DccWorkspace::restricted(Session::get('user'))) {
         'พื้นที่ทำงาน DCC' => [['/', 'หน้าแรก DCC', 'house-door'], ['/users', 'รายชื่อผู้ใช้งาน', 'people']],
     ];
 }
+if (KpiPolicy::allows(Session::get('user'))) {
+    $navGroups['ผลการดำเนินงาน'] = [['/kpi', 'KPI / ผลงาน', 'graph-up-arrow']];
+}
 if (DocumentControlAccess::allows(Session::get('user'))) {
     $navGroups['เอกสาร'] = [['/document-control', 'Document Control', 'file-earmark-check']];
 }

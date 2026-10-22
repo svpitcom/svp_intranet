@@ -1,5 +1,10 @@
 <?php
 return [
+    'GET /kpi' => ['KpiController','index',['auth']],
+    'GET /kpi/create' => ['KpiController','create',['auth','role:admin,manager']],
+    'POST /kpi/create' => ['KpiController','store',['auth','role:admin,manager']],
+    'POST /kpi/{id}/result' => ['KpiController','result',['auth']],
+    'GET /kpi/{id}/history' => ['KpiController','history',['auth']],
     'GET /tickets' => ['WorkController','tickets',['auth']],
     'GET /tickets/create' => ['WorkController','newTicket',['auth']],
     'POST /tickets/create' => ['WorkController','createTicket',['auth']],
