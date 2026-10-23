@@ -53,7 +53,7 @@ if ((Session::get('user')['user_role'] ?? '') === 'admin') {
                         <li class="nav-item">
                             <?php if ($path === '/document-control'): ?>
                                 <details class="dcc-nav-group" <?= $active ? 'open' : '' ?>>
-                                    <summary class="nav-link-modern <?= $active ? 'active' : '' ?>"><i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span><i class="bi bi-chevron-right dcc-nav-chevron" aria-hidden="true"></i></summary>
+                                    <summary title="<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>" class="nav-link-modern <?= $active ? 'active' : '' ?>"><i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span><i class="bi bi-chevron-right dcc-nav-chevron" aria-hidden="true"></i></summary>
                                     <div class="ms-3 me-2 mb-2">
                                         <?php foreach (['' => '0.รวมทะเบียนเอกสาร'] + DocumentCategory::LABELS as $categoryKey => $categoryLabel): ?>
                                             <?php $categoryActive = $currentPath === '/document-control' && ($_GET['category'] ?? '') === $categoryKey; ?>
@@ -62,7 +62,7 @@ if ((Session::get('user')['user_role'] ?? '') === 'admin') {
                                     </div>
                                 </details>
                             <?php else: ?>
-                                <a class="nav-link-modern <?= $active ? 'active' : '' ?>" href="<?= APP_URL . $path ?>" <?= $active ? 'aria-current="page"' : '' ?>>
+                                <a title="<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>" class="nav-link-modern <?= $active ? 'active' : '' ?>" href="<?= APP_URL . $path ?>" <?= $active ? 'aria-current="page"' : '' ?>>
                                     <i class="bi bi-<?= $icon ?>" aria-hidden="true"></i><span><?= $label ?></span>
                                     <?php if ($active): ?><span class="nav-indicator" aria-hidden="true"></span><?php endif; ?>
                                 </a>

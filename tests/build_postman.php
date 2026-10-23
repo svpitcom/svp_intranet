@@ -45,7 +45,7 @@ JS;
 $collection = ['info'=>['name'=>'SVP Intranet - All Endpoints','schema'=>'https://schema.getpostman.com/json/collection/v2.1.0/collection.json','description'=>'All routes from app/Config/routes.php. HTML/session application, not a JSON REST API. Import the environment and read README_TH.md. Writes are skipped by default; allow exactly one request via allow_write_request. No passwords, secrets or live cookies included.'], 'auth'=>['type'=>'noauth'], 'event'=>[eventScript('prerequest',$pre),eventScript('test',$post)], 'item'=>[]];
 $env = ['base_url'=>'http://localhost/svp_intranet','username'=>'','password'=>'','csrf_token'=>'','allow_write_request'=>'','user_id'=>'0','department_id'=>'0','position_id'=>'0','device_type_id'=>'0','device_id'=>'0','schedule_id'=>'0','record_id'=>'0','work_id'=>'0','announcement_id'=>'0','document_id'=>'0','work_version'=>'','announcement_version'=>'','document_version'=>'','new_user_password'=>'','date'=>'2026-10-22'];
 $groups = [];
-$env += ['kpi_id'=>'0','kpi_version'=>'0','kpi_period'=>'2026-10'];
+$env += ['kpi_id'=>'0','kpi_version'=>'0','kpi_period'=>'2026-10','kpi_form_id'=>'0','kpi_form_version'=>'0','kpi_form_year'=>'2026'];
 $index = "# Endpoint inventory\n\nGenerated from app/Config/routes.php. Middleware is only the first layer; controller/record/department checks also apply.\n\n| Method | Path | Handler | Middleware |\n|---|---|---|---|\n";
 // Put authentication first, logout last. Preserve every declared route exactly once.
 $ordered = ['GET /login'=>$routes['GET /login'], 'POST /login'=>$routes['POST /login']];
@@ -69,6 +69,7 @@ foreach ($ordered as $key=>$handler) {
         'devices'=>'device_id','pm-schedules'=>'schedule_id','pm-records'=>'record_id','work'=>'work_id',
         'announcements'=>'announcement_id','document-control'=>'document_id','kpi'=>'kpi_id',default=>'id',
     };
+    if ($controller === 'KpiFormController') $id='kpi_form_id';
     $urlPath = str_replace('{id}', '{{'.$id.'}}', $path);
     $description = "Handler: $controller::$action\nMiddleware: ".implode(', ', $handler[2] ?? [])."\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n";
     if ($method === 'POST' && $path !== '/login') $description .= "WARNING: changes data/session or writes to SharePoint. Set allow_write_request to '$key' for ONE send only. Read the response destination to verify success.\n";
@@ -79,6 +80,10 @@ foreach ($ordered as $key=>$handler) {
     $fields = []; $file = null; $query = [];
     if ($method === 'POST') {
         $fields['_csrf']='{{csrf_token}}';
+        if ($controller === 'KpiFormController' && $action === 'save') {
+            $fields += ['title'=>'Postman test annual KPI','year'=>'{{kpi_form_year}}','department_id'=>'{{department_id}}','version'=>'{{kpi_form_version}}','owner'=>'','qms'=>'1','target'=>'95%','measurement'=>'Completed / total x 100','frequency'=>'Monthly','effective_date'=>'','prepared_by'=>'','approved_by'=>'','activities[0][activity]'=>'Review process','activities[0][months][]'=>'1','results[0][result]'=>'','action_taken'=>'','ytd'=>''];
+            $description .= "Saves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n";
+        }
         if ($path === '/login') $fields += ['username'=>'{{username}}','password'=>'{{password}}'];
         if (in_array($action,['store','update'],true)) {
             $fields += match($controller) {
@@ -115,6 +120,7 @@ foreach ($ordered as $key=>$handler) {
             if ($action === 'exportTables') { $fields['type']='devices'; $description .= "type: devices, device_types, departments, pm_schedules or all.\n"; }
         }
     } else {
+        if ($controller === 'KpiFormController' && $action === 'export') $query=['format'=>'xlsx'];
         if (in_array($action,['index','search','tickets','requests','schedules','records'],true)) {
             $query = match($controller) {
                 'KpiController'=>['period'=>'{{kpi_period}}'],
@@ -143,7 +149,7 @@ foreach ($ordered as $key=>$handler) {
         $request['body']=['mode'=>$mode,$mode=>$body];
     }
     $item=['name'=>$key,'request'=>$request,'response'=>[], 'protocolProfileBehavior'=>['followRedirects'=>false]];
-    $versionVar=match($controller) {'WorkController'=>'work_version','AnnouncementController'=>'announcement_version','DocumentControlController'=>'document_version',default=>null};
+    $versionVar=match($controller) {'WorkController'=>'work_version','AnnouncementController'=>'announcement_version','DocumentControlController'=>'document_version','KpiFormController'=>'kpi_form_version',default=>null};
     if ($method==='GET' && $versionVar && in_array($action,['show','edit'],true)) {
         $item['event']=[eventScript('test',"const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);\nif (v) pm.environment.set('$versionVar', v[1]);")];
     }

@@ -312,6 +312,9 @@ textarea {
   font-size: 11px;
 }
 .menu-toggle {
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   border: 1px solid var(--line);
   background: #fff;
   border-radius: 8px;
@@ -1272,6 +1275,49 @@ textarea {
   }
   .app-workspace {
     margin-left: var(--sidebar-width);
+  }
+  .sidebar-collapsed .app-sidebar {
+    width: 76px;
+  }
+  .sidebar-collapsed .app-workspace {
+    margin-left: 76px;
+  }
+  .sidebar-collapsed .app-sidebar .sidebar-brand {
+    padding: 20px 16px;
+  }
+  .sidebar-collapsed .sidebar-body {
+    padding: 8px 10px 20px !important;
+  }
+  .sidebar-collapsed .brand-lockup > span:last-child,
+  .sidebar-collapsed .nav-link-modern > span,
+  .sidebar-collapsed .sidebar-note,
+  .sidebar-collapsed .dcc-nav-chevron,
+  .sidebar-collapsed .dcc-nav-group > div {
+    display: none;
+  }
+  .sidebar-collapsed .nav-group-label {
+    font-size: 0;
+    padding: 0;
+    height: 1px;
+    margin: 10px 8px;
+    background: #ffffff18;
+  }
+  .sidebar-collapsed .nav-link-modern {
+    justify-content: center;
+    gap: 0;
+    min-height: 44px;
+    padding: 11px;
+    border-radius: 10px;
+  }
+  .sidebar-collapsed .nav-link-modern i {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .sidebar-collapsed .nav-link-modern.active {
+    box-shadow: inset 3px 0 #8fc9f2;
+  }
+  .sidebar-collapsed .sidebar-toggle-icon {
+    transform: rotate(180deg);
   }
 }
 @media (max-width: 1199px) {

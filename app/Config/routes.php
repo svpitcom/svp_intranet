@@ -1,5 +1,11 @@
 <?php
 return [
+    'GET /kpi/forms' => ['KpiFormController','index',['auth']],
+    'GET /kpi/forms/create' => ['KpiFormController','edit',['auth','role:admin,manager']],
+    'POST /kpi/forms/create' => ['KpiFormController','save',['auth','role:admin,manager']],
+    'GET /kpi/forms/{id}' => ['KpiFormController','edit',['auth']],
+    'POST /kpi/forms/{id}' => ['KpiFormController','save',['auth','role:admin,manager']],
+    'GET /kpi/forms/{id}/export' => ['KpiFormController','export',['auth']],
     'GET /kpi' => ['KpiController','index',['auth']],
     'GET /kpi/create' => ['KpiController','create',['auth','role:admin,manager']],
     'POST /kpi/create' => ['KpiController','store',['auth','role:admin,manager']],

@@ -13,28 +13,28 @@
             "script": {
                 "type": "text/javascript",
                 "exec": [
-                    "// Only one explicitly selected write request is allowed. Never bulk-run writes.",
-                    "const isLogin = pm.info.requestName === 'POST /login';",
-                    "if (pm.request.method === 'POST' && !isLogin) {",
-                    "    if (pm.environment.get('allow_write_request') !== pm.info.requestName) {",
-                    "        console.warn('Skipped write. Set allow_write_request to this exact request name for one send.');",
-                    "        pm.execution.skipRequest();",
-                    "    } else {",
-                    "        pm.environment.set('allow_write_request', '');",
-                    "    }",
-                    "}",
-                    "const url = pm.variables.replaceIn(pm.request.url.toString());",
-                    "if (/\\{\\{[^}]+\\}\\}/.test(url) || /\\/(?:0)(?:\\/|\\?|$)/.test(url)) {",
-                    "    console.warn('Set a valid existing record ID before sending.');",
-                    "    pm.execution.skipRequest();",
-                    "}",
-                    "if (pm.request.method === 'POST' && !pm.environment.get('csrf_token')) {",
-                    "    console.warn('Run GET /login or an authenticated HTML form to obtain CSRF first.');",
-                    "    pm.execution.skipRequest();",
-                    "}",
-                    "if (isLogin && (!pm.environment.get('username') || !pm.environment.get('password'))) {",
-                    "    console.warn('Set username and password locally in the selected environment.');",
-                    "    pm.execution.skipRequest();",
+                    "// Only one explicitly selected write request is allowed. Never bulk-run writes.\r",
+                    "const isLogin = pm.info.requestName === 'POST /login';\r",
+                    "if (pm.request.method === 'POST' && !isLogin) {\r",
+                    "    if (pm.environment.get('allow_write_request') !== pm.info.requestName) {\r",
+                    "        console.warn('Skipped write. Set allow_write_request to this exact request name for one send.');\r",
+                    "        pm.execution.skipRequest();\r",
+                    "    } else {\r",
+                    "        pm.environment.set('allow_write_request', '');\r",
+                    "    }\r",
+                    "}\r",
+                    "const url = pm.variables.replaceIn(pm.request.url.toString());\r",
+                    "if (/\\{\\{[^}]+\\}\\}/.test(url) || /\\/(?:0)(?:\\/|\\?|$)/.test(url)) {\r",
+                    "    console.warn('Set a valid existing record ID before sending.');\r",
+                    "    pm.execution.skipRequest();\r",
+                    "}\r",
+                    "if (pm.request.method === 'POST' && !pm.environment.get('csrf_token')) {\r",
+                    "    console.warn('Run GET /login or an authenticated HTML form to obtain CSRF first.');\r",
+                    "    pm.execution.skipRequest();\r",
+                    "}\r",
+                    "if (isLogin && (!pm.environment.get('username') || !pm.environment.get('password'))) {\r",
+                    "    console.warn('Set username and password locally in the selected environment.');\r",
+                    "    pm.execution.skipRequest();\r",
                     "}"
                 ]
             }
@@ -44,13 +44,13 @@
             "script": {
                 "type": "text/javascript",
                 "exec": [
-                    "const html = pm.response.text();",
-                    "const token = html.match(/name=[\"']_csrf[\"'][^>]*value=[\"']([a-f0-9]+)[\"']/i);",
-                    "if (token) pm.environment.set('csrf_token', token[1]);",
-                    "pm.test('No server error (not proof of business success)', function () {",
-                    "    pm.expect(pm.response.code).to.be.below(500);",
-                    "});",
-                    "if (pm.response.code === 403) console.warn('Check role/department, record permissions and CSRF/session.');",
+                    "const html = pm.response.text();\r",
+                    "const token = html.match(/name=[\"']_csrf[\"'][^>]*value=[\"']([a-f0-9]+)[\"']/i);\r",
+                    "if (token) pm.environment.set('csrf_token', token[1]);\r",
+                    "pm.test('No server error (not proof of business success)', function () {\r",
+                    "    pm.expect(pm.response.code).to.be.below(500);\r",
+                    "});\r",
+                    "if (pm.response.code === 403) console.warn('Check role/department, record permissions and CSRF/session.');\r",
                     "if (pm.response.code === 302) console.info('Inspect Location, then GET the destination and check its flash message. 302 alone does not prove success.');"
                 ]
             }
@@ -3306,6 +3306,365 @@
         {
             "name": "15 KPI",
             "item": [
+                {
+                    "name": "GET /kpi/forms",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/forms",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "forms"
+                            ]
+                        },
+                        "description": "Handler: KpiFormController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /kpi/forms/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/forms/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "forms",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: KpiFormController::edit\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('kpi_form_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /kpi/forms/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/forms/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "forms",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: KpiFormController::save\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/forms/create' for ONE send only. Read the response destination to verify success.\nSaves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test annual KPI",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "year",
+                                    "value": "{{kpi_form_year}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "{{department_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{kpi_form_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "owner",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "qms",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "target",
+                                    "value": "95%",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "measurement",
+                                    "value": "Completed / total x 100",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "frequency",
+                                    "value": "Monthly",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "effective_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "prepared_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approved_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "activities[0][activity]",
+                                    "value": "Review process",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "activities[0][months][]",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "results[0][result]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "action_taken",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "ytd",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /kpi/forms/{id}",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/forms/{{kpi_form_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "forms",
+                                "{{kpi_form_id}}"
+                            ]
+                        },
+                        "description": "Handler: KpiFormController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('kpi_form_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /kpi/forms/{id}",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/forms/{{kpi_form_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "forms",
+                                "{{kpi_form_id}}"
+                            ]
+                        },
+                        "description": "Handler: KpiFormController::save\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/forms/{id}' for ONE send only. Read the response destination to verify success.\nSaves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Postman test annual KPI",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "year",
+                                    "value": "{{kpi_form_year}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "{{department_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{kpi_form_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "owner",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "qms",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "target",
+                                    "value": "95%",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "measurement",
+                                    "value": "Completed / total x 100",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "frequency",
+                                    "value": "Monthly",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "effective_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "prepared_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approved_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "activities[0][activity]",
+                                    "value": "Review process",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "activities[0][months][]",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "results[0][result]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "action_taken",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "ytd",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /kpi/forms/{id}/export",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/forms/{{kpi_form_id}}/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "forms",
+                                "{{kpi_form_id}}",
+                                "export"
+                            ],
+                            "query": [
+                                {
+                                    "key": "format",
+                                    "value": "xlsx",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: KpiFormController::export\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
                 {
                     "name": "GET /kpi",
                     "request": {

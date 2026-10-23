@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-start gap-3 mb-4 flex-wrap">
     <div><h1 class="h3">KPI / ผลการดำเนินงาน</h1><p class="text-muted">เป้าหมายรายเดือน · รายแผนกและรายบุคคล</p></div>
-    <?php if (Portal::manager($user)): ?><a class="btn btn-primary" href="<?= APP_URL ?>/kpi/create">+ กำหนด KPI</a><?php endif; ?>
+    <div><a class="btn btn-outline-primary" href="<?= APP_URL ?>/kpi/forms">KPI &amp; Action plan รายปี</a> <?php if (Portal::manager($user)): ?><a class="btn btn-primary" href="<?= APP_URL ?>/kpi/create">+ กำหนด KPI รายเดือน</a><?php endif; ?></div>
 </div>
 <form method="get" class="d-flex gap-2 align-items-end mb-4 flex-wrap">
     <div><label class="form-label" for="kpi-month">เดือนประเมิน (ค.ศ.)</label><input class="form-control" id="kpi-month" type="month" name="period" value="<?= Portal::esc($period) ?>" required></div>

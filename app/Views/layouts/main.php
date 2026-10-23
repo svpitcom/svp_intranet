@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(APP_NAME) ?></title>
+    <script>
+        // Restore the desktop preference before the first layout is painted.
+        try {
+            document.documentElement.classList.toggle('sidebar-collapsed', localStorage.getItem('svp.sidebar.collapsed') === '1');
+        } catch (_) { /* Navigation remains available when browser storage is blocked. */ }
+    </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/style.css?v=<?= filemtime(BASE_PATH . '/public/assets/css/style.css') ?>">

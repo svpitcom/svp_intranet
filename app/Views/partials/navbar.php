@@ -11,6 +11,9 @@ if (str_starts_with($currentPath, '/work/')) $sectionName = 'รายละเ�
 ?>
 <header class="app-topbar">
     <div class="d-flex align-items-center gap-3">
+        <button class="menu-toggle d-none d-lg-inline-flex" id="sidebar-toggle" type="button" aria-controls="app-sidebar" aria-expanded="true" aria-label="ย่อเมนูด้านข้าง" title="ย่อเมนูด้านข้าง">
+            <svg class="sidebar-toggle-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m7-12-4 4 4 4"/></svg>
+        </button>
         <button class="menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#app-sidebar" aria-controls="app-sidebar" aria-label="เปิดเมนูหลัก"><span aria-hidden="true">☰</span></button>
         <div class="topbar-breadcrumb"><span>พื้นที่ทำงาน</span><span class="breadcrumb-divider">/</span><strong><?= htmlspecialchars($sectionName) ?></strong></div>
     </div>

@@ -1,4 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    if (sidebarToggle) {
+        const root = document.documentElement;
+        const applySidebar = collapsed => {
+            root.classList.toggle('sidebar-collapsed', collapsed);
+            sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+            const label = collapsed ? 'ขยายเมนูด้านข้าง' : 'ย่อเมนูด้านข้าง';
+            sidebarToggle.setAttribute('aria-label', label);
+            sidebarToggle.title = label;
+        };
+        applySidebar(root.classList.contains('sidebar-collapsed'));
+        sidebarToggle.addEventListener('click', () => {
+            const collapsed = !root.classList.contains('sidebar-collapsed');
+            applySidebar(collapsed);
+            try { localStorage.setItem('svp.sidebar.collapsed', collapsed ? '1' : '0'); }
+            catch (_) { /* Still allow toggling in private/restricted browser contexts. */ }
+        });
+        // Expand the rail before opening nested document categories.
+        document.querySelectorAll('.dcc-nav-group > summary').forEach(summary => {
+            summary.addEventListener('click', event => {
+                if (!window.matchMedia('(min-width: 992px)').matches || !root.classList.contains('sidebar-collapsed')) return;
+                event.preventDefault();
+                sidebarToggle.click();
+                summary.parentElement.open = true;
+            });
+        });
+    }
     document.querySelectorAll('.password-toggle').forEach(button => {
         button.addEventListener('click', () => {
             const field = document.getElementById(button.getAttribute('aria-controls'));
