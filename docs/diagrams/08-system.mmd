@@ -1,0 +1,21 @@
+flowchart TB
+    M["Maintenance หรือ Admin<br/>เพิ่มทะเบียนเครื่องจักร"]
+    P["สร้างแผน PM<br/>Checklist · รอบวัน · ผู้รับผิดชอบ"]
+    CHECK["กรอกวันทำจริงและผลตรวจ<br/>ตรวจสิทธิ์ · สถานะเปิดใช้ · version"]
+    RESULT{"ผลตรวจ"}
+    OK["completed<br/>ตรวจครบและปกติทุกข้อ"]
+    PART["partial / issue_found<br/>ยังไม่ครบหรือพบปัญหา"]
+    ADVANCE["อัปเดตวัน PM ล่าสุดและกำหนดถัดไป<br/>ไม่ย้อนวันล่าสุดเมื่อกรอกประวัติเก่ากว่า"]
+    HOLD["คงวันครบกำหนดเดิม"]
+    SAVE["Transaction<br/>ประวัติ + Snapshot + version + Audit"]
+    HISTORY["เปิดดูประวัติ PM เครื่องจักร"]
+    M --> P
+    P --> CHECK
+    CHECK --> RESULT
+    RESULT --> OK
+    RESULT --> PART
+    OK --> ADVANCE
+    PART --> HOLD
+    ADVANCE --> SAVE
+    HOLD --> SAVE
+    SAVE --> HISTORY

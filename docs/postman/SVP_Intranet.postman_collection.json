@@ -1043,27 +1043,6 @@
                     }
                 },
                 {
-                    "name": "GET /machines",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/machines",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "machines"
-                            ]
-                        },
-                        "description": "Handler: DeviceController::machines\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nMaintenance department 6 or admin only.\n"
-                    },
-                    "response": [],
-                    "protocolProfileBehavior": {
-                        "followRedirects": false
-                    }
-                },
-                {
                     "name": "GET /it-devices",
                     "request": {
                         "method": "GET",
@@ -1842,7 +1821,7 @@
                                 "record"
                             ]
                         },
-                        "description": "Handler: PmRecordController::store\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /pm-schedules/{id}/record' for ONE send only. Read the response destination to verify success.\n",
+                        "description": "Handler: PmRecordController::store\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /pm-schedules/{id}/record' for ONE send only. Read the response destination to verify success.\nFor IT devices, load GET /pm-schedules/{id}/record first and submit its IT-F-005 fields: inspection_device_id, device_name, serial_number, department, inspector, manager, acknowledged_by, start_time, end_time and checks/work/safety arrays. The minimal example below is for generic PM only. Use actual inspection data; missing results must not be marked completed. See PM_INSPECTION.md.\n",
                         "body": {
                             "mode": "formdata",
                             "formdata": [
@@ -2016,6 +1995,60 @@
                             ]
                         },
                         "description": "Handler: PmRecordController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-records/{id}/form",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-records/{{record_id}}/form",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-records",
+                                "{{record_id}}",
+                                "form"
+                            ]
+                        },
+                        "description": "Handler: PmRecordController::form\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /pm-records/{id}/form/export",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/pm-records/{{record_id}}/form/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pm-records",
+                                "{{record_id}}",
+                                "form",
+                                "export"
+                            ],
+                            "query": [
+                                {
+                                    "key": "format",
+                                    "value": "xlsx",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: PmRecordController::exportForm\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3319,9 +3352,16 @@
                             "path": [
                                 "kpi",
                                 "forms"
+                            ],
+                            "query": [
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "disabled": true
+                                }
                             ]
                         },
-                        "description": "Handler: KpiFormController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: KpiFormController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3344,7 +3384,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: KpiFormController::edit\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: KpiFormController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3379,7 +3419,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: KpiFormController::save\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/forms/create' for ONE send only. Read the response destination to verify success.\nSaves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n",
+                        "description": "Handler: KpiFormController::save\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/forms/create' for ONE send only. Read the response destination to verify success.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\nSaves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n",
                         "body": {
                             "mode": "urlencoded",
                             "urlencoded": [
@@ -3497,7 +3537,7 @@
                                 "{{kpi_form_id}}"
                             ]
                         },
-                        "description": "Handler: KpiFormController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: KpiFormController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3532,7 +3572,7 @@
                                 "{{kpi_form_id}}"
                             ]
                         },
-                        "description": "Handler: KpiFormController::save\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/forms/{id}' for ONE send only. Read the response destination to verify success.\nSaves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n",
+                        "description": "Handler: KpiFormController::save\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/forms/{id}' for ONE send only. Read the response destination to verify success.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\nSaves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n",
                         "body": {
                             "mode": "urlencoded",
                             "urlencoded": [
@@ -3658,7 +3698,56 @@
                                 }
                             ]
                         },
-                        "description": "Handler: KpiFormController::export\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: KpiFormController::export\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "POST /kpi/forms/{id}/sharepoint",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/kpi/forms/{{kpi_form_id}}/sharepoint",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "kpi",
+                                "forms",
+                                "{{kpi_form_id}}",
+                                "sharepoint"
+                            ]
+                        },
+                        "description": "Handler: KpiFormController::sendSharePoint\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/forms/{id}/sharepoint' for ONE send only. Read the response destination to verify success.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\nAdmin only. Uploads the SAVED annual KPI snapshot. Choose format xlsx or pdf and destination from the form (default or a configured department key). Load the form first for its version. Repeating the same version/format/destination updates the same filename.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "format",
+                                    "value": "xlsx",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "destination",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{kpi_form_version}}",
+                                    "type": "text"
+                                }
+                            ]
+                        }
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3683,10 +3772,15 @@
                                     "key": "period",
                                     "value": "{{kpi_period}}",
                                     "disabled": true
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "disabled": true
                                 }
                             ]
                         },
-                        "description": "Handler: KpiController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: KpiController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3708,7 +3802,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: KpiController::create\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: KpiController::create\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3730,7 +3824,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: KpiController::store\nMiddleware: auth, role:admin,manager\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/create' for ONE send only. Read the response destination to verify success.\n",
+                        "description": "Handler: KpiController::store\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/create' for ONE send only. Read the response destination to verify success.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n",
                         "body": {
                             "mode": "urlencoded",
                             "urlencoded": [
@@ -3752,11 +3846,6 @@
                                 {
                                     "key": "department_id",
                                     "value": "{{department_id}}",
-                                    "type": "text"
-                                },
-                                {
-                                    "key": "user_id",
-                                    "value": "",
                                     "type": "text"
                                 },
                                 {
@@ -3808,7 +3897,7 @@
                                 "result"
                             ]
                         },
-                        "description": "Handler: KpiController::result\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/{id}/result' for ONE send only. Read the response destination to verify success.\nSet kpi_version from the target row's hidden version on GET /kpi (0 only before the first result). Automatic KPIs cannot be manually edited.\n",
+                        "description": "Handler: KpiController::result\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /kpi/{id}/result' for ONE send only. Read the response destination to verify success.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\nSet kpi_version from the target row's hidden version on GET /kpi (0 only before the first result). Automatic KPIs cannot be manually edited.\n",
                         "body": {
                             "mode": "urlencoded",
                             "urlencoded": [
@@ -3856,7 +3945,1048 @@
                                 "history"
                             ]
                         },
-                        "description": "Handler: KpiController::history\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: KpiController::history\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nDepartment KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "16 IT backup checklists",
+            "item": [
+                {
+                    "name": "GET /it-backup",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/it-backup",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "it-backup"
+                            ],
+                            "query": [
+                                {
+                                    "key": "month",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: BackupChecklistController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /it-backup/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/it-backup/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "it-backup",
+                                "create"
+                            ],
+                            "query": [
+                                {
+                                    "key": "month",
+                                    "value": "{{backup_month}}",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: BackupChecklistController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('backup_form_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /it-backup/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/it-backup/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "it-backup",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: BackupChecklistController::save\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /it-backup/create' for ONE send only. Read the response destination to verify success.\nActive IT department 2 or admin only. Saves the ENTIRE monthly checklist; include all days/fields to retain previous entries. Read the saved form first to capture version and month. One document per month/location/server.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{backup_month}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{backup_form_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "SVP",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "server_name",
+                                    "value": "POSTMAN TEST SERVER",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "prepared_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approved_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "prepared_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approved_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][data]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][data_full]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][start]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][end]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][status]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][checked_by]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][notes]",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /it-backup/{id}",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/it-backup/{{backup_form_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "it-backup",
+                                "{{backup_form_id}}"
+                            ]
+                        },
+                        "description": "Handler: BackupChecklistController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('backup_form_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /it-backup/{id}",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/it-backup/{{backup_form_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "it-backup",
+                                "{{backup_form_id}}"
+                            ]
+                        },
+                        "description": "Handler: BackupChecklistController::save\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /it-backup/{id}' for ONE send only. Read the response destination to verify success.\nActive IT department 2 or admin only. Saves the ENTIRE monthly checklist; include all days/fields to retain previous entries. Read the saved form first to capture version and month. One document per month/location/server.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{backup_month}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{backup_form_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "SVP",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "server_name",
+                                    "value": "POSTMAN TEST SERVER",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "prepared_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approved_by",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "prepared_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "approved_date",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][data]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][data_full]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][start]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][end]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][status]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][checked_by]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "days[1][notes]",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /it-backup/{id}/export",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/it-backup/{{backup_form_id}}/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "it-backup",
+                                "{{backup_form_id}}",
+                                "export"
+                            ],
+                            "query": [
+                                {
+                                    "key": "format",
+                                    "value": "xlsx",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: BackupChecklistController::export\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                }
+            ]
+        },
+        {
+            "name": "17 Machines",
+            "item": [
+                {
+                    "name": "GET /machines",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machines",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machines"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: MachineController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nMaintenance department 6 or admin only.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machines/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machines/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machines",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: MachineController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('machine_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /machines/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machines/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machines",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: MachineController::save\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /machines/create' for ONE send only. Read the response destination to verify success.\nSeparate machine tables in the Intranet database. Admin and all active maintenance staff manage machines/plans and record PM. Read the current form version before a single write. IDs are NOT IT device/PM IDs.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{machine_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "code",
+                                    "value": "POSTMAN-MACHINE",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "name",
+                                    "value": "Test machine",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "machine_type",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "brand",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "model",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "serial_number",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "owner_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machines/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machines/{{machine_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machines",
+                                "{{machine_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: MachineController::edit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('machine_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /machines/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machines/{{machine_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machines",
+                                "{{machine_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: MachineController::save\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /machines/{id}/edit' for ONE send only. Read the response destination to verify success.\nSeparate machine tables in the Intranet database. Admin and all active maintenance staff manage machines/plans and record PM. Read the current form version before a single write. IDs are NOT IT device/PM IDs.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{machine_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "code",
+                                    "value": "POSTMAN-MACHINE",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "name",
+                                    "value": "Test machine",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "machine_type",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "brand",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "model",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "serial_number",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "department_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "owner_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machine-pm",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: MachineController::plans\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machine-pm/create",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: MachineController::planEdit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('machine_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /machine-pm/create",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "create"
+                            ]
+                        },
+                        "description": "Handler: MachineController::planSave\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /machine-pm/create' for ONE send only. Read the response destination to verify success.\nSeparate machine tables in the Intranet database. Admin and all active maintenance staff manage machines/plans and record PM. Read the current form version before a single write. IDs are NOT IT device/PM IDs.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{machine_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "machine_id",
+                                    "value": "{{machine_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Test machine PM",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "frequency_days",
+                                    "value": "30",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "next_pm_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "checklist",
+                                    "value": "ตรวจสภาพทั่วไป",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "responsible_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machine-pm/{id}/edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/{{machine_plan_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "{{machine_plan_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: MachineController::planEdit\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('machine_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /machine-pm/{id}/edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/{{machine_plan_id}}/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "{{machine_plan_id}}",
+                                "edit"
+                            ]
+                        },
+                        "description": "Handler: MachineController::planSave\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /machine-pm/{id}/edit' for ONE send only. Read the response destination to verify success.\nSeparate machine tables in the Intranet database. Admin and all active maintenance staff manage machines/plans and record PM. Read the current form version before a single write. IDs are NOT IT device/PM IDs.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{machine_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "machine_id",
+                                    "value": "{{machine_id}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Test machine PM",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "frequency_days",
+                                    "value": "30",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "next_pm_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "checklist",
+                                    "value": "ตรวจสภาพทั่วไป",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "responsible_id",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machine-pm/{id}/record",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/{{machine_plan_id}}/record",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "{{machine_plan_id}}",
+                                "record"
+                            ]
+                        },
+                        "description": "Handler: MachineController::recordForm\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);",
+                                    "if (v) pm.environment.set('machine_version', v[1]);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /machine-pm/{id}/record",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/{{machine_plan_id}}/record",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "{{machine_plan_id}}",
+                                "record"
+                            ]
+                        },
+                        "description": "Handler: MachineController::recordSave\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /machine-pm/{id}/record' for ONE send only. Read the response destination to verify success.\nSeparate machine tables in the Intranet database. Admin and all active maintenance staff manage machines/plans and record PM. Read the current form version before a single write. IDs are NOT IT device/PM IDs.\n",
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "_csrf",
+                                    "value": "{{csrf_token}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "version",
+                                    "value": "{{machine_version}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "performed_date",
+                                    "value": "{{date}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "result_status",
+                                    "value": "partial",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "checks[0][result]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "checks[0][note]",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "notes",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machine-pm/records",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/records",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "records"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Handler: MachineController::records\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "followRedirects": false
+                    }
+                },
+                {
+                    "name": "GET /machine-pm/records/{id}",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/machine-pm/records/{{machine_record_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "machine-pm",
+                                "records",
+                                "{{machine_record_id}}"
+                            ]
+                        },
+                        "description": "Handler: MachineController::report\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {

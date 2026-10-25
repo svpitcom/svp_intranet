@@ -45,18 +45,19 @@ class KpiForm extends Model
         $row['data']=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);
         return $row;
     }
-    public function listing(array $user): array
+    public function listing(array $user,$requestedDepartment=null): array
     {
         if (!KpiPolicy::allows($user)) throw new RuntimeException('ไม่มีสิทธิ์');
         $where=''; $params=[];
-        if (($user['user_role']??'')!=='admin') { $where=' WHERE f.department_id=?'; $params[]=(int)($user['svp_department_id']??0); }
+        $departmentId=KpiPolicy::department($user,$requestedDepartment);
+        if ($departmentId!==null) { $where=' WHERE f.department_id=?'; $params[]=$departmentId; }
         return $this->query('SELECT f.id,f.title,f.year,f.department_id,f.version,f.updated_at,d.svp_department_name FROM kpi_forms f LEFT JOIN department d ON d.svp_department_id=f.department_id'.$where.' ORDER BY f.year DESC,f.id DESC',$params)->fetchAll();
     }
     public function save(?int $id,array $user,array $input): int
     {
         $data=self::clean($input);
         $dept=Portal::id($input['department_id']??'')??0;
-        if (!KpiPolicy::manages($user,$dept)) throw new RuntimeException('เฉพาะผู้จัดการแผนกหรือผู้ดูแลระบบที่แก้ไขแบบฟอร์มได้');
+        if (!KpiPolicy::manages($user,$dept)) throw new RuntimeException('แก้ไข KPI ได้เฉพาะแผนกของตนเอง หรือผู้ดูแลระบบ');
         $department=$this->query('SELECT svp_department_name FROM department WHERE svp_department_id=?',[$dept])->fetchColumn();
         if ($department===false) throw new RuntimeException('ไม่พบแผนก');
         $data['department']=$department;

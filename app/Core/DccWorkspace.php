@@ -23,6 +23,17 @@ final class DccWorkspace
             'POST /document-control/create',
             'GET /document-control/{id}/edit',
             'POST /document-control/{id}/edit',
+            'GET /kpi',
+            'GET /kpi/create',
+            'POST /kpi/create',
+            'POST /kpi/{id}/result',
+            'GET /kpi/{id}/history',
+            'GET /kpi/forms',
+            'GET /kpi/forms/create',
+            'POST /kpi/forms/create',
+            'GET /kpi/forms/{id}',
+            'POST /kpi/forms/{id}',
+            'GET /kpi/forms/{id}/export',
         ], true);
     }
 }

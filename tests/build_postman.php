@@ -46,6 +46,8 @@ $collection = ['info'=>['name'=>'SVP Intranet - All Endpoints','schema'=>'https:
 $env = ['base_url'=>'http://localhost/svp_intranet','username'=>'','password'=>'','csrf_token'=>'','allow_write_request'=>'','user_id'=>'0','department_id'=>'0','position_id'=>'0','device_type_id'=>'0','device_id'=>'0','schedule_id'=>'0','record_id'=>'0','work_id'=>'0','announcement_id'=>'0','document_id'=>'0','work_version'=>'','announcement_version'=>'','document_version'=>'','new_user_password'=>'','date'=>'2026-10-22'];
 $groups = [];
 $env += ['kpi_id'=>'0','kpi_version'=>'0','kpi_period'=>'2026-10','kpi_form_id'=>'0','kpi_form_version'=>'0','kpi_form_year'=>'2026'];
+$env += ['backup_form_id'=>'0','backup_form_version'=>'0','backup_month'=>'2026-10'];
+$env += ['machine_id'=>'0','machine_plan_id'=>'0','machine_record_id'=>'0','machine_version'=>'0'];
 $index = "# Endpoint inventory\n\nGenerated from app/Config/routes.php. Middleware is only the first layer; controller/record/department checks also apply.\n\n| Method | Path | Handler | Middleware |\n|---|---|---|---|\n";
 // Put authentication first, logout last. Preserve every declared route exactly once.
 $ordered = ['GET /login'=>$routes['GET /login'], 'POST /login'=>$routes['POST /login']];
@@ -58,10 +60,10 @@ foreach ($ordered as $key=>$handler) {
     $group = match($segment) {
         'login'=>'01 Authentication', 'logout'=>'99 Logout', ''=>'02 Home',
         'users'=>'03 Users', 'departments'=>'04 Departments', 'positions'=>'05 Positions',
-        'devices','it-devices','machines'=>'06 Devices', 'device_types'=>'07 Device types',
+        'devices','it-devices'=>'06 Devices', 'device_types'=>'07 Device types', 'machines','machine-pm'=>'17 Machines',
         'pm-schedules'=>'08 PM schedules', 'pm-records'=>'09 PM records',
         'tickets','requests','work'=>'10 Tickets and approvals', 'announcements'=>'11 Announcements',
-        'notifications'=>'12 Notifications', 'document-control'=>'13 Document Control', 'sharepoint'=>'14 SharePoint', 'kpi'=>'15 KPI',
+        'notifications'=>'12 Notifications', 'document-control'=>'13 Document Control', 'sharepoint'=>'14 SharePoint', 'kpi'=>'15 KPI', 'it-backup'=>'16 IT backup checklists',
         default=>throw new RuntimeException('Unmapped route '.$key),
     };
     $id = match($segment) {
@@ -70,6 +72,8 @@ foreach ($ordered as $key=>$handler) {
         'announcements'=>'announcement_id','document-control'=>'document_id','kpi'=>'kpi_id',default=>'id',
     };
     if ($controller === 'KpiFormController') $id='kpi_form_id';
+    if ($controller === 'BackupChecklistController') $id='backup_form_id';
+    if ($controller === 'MachineController') $id=$segment==='machines'?'machine_id':($action==='report'?'machine_record_id':'machine_plan_id');
     $urlPath = str_replace('{id}', '{{'.$id.'}}', $path);
     $description = "Handler: $controller::$action\nMiddleware: ".implode(', ', $handler[2] ?? [])."\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n";
     if ($method === 'POST' && $path !== '/login') $description .= "WARNING: changes data/session or writes to SharePoint. Set allow_write_request to '$key' for ONE send only. Read the response destination to verify success.\n";
@@ -77,17 +81,36 @@ foreach ($ordered as $key=>$handler) {
     if ($segment === 'document-control') $description .= "Active DCC department 13 or admin only. Category and department_id are different fields.\n";
     if ($path === '/machines') $description .= "Maintenance department 6 or admin only.\n";
     if ($path === '/it-devices') $description .= "IT department 2 or admin only.\n";
+    if (in_array($controller,['KpiController','KpiFormController'],true)) $description .= "Department KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n";
+    if ($controller === 'PmRecordController' && $action === 'store') $description .= "For IT devices, load GET /pm-schedules/{id}/record first and submit its IT-F-005 fields: inspection_device_id, device_name, serial_number, department, inspector, manager, acknowledged_by, start_time, end_time and checks/work/safety arrays. The minimal example below is for generic PM only. Use actual inspection data; missing results must not be marked completed. See PM_INSPECTION.md.\n";
     $fields = []; $file = null; $query = [];
     if ($method === 'POST') {
         $fields['_csrf']='{{csrf_token}}';
+        if ($controller === 'MachineController') {
+            $description .= "Separate machine tables in the Intranet database. Admin and all active maintenance staff manage machines/plans and record PM. Read the current form version before a single write. IDs are NOT IT device/PM IDs.\n";
+            $fields += match($action) {
+                'save'=>['version'=>'{{machine_version}}','code'=>'POSTMAN-MACHINE','name'=>'Test machine','machine_type'=>'','brand'=>'','model'=>'','serial_number'=>'','location'=>'','department_id'=>'','owner_id'=>'','is_active'=>'1'],
+                'planSave'=>['version'=>'{{machine_version}}','machine_id'=>'{{machine_id}}','title'=>'Test machine PM','frequency_days'=>'30','next_pm_date'=>'{{date}}','checklist'=>'ตรวจสภาพทั่วไป','responsible_id'=>'','is_active'=>'1'],
+                'recordSave'=>['version'=>'{{machine_version}}','performed_date'=>'{{date}}','result_status'=>'partial','checks[0][result]'=>'','checks[0][note]'=>'','notes'=>''],
+                default=>throw new RuntimeException('Unmapped machine action'),
+            };
+        }
+        if ($controller === 'BackupChecklistController' && $action === 'save') {
+            $fields += ['month'=>'{{backup_month}}','version'=>'{{backup_form_version}}','location'=>'SVP','server_name'=>'POSTMAN TEST SERVER','prepared_by'=>'','approved_by'=>'','prepared_date'=>'','approved_date'=>'','days[1][data]'=>'','days[1][data_full]'=>'','days[1][start]'=>'','days[1][end]'=>'','days[1][status]'=>'','days[1][checked_by]'=>'','days[1][notes]'=>''];
+            $description .= "Active IT department 2 or admin only. Saves the ENTIRE monthly checklist; include all days/fields to retain previous entries. Read the saved form first to capture version and month. One document per month/location/server.\n";
+        }
         if ($controller === 'KpiFormController' && $action === 'save') {
             $fields += ['title'=>'Postman test annual KPI','year'=>'{{kpi_form_year}}','department_id'=>'{{department_id}}','version'=>'{{kpi_form_version}}','owner'=>'','qms'=>'1','target'=>'95%','measurement'=>'Completed / total x 100','frequency'=>'Monthly','effective_date'=>'','prepared_by'=>'','approved_by'=>'','activities[0][activity]'=>'Review process','activities[0][months][]'=>'1','results[0][result]'=>'','action_taken'=>'','ytd'=>''];
             $description .= "Saves the ENTIRE form. Fill every activity/result to retain existing data. Load the form first to capture its version.\n";
         }
+        if ($controller === 'KpiFormController' && $action === 'sendSharePoint') {
+            $fields += ['format'=>'xlsx','destination'=>'','version'=>'{{kpi_form_version}}'];
+            $description .= "Admin only. Uploads the SAVED annual KPI snapshot. Choose format xlsx or pdf and destination from the form (default or a configured department key). Load the form first for its version. Repeating the same version/format/destination updates the same filename.\n";
+        }
         if ($path === '/login') $fields += ['username'=>'{{username}}','password'=>'{{password}}'];
         if (in_array($action,['store','update'],true)) {
             $fields += match($controller) {
-                'KpiController'=>['period'=>'{{kpi_period}}','title'=>'Postman test KPI','department_id'=>'{{department_id}}','user_id'=>'','source'=>'manual','direction'=>'higher','target'=>'10','weight'=>'1','unit'=>'รายการ'],
+                'KpiController'=>['period'=>'{{kpi_period}}','title'=>'Postman test KPI','department_id'=>'{{department_id}}','source'=>'manual','direction'=>'higher','target'=>'10','weight'=>'1','unit'=>'รายการ'],
                 'UserController'=>['username'=>'postman_test_user','password'=>$action==='store'?'{{new_user_password}}':'','first_name'=>'Test','last_name'=>'Postman','email'=>'','svp_position_id'=>'','svp_department_id'=>'','user_role'=>'user'],
                 'DepartmentController'=>['svp_code_department'=>'TEST','svp_department_name'=>'Postman Test'],
                 'PositionController'=>['position_name'=>'Postman Test'],
@@ -120,10 +143,13 @@ foreach ($ordered as $key=>$handler) {
             if ($action === 'exportTables') { $fields['type']='devices'; $description .= "type: devices, device_types, departments, pm_schedules or all.\n"; }
         }
     } else {
+        if ($controller === 'BackupChecklistController') $query=match($action) {'export'=>['format'=>'xlsx'],'index'=>['month'=>'','page'=>'1'],'edit'=>$path==='/it-backup/create'?['month'=>'{{backup_month}}']:[],default=>[]};
         if ($controller === 'KpiFormController' && $action === 'export') $query=['format'=>'xlsx'];
+        if ($controller === 'PmRecordController' && $action === 'exportForm') $query=['format'=>'xlsx'];
         if (in_array($action,['index','search','tickets','requests','schedules','records'],true)) {
             $query = match($controller) {
-                'KpiController'=>['period'=>'{{kpi_period}}'],
+                'KpiController'=>['period'=>'{{kpi_period}}','department_id'=>''],
+                'KpiFormController'=>['department_id'=>''],
                 'UserController'=>['search'=>'','page'=>'1','sort'=>'svp_user_id','dir'=>'asc'],
                 'DeviceController'=>['search'=>'','page'=>'1','sort'=>'svp_device_id','dir'=>'asc','group'=>''],
                 'DepartmentController','PositionController','DeviceTypeController'=>['search'=>''],
@@ -133,12 +159,13 @@ foreach ($ordered as $key=>$handler) {
                 'AnnouncementController'=>['q'=>'','page'=>'1','manage'=>'0'],
                 'NotificationController'=>['page'=>'1'],
                 'DocumentControlController'=>['q'=>'','status'=>'','category'=>'','page'=>'1'],
-                'SharePointController'=>['folder'=>'','cursor'=>''],default=>[],
+                'SharePointController'=>['folder'=>'','cursor'=>''],'BackupChecklistController'=>['month'=>'','page'=>'1'],default=>[],
             };
         }
         if ($action === 'files') $query=['folder'=>'','cursor'=>'','category'=>'','document_id'=>''];
         if ($controller === 'DocumentControlController' && in_array($action,['create','edit'],true)) $query=['category'=>'','file'=>''];
         if ($controller === 'DeviceController' && $action === 'create') $query=['group'=>'it'];
+        if ($controller === 'MachineController' && in_array($action,['index','plans','records'],true)) $query=['q'=>'','page'=>'1'];
     }
     $request=['method'=>$method,'header'=>[], 'url'=>['raw'=>'{{base_url}}'.$urlPath,'host'=>['{{base_url}}'],'path'=>explode('/',ltrim($urlPath,'/'))], 'description'=>$description];
     if ($query) $request['url']['query']=array_map(fn($k,$v)=>['key'=>$k,'value'=>$v,'disabled'=>true],array_keys($query),array_values($query));
@@ -149,8 +176,8 @@ foreach ($ordered as $key=>$handler) {
         $request['body']=['mode'=>$mode,$mode=>$body];
     }
     $item=['name'=>$key,'request'=>$request,'response'=>[], 'protocolProfileBehavior'=>['followRedirects'=>false]];
-    $versionVar=match($controller) {'WorkController'=>'work_version','AnnouncementController'=>'announcement_version','DocumentControlController'=>'document_version','KpiFormController'=>'kpi_form_version',default=>null};
-    if ($method==='GET' && $versionVar && in_array($action,['show','edit'],true)) {
+    $versionVar=match($controller) {'WorkController'=>'work_version','AnnouncementController'=>'announcement_version','DocumentControlController'=>'document_version','KpiFormController'=>'kpi_form_version','BackupChecklistController'=>'backup_form_version','MachineController'=>'machine_version',default=>null};
+    if ($method==='GET' && $versionVar && in_array($action,['show','edit','planEdit','recordForm'],true)) {
         $item['event']=[eventScript('test',"const v = pm.response.text().match(/name=[\"']version[\"'][^>]*value=[\"']([0-9]+)[\"']/i);\nif (v) pm.environment.set('$versionVar', v[1]);")];
     }
     if ($key==='POST /login') $item['event']=[eventScript('test',"pm.test('Login redirects to home', function () { pm.expect(pm.response.code).to.eql(302); pm.expect(pm.response.headers.get('Location')).to.match(/\\/$/); });")];

@@ -1,0 +1,6 @@
+<?php require __DIR__.'/_nav.php'; $data=$record['data']; ?>
+<h1 class="h4 mb-3">ผลตรวจ PM เครื่องจักร #<?= (int)$record['id'] ?></h1>
+<section class="card p-4"><h2 class="h5"><?= Portal::esc($record['machine_code'].' · '.$record['machine_name']) ?></h2><p>แผน: <?= Portal::esc($data['plan']['title']) ?><br>วันที่ตรวจ: <?= Portal::esc($record['performed_date']) ?><br>ผู้ตรวจ: <?= Portal::esc($record['performed_name']) ?><br>ผลรวม: <strong><?= Portal::esc(MachinePm::RESULTS[$record['result_status']]) ?></strong></p>
+<p class="text-muted">Serial: <?= Portal::esc($data['machine']['serial_number']) ?> · จุดติดตั้ง: <?= Portal::esc($data['machine']['location']) ?> · แผนก: <?= Portal::esc($data['machine']['department_name']) ?></p>
+<div class="table-responsive"><table class="table"><thead><tr><th>รายการตรวจ</th><th>ผลตรวจ</th><th>รายละเอียด</th></tr></thead><tbody><?php foreach($data['checks'] as $entry): ?><tr><td><?= Portal::esc($entry['title']) ?></td><td><?= Portal::esc(MachinePm::CHECKS[$entry['result']]??'ยังไม่ระบุ') ?></td><td><?= nl2br(Portal::esc($entry['note'])) ?></td></tr><?php endforeach; ?></tbody></table></div>
+<p>หมายเหตุ: <?= nl2br(Portal::esc($data['notes'])) ?></p><p class="small text-muted mb-0">ข้อมูลเครื่องจักรและรายการตรวจเป็นฉบับ ณ เวลาที่บันทึกผล</p></section>

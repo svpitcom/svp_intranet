@@ -1,0 +1,24 @@
+flowchart LR
+    B["Browser<br/>HTML · CSS · JavaScript / Bootstrap"]
+    ENTRY["Apache / PHP<br/>public/index.php"]
+    ROUTER["Router<br/>app/Config/routes.php"]
+    GUARD["Middleware และ Policy<br/>Auth · Role · แผนก · DCC · CSRF"]
+    C["Controllers<br/>รับข้อมูลและเลือกงาน"]
+    M["Models / Services<br/>ตรวจข้อมูล · กฎงาน · Query"]
+    DB[("MySQL / MariaDB<br/>svpintranet ผ่าน PDO")]
+    VIEW["Views<br/>หน้าเว็บและแบบฟอร์ม"]
+    TEMPLATE["Templates / Export classes<br/>XLSX และ PDF"]
+    FILES["ไฟล์แนบในเครื่อง Server<br/>ดาวน์โหลดผ่าน Controller"]
+    REMOTE["SharePointClient<br/>Microsoft Graph"]
+    B --> ENTRY
+    ENTRY --> ROUTER
+    ROUTER --> GUARD
+    GUARD --> C
+    C --> M
+    M --> DB
+    C --> VIEW
+    VIEW --> B
+    C --> TEMPLATE
+    TEMPLATE --> B
+    C --> FILES
+    C --> REMOTE

@@ -4,6 +4,7 @@ require __DIR__.'/regression.php';
 $start=$checks;
 $dcc=['svp_department_id'=>13,'user_role'=>'user','is_active'=>1,'first_name'=>'<DCC>'];
 $allowed=['GET /','GET /login','POST /login','POST /logout','GET /users','GET /users/search','GET /document-control','GET /document-control/files','GET /document-control/create','POST /document-control/create','GET /document-control/{id}/edit','POST /document-control/{id}/edit'];
+$allowed=array_merge($allowed,['GET /kpi','GET /kpi/create','POST /kpi/create','POST /kpi/{id}/result','GET /kpi/{id}/history','GET /kpi/forms','GET /kpi/forms/create','POST /kpi/forms/create','GET /kpi/forms/{id}','POST /kpi/forms/{id}','GET /kpi/forms/{id}/export']);
 foreach (require BASE_PATH.'/app/Config/routes.php' as $route=>$handler) {
     check(DccWorkspace::allows($dcc,$route)===in_array($route,$allowed,true),'DCC route '.$route);
     check(DccWorkspace::allows(array_replace($dcc,['user_role'=>'admin']),$route),'admin unchanged '.$route);
@@ -15,6 +16,8 @@ $_SESSION['user']=$dcc;
 $html=render('partials/sidebar',[]);
 foreach(['/devices','/tickets','/requests','/announcements','/notifications','/departments','/positions','/pm-schedules','/sharepoint'] as $path) check(!str_contains($html,APP_URL.$path),'hidden sidebar '.$path);
 check(str_contains($html,APP_URL.'/users') && str_contains($html,APP_URL.'/document-control'),'DCC sidebar allowed links');
+check(str_contains($html,APP_URL.'/kpi'),'DCC sidebar includes own department KPI');
+check(!DccWorkspace::allows($dcc,'POST /kpi/forms/{id}/sharepoint'),'DCC cannot send KPI to SharePoint');
 check(str_contains($html,'SharePoint DCC') && str_contains($html,APP_URL.'/document-control/files'),'DCC SharePoint menu targets scoped browser');
 $_SERVER['REQUEST_URI']=APP_URL.'/document-control/files';
 $html=render('partials/sidebar',[]);

@@ -36,9 +36,9 @@ $errors = Session::get('errors');
         <div class="mb-3">
             <label for="asset_group" class="form-label-modern">กลุ่มอุปกรณ์</label>
             <select id="asset_group" name="asset_group" class="form-select" required>
-                <?php foreach (Device::GROUPS as $key => $label): ?><option value="<?= $key ?>" <?= ($device['asset_group'] ?? $defaultGroup ?? 'unclassified') === $key ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?>
+                <?php foreach (Device::GROUPS as $key => $label): if($key==='machine') continue; ?><option value="<?= $key ?>" <?= ($device['asset_group'] ?? $defaultGroup ?? 'unclassified') === $key ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?>
             </select>
-            <small class="text-muted">เลือกกลุ่มหลัก ส่วนประเภทอุปกรณ์ใช้ระบุชนิดย่อย เช่น Laptop หรือเครื่องฉีดพลาสติก</small>
+            <small class="text-muted">เลือกประเภทอุปกรณ์ เช่น Laptop หรือ Printer สำหรับเครื่องจักรให้ใช้เมนูเครื่องจักร</small>
         </div>
 
         <div class="mb-3">

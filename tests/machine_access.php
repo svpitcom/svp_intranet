@@ -5,6 +5,7 @@ $start=$checks;
 foreach ([['user',6,true],['manager','6',true],['admin',2,true],['user',2,false],['manager',3,false],['user',13,false],['user',null,false]] as [$role,$dept,$expected]) {
     $u=['user_role'=>$role,'svp_department_id'=>$dept,'is_active'=>1];
     check(MachineAccess::allows($u)===$expected,'machine policy role/department');
+    check(MachineAccess::manages($u)===$expected,'Maintenance and admin can manage machines regardless of role');
     $_SESSION['user']=$u;
     $html=render('partials/sidebar',[]);
     check(str_contains($html,APP_URL.'/machines')===$expected,'machine sidebar role/department');

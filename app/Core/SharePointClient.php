@@ -46,6 +46,38 @@ class SharePointClient
         return !$this->missingSettings() && trim($this->config['export_folder_id'] ?? '') !== '';
     }
 
+    /** Public labels only; folder IDs and credentials stay on the server. */
+    public function exportDestinations(): array
+    {
+        if ($this->missingSettings()) return [];
+        $choices=[];
+        if (trim($this->config['export_folder_id'] ?? '') !== '') $choices['default']='โฟลเดอร์ส่งออกหลัก';
+        foreach ($this->config['department_folders'] ?? [] as $key=>$id) {
+            if (is_string($key) && preg_match('/^[A-Z_]+$/D',$key) && trim((string)$id)!=='') $choices[$key]=$key;
+        }
+        return $choices;
+    }
+
+    public function uploadKpiForm(int $id,int $year,int $version,string $format,string $bytes,string $destination): array
+    {
+        if (!isset($this->exportDestinations()[$destination])) throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ SharePoint ที่เลือก');
+        if ($id<1 || $version<1 || $year<2000 || $year>2099 || !in_array($format,['xlsx','pdf'],true)) throw new RuntimeException('ข้อมูลไฟล์ KPI ไม่ถูกต้อง');
+        if (strlen($bytes)>10*1024*1024 || !str_starts_with($bytes,$format==='xlsx'?"PK\x03\x04":'%PDF-')) throw new RuntimeException('รูปแบบไฟล์ KPI ไม่ถูกต้องหรือเกิน 10 MB');
+        $client=$destination==='default'?$this:$this->forDepartment($destination);
+        // Validate the default folder as well as department destinations before writing.
+        if ($destination==='default') {
+            $folder=$this->graph('GET',$this->drivePath().'/items/'.rawurlencode($this->config['export_folder_id']).'?$select=id,folder,parentReference');
+            if (($folder['id']??'')!==$this->config['export_folder_id'] || !isset($folder['folder']) || ($folder['parentReference']['driveId']??'')!==$this->config['drive_id']) throw new RuntimeException('ปลายทางส่งออกไม่ใช่โฟลเดอร์ใน Document Library ที่ตั้งค่า');
+        }
+        $name='MR-F-027-01-'.$year.'-'.$id.'-v'.$version.'.'.$format;
+        $type=$format==='xlsx'?'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'application/pdf';
+        $result=$client->graph('PUT',$client->drivePath().'/items/'.rawurlencode($client->config['export_folder_id']).':/'.rawurlencode($name).':/content',$bytes,$type);
+        if (!is_string($result['id']??null) || $result['id']==='' || ($result['name']??'')!==$name) throw new RuntimeException('ยังยืนยันผลการส่งไม่ได้ กรุณาตรวจไฟล์ใน SharePoint ก่อนส่งซ้ำ');
+        $url=$result['webUrl']??'';
+        if (!is_string($url) || !filter_var($url,FILTER_VALIDATE_URL) || strtolower(parse_url($url,PHP_URL_SCHEME)??'')!=='https' || parse_url($url,PHP_URL_USER) || parse_url($url,PHP_URL_PASS)) $url='';
+        return ['id'=>$result['id'],'name'=>$name,'webUrl'=>$url];
+    }
+
     public function site(): array
     {
         return $this->graph('GET', '/sites/' . rawurlencode($this->config['site_id']) . '?$select=id,displayName,webUrl');

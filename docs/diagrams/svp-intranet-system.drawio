@@ -1,0 +1,783 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="svp-1" name="1. ภาพรวมระบบ">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="2740" pageHeight="1180" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="1. ภาพรวมระบบ" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="2660" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="U" value="ผู้ใช้งานผ่าน Web browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1195.0" y="120" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="A" value="เข้าสู่ระบบและตรวจสิทธิ์&lt;br/&gt;สถานะบัญชี · Role · แผนก · CSRF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1195.0" y="290" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="H" value="SVP Intranet&lt;br/&gt;Dashboard และ Sidebar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1195.0" y="460" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="PEOPLE" value="บุคลากร&lt;br/&gt;ผู้ใช้ · แผนก · ตำแหน่ง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="IT" value="อุปกรณ์ IT และ PM&lt;br/&gt;ทะเบียน · แผน · ผลตรวจ IT-F-005" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="MACHINE" value="เครื่องจักรและ PM&lt;br/&gt;ทะเบียน · แผน · ประวัติ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="WORK" value="แจ้งซ่อมและคำขอ&lt;br/&gt;มอบหมาย · ติดตาม · อนุมัติ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1030.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="COMMS" value="ประกาศและการแจ้งเตือน&lt;br/&gt;กลุ่มเป้าหมาย · รับทราบ · ติดตามงาน" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1360.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DCC" value="Document Control&lt;br/&gt;ทะเบียนเอกสาร · Revision · ประวัติ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1690.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="KPI" value="KPI ของแต่ละแผนก&lt;br/&gt;รายเดือน · MR-F-027-01 รายปี" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="2020.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="BACKUP" value="บันทึกตรวจ Backup Server&lt;br/&gt;IT-F-004" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="2350.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DB" value="svpintranet&lt;br/&gt;28 ตาราง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;shape=cylinder3;boundedLbl=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="865.0" y="800" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="EXPORT" value="สร้างไฟล์ / เชื่อมต่อเอกสาร&lt;br/&gt;Excel · PDF · CSV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1195.0" y="800" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="GRAPH" value="SharePointClient&lt;br/&gt;Microsoft Graph" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1525.0" y="800" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="SP" value="SharePoint&lt;br/&gt;โฟลเดอร์ที่ตั้งค่าไว้" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1195.0" y="970" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="U" target="A">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="A" target="H">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="PEOPLE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="IT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="MACHINE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="WORK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="COMMS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="DCC">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="KPI">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="H" target="BACKUP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="PEOPLE" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="IT" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="MACHINE" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="WORK" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="COMMS" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DCC" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="KPI" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="BACKUP" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="IT" target="EXPORT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="KPI" target="EXPORT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="BACKUP" target="EXPORT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="PEOPLE" target="EXPORT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="EXPORT" target="GRAPH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DCC" target="GRAPH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="GRAPH" target="SP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-2" name="2. โครงสร้างการทำงานของเว็บ">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="2410" pageHeight="1010" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="2. โครงสร้างการทำงานของเว็บ" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="2330" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="B" value="Browser&lt;br/&gt;HTML · CSS · JavaScript / Bootstrap" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="ENTRY" value="Apache / PHP&lt;br/&gt;public/index.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="ROUTER" value="Router&lt;br/&gt;app/Config/routes.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="GUARD" value="Middleware และ Policy&lt;br/&gt;Auth · Role · แผนก · DCC · CSRF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="C" value="Controllers&lt;br/&gt;รับข้อมูลและเลือกงาน" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="M" value="Models / Services&lt;br/&gt;ตรวจข้อมูล · กฎงาน · Query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="120.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="VIEW" value="Views&lt;br/&gt;หน้าเว็บและแบบฟอร์ม" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="TEMPLATE" value="Templates / Export classes&lt;br/&gt;XLSX และ PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="FILES" value="ไฟล์แนบในเครื่อง Server&lt;br/&gt;ดาวน์โหลดผ่าน Controller" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="REMOTE" value="SharePointClient&lt;br/&gt;Microsoft Graph" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="800.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DB" value="MySQL / MariaDB&lt;br/&gt;svpintranet ผ่าน PDO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;shape=cylinder3;boundedLbl=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="2020" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="B" target="ENTRY">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="ENTRY" target="ROUTER">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="ROUTER" target="GUARD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="GUARD" target="C">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="C" target="M">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="M" target="DB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="C" target="VIEW">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="VIEW" target="B">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="C" target="TEMPLATE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="TEMPLATE" target="B">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="C" target="FILES">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="C" target="REMOTE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-3" name="3. ฐานข้อมูล: บุคลากร / อุปกรณ์ IT / PM">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1420" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="3. ฐานข้อมูล: บุคลากร / อุปกรณ์ IT / PM" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1340" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="เส้นทึบ: Foreign Key จริง | เส้นประ: ความสัมพันธ์ในโค้ด" style="text;html=1;fontSize=15;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="800" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DEP" value="department&lt;br/&gt;PK svp_department_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="POS" value="position&lt;br/&gt;PK svp_position_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="TYPE" value="device_type&lt;br/&gt;PK device_type_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="USER" value="users&lt;br/&gt;PK svp_user_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="205.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DEVICE" value="device&lt;br/&gt;PK svp_device_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="375.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="PLAN" value="pm_schedule&lt;br/&gt;PK pm_schedule_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="205.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="RECORD" value="pm_record&lt;br/&gt;PK pm_record_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="375.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="FORM" value="pm_inspection_form&lt;br/&gt;PK / FK pm_record_id&lt;br/&gt;ข้อมูลใบตรวจ IT-F-005" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="svp_department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DEP" target="USER">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="svp_position_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="POS" target="USER">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="svp_department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DEP" target="DEVICE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="svp_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="USER" target="DEVICE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="device_type_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="TYPE" target="DEVICE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="svp_device_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DEVICE" target="PLAN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="responsible_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="USER" target="PLAN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="pm_schedule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="PLAN" target="RECORD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="performed_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="USER" target="RECORD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="pm_record_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="RECORD" target="FORM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-4" name="4. ฐานข้อมูล: เครื่องจักร / แผนและประวัติ PM">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1200" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="4. ฐานข้อมูล: เครื่องจักร / แผนและประวัติ PM" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="เส้นทึบ: Foreign Key จริง | เส้นประ: ความสัมพันธ์ในโค้ด" style="text;html=1;fontSize=15;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="800" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DEP" value="department&lt;br/&gt;ข้อมูลแผนกกลาง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="205.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="USER" value="users&lt;br/&gt;บัญชีผู้ใช้กลาง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="375.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="SCHEMA" value="machine_schema&lt;br/&gt;PK version&lt;br/&gt;เวอร์ชันโครงสร้างตาราง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="545.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="MACHINE" value="machines&lt;br/&gt;PK id&lt;br/&gt;รหัส · ชื่อ · ที่ตั้ง · ผู้รับผิดชอบ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="120.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="PLAN" value="machine_pm_schedules&lt;br/&gt;PK id&lt;br/&gt;รอบ PM · Checklist · กำหนดถัดไป" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="RECORD" value="machine_pm_records&lt;br/&gt;PK id&lt;br/&gt;ผลตรวจและ Snapshot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="EVENTS" value="machine_events&lt;br/&gt;PK id&lt;br/&gt;entity_type + entity_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="MACHINE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="owner_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="MACHINE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="machine_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="MACHINE" target="PLAN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="machine_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="MACHINE" target="RECORD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="schedule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="PLAN" target="RECORD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="responsible_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="PLAN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="performed_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="RECORD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="ทะเบียน" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="MACHINE" target="EVENTS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="แผน" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="PLAN" target="EVENTS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="ผลตรวจ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="RECORD" target="EVENTS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-10" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="EVENTS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-5" name="5. ฐานข้อมูล: ใบงาน / ประกาศ / เอกสาร / Backup">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1200" pageHeight="1690" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="5. ฐานข้อมูล: ใบงาน / ประกาศ / เอกสาร / Backup" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="เส้นทึบ: Foreign Key จริง | เส้นประ: ความสัมพันธ์ในโค้ด" style="text;html=1;fontSize=15;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="800" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="USER" value="users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DEP" value="department" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DEVICE" value="device" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="970.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="WORK" value="work_items&lt;br/&gt;PK id&lt;br/&gt;kind = ticket / request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="120.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="EVENT" value="work_events&lt;br/&gt;PK id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="NOTICE" value="portal_notifications&lt;br/&gt;PK id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="ANN" value="announcements&lt;br/&gt;PK id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="READ" value="announcement_reads&lt;br/&gt;PK announcement_id + user_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="800.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DOC" value="controlled_documents&lt;br/&gt;PK id&lt;br/&gt;Metadata + SharePoint file reference" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="970.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DOCH" value="controlled_document_history&lt;br/&gt;PK id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="1140.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="BACKUP" value="backup_checklists&lt;br/&gt;PK id&lt;br/&gt;ข้อมูลรายวันใน payload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="1310.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="BACKUPH" value="backup_checklist_history&lt;br/&gt;PK id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="1480.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="requester / assignee / approver" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="WORK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="device_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEVICE" target="WORK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="work_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="WORK" target="EVENT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="work_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="WORK" target="NOTICE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="EVENT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="NOTICE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="ANN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="author_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="ANN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="announcement_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="ANN" target="READ">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="READ">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-10" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="DOC">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-11" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DOC">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-12" value="document_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DOC" target="DOCH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-13" value="changed_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DOCH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-14" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="BACKUP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-15" value="form_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="BACKUP" target="BACKUPH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-16" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="BACKUPH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-6" name="6. ฐานข้อมูล: KPI แผนก">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1200" pageHeight="1180" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="6. ฐานข้อมูล: KPI แผนก" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="เส้นทึบ: Foreign Key จริง | เส้นประ: ความสัมพันธ์ในโค้ด" style="text;html=1;fontSize=15;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="800" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DEP" value="department" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="USER" value="users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DEF" value="kpi_definitions&lt;br/&gt;PK id&lt;br/&gt;เดือน · แผนก · เป้าหมาย · น้ำหนัก" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="120.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="RESULT" value="kpi_results&lt;br/&gt;PK kpi_id&lt;br/&gt;ผลล่าสุด + version" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="HISTORY" value="kpi_history&lt;br/&gt;PK id&lt;br/&gt;ประวัติผลและผู้บันทึก" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="FORM" value="kpi_forms&lt;br/&gt;PK id&lt;br/&gt;MR-F-027-01 รายปี" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="FH" value="kpi_form_history&lt;br/&gt;PK id&lt;br/&gt;Snapshot ตามฉบับ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="800.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DELIVERY" value="kpi_form_deliveries&lt;br/&gt;PK id&lt;br/&gt;หลักฐานส่ง SharePoint" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="970.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="DEF">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="created_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DEF">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="kpi_id : ผลล่าสุด 0 หรือ 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEF" target="RESULT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="kpi_id : หลายครั้ง" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEF" target="HISTORY">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="RESULT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="HISTORY">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="FORM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="FORM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="form_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="FORM" target="FH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="form_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="FORM" target="DELIVERY">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-10" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="FH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-11" value="sent_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DELIVERY">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-7" name="7. Workflow แจ้งซ่อมและคำขออนุมัติ">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1420" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="7. Workflow แจ้งซ่อมและคำขออนุมัติ" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1340" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="NEW" value="แจ้งซ่อม&lt;br/&gt;open" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="REQ" value="ส่งคำขอ&lt;br/&gt;pending" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="ASSIGN" value="มอบหมายผู้รับงาน&lt;br/&gt;ยังคงสถานะเดิม" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="120.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DO" value="เริ่มดำเนินการ&lt;br/&gt;in_progress" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CANCEL" value="ยกเลิก&lt;br/&gt;cancelled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="APPROVE" value="ผู้อนุมัติที่กำหนด&lt;br/&gt;ต้องไม่ใช่ผู้ขอ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DONE" value="แจ้งซ่อมเสร็จ&lt;br/&gt;resolved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="205.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="YES" value="อนุมัติ&lt;br/&gt;approved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="375.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="NO" value="ไม่อนุมัติ&lt;br/&gt;rejected" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="545.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CLOSE" value="ยืนยันปิดงาน&lt;br/&gt;closed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="375.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="NEW" target="ASSIGN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="ASSIGN" target="DO">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="NEW" target="DO">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DO" target="DONE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DONE" target="CLOSE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="เปิดงานอีกครั้ง" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DONE" target="DO">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="NEW" target="CANCEL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DO" target="CANCEL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="REQ" target="APPROVE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="APPROVE" target="YES">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="APPROVE" target="NO">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-11" value="ผู้ขอยกเลิก" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="REQ" target="CANCEL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-8" name="8. Workflow PM เครื่องจักร">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1200" pageHeight="1520" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="8. Workflow PM เครื่องจักร" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="M" value="Maintenance หรือ Admin&lt;br/&gt;เพิ่มทะเบียนเครื่องจักร" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="205.0" y="120" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="P" value="สร้างแผน PM&lt;br/&gt;Checklist · รอบวัน · ผู้รับผิดชอบ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="205.0" y="290" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CHECK" value="กรอกวันทำจริงและผลตรวจ&lt;br/&gt;ตรวจสิทธิ์ · สถานะเปิดใช้ · version" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="205.0" y="460" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="RESULT" value="ผลตรวจ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;shape=rhombus;" vertex="1" parent="1">
+          <mxGeometry x="205.0" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="OK" value="completed&lt;br/&gt;ตรวจครบและปกติทุกข้อ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40.0" y="800" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="PART" value="partial / issue_found&lt;br/&gt;ยังไม่ครบหรือพบปัญหา" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370.0" y="800" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="ADVANCE" value="อัปเดตวัน PM ล่าสุดและกำหนดถัดไป&lt;br/&gt;ไม่ย้อนวันล่าสุดเมื่อกรอกประวัติเก่ากว่า" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40.0" y="970" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="HOLD" value="คงวันครบกำหนดเดิม" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370.0" y="970" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="SAVE" value="Transaction&lt;br/&gt;ประวัติ + Snapshot + version + Audit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="205.0" y="1140" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="HISTORY" value="เปิดดูประวัติ PM เครื่องจักร" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="205.0" y="1310" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="M" target="P">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="P" target="CHECK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="CHECK" target="RESULT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="RESULT" target="OK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="RESULT" target="PART">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="OK" target="ADVANCE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="PART" target="HOLD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="ADVANCE" target="SAVE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="HOLD" target="SAVE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="SAVE" target="HISTORY">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="svp-9" name="9. Excel / PDF / SharePoint">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1420" pageHeight="1180" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="9. Excel / PDF / SharePoint" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1340" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="USER" value="ทะเบียนผู้ใช้ / อุปกรณ์ IT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="MASTER" value="app/Templates/*.xlsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="290.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="ANNUAL" value="KPI รายปีที่บันทึกแล้ว" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="PMPDF" value="ไฟล์ PDF แนบผล PM IT&lt;br/&gt;ส่งหลังบันทึกฐานข้อมูลสำเร็จ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="630.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CSV" value="รายงาน PM / ตารางที่รองรับ&lt;br/&gt;SharePointTables และ Export" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DCC" value="Document Control&lt;br/&gt;อ่านไฟล์ในขอบเขต DCC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="970.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="WB" value="UserWorkbook / DeviceWorkbook&lt;br/&gt;Build · Parse · Import" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="205.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="KEXPORT" value="KpiFormExport&lt;br/&gt;Excel / PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="375.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="BACKUP" value="IT-F-004&lt;br/&gt;BackupChecklistExport" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="545.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="PMFORM" value="IT-F-005&lt;br/&gt;PmInspectionExport" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="715.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CLIENT" value="SharePointClient" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="885.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="DOWNLOAD" value="ดาวน์โหลดไฟล์ใน Browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="375.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="GRAPH" value="Microsoft Graph&lt;br/&gt;App-only access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="545.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="RECEIPT" value="kpi_form_deliveries&lt;br/&gt;เก็บหลักฐานส่งตามฉบับ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="715.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="SP" value="SharePoint&lt;br/&gt;Site / Drive / โฟลเดอร์ที่ตั้งค่า" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="545.0" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="USER" target="WB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="MASTER" target="WB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="Admin สั่งอัปเดต / นำเข้า" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="WB" target="CLIENT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="ดาวน์โหลด XLSX เพื่อนำเข้า" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="CLIENT" target="WB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="ANNUAL" target="KEXPORT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="MASTER" target="KEXPORT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="KEXPORT" target="DOWNLOAD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="Admin กดส่งฉบับที่บันทึกแล้ว" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="KEXPORT" target="CLIENT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="BACKUP" target="DOWNLOAD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="PMFORM" target="DOWNLOAD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="MASTER" target="BACKUP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="MASTER" target="PMFORM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="PMPDF" target="CLIENT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-13" value="Admin สั่งส่งออก" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="CSV" target="CLIENT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DCC" target="CLIENT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="CLIENT" target="GRAPH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="GRAPH" target="SP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-17" value="ผลส่ง KPI สำเร็จ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="CLIENT" target="RECEIPT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

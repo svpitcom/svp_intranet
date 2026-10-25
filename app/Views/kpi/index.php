@@ -1,22 +1,24 @@
 <div class="d-flex justify-content-between align-items-start gap-3 mb-4 flex-wrap">
-    <div><h1 class="h3">KPI / ผลการดำเนินงาน</h1><p class="text-muted">เป้าหมายรายเดือน · รายแผนกและรายบุคคล</p></div>
-    <div><a class="btn btn-outline-primary" href="<?= APP_URL ?>/kpi/forms">KPI &amp; Action plan รายปี</a> <?php if (Portal::manager($user)): ?><a class="btn btn-primary" href="<?= APP_URL ?>/kpi/create">+ กำหนด KPI รายเดือน</a><?php endif; ?></div>
+    <div><h1 class="h3">KPI แผนก</h1><p class="text-muted">เป้าหมายและผลงานรายเดือน · พนักงานร่วมกันบันทึกผลของแผนกตนเอง</p></div>
+    <div><a class="btn btn-outline-primary" href="<?= APP_URL ?>/kpi/forms?department_id=<?= (int)($departmentId??0) ?: '' ?>">KPI &amp; Action plan รายปี</a> <?php if (KpiPolicy::manages($user,(int)($user['svp_department_id']??0))): ?><a class="btn btn-primary" href="<?= APP_URL ?>/kpi/create?period=<?= Portal::esc($period) ?>&amp;department_id=<?= (int)($departmentId??0) ?: '' ?>">+ กำหนด KPI แผนก</a><?php endif; ?></div>
 </div>
 <form method="get" class="d-flex gap-2 align-items-end mb-4 flex-wrap">
     <div><label class="form-label" for="kpi-month">เดือนประเมิน (ค.ศ.)</label><input class="form-control" id="kpi-month" type="month" name="period" value="<?= Portal::esc($period) ?>" required></div>
+    <?php require __DIR__.'/_department_filter.php'; ?>
     <button class="btn btn-primary">แสดงผล</button>
 </form>
-<div class="alert alert-info">คะแนนสูงสุด 100 ต่อหัวข้อ · คะแนนถ่วงน้ำหนักจะแยกแต่ละแผนก/บุคคล และคิดเฉพาะหัวข้อที่มีผลแล้ว หากข้อมูลยังไม่ครบจะแสดงเป็นคะแนนชั่วคราว ไม่ใช่ผลประเมินที่อนุมัติแล้ว</div>
+<div class="alert alert-info">คะแนนสูงสุด 100 ต่อหัวข้อ · สรุปคะแนนถ่วงน้ำหนักแยกตามแผนก คิดเฉพาะหัวข้อที่มีผลแล้ว หากข้อมูลยังไม่ครบจะแสดงเป็นคะแนนชั่วคราว ไม่ใช่ผลประเมินที่อนุมัติแล้ว</div>
 <div class="row g-3 mb-4">
 <?php foreach ($summaries as $s): ?>
     <div class="col-12 col-md-6 col-xl-4"><div class="card h-100"><div class="card-body">
         <h2 class="h6"><?= Portal::esc($s['label']) ?></h2>
         <div class="fs-2 fw-bold text-primary"><?= $s['weight']>0?number_format($s['weighted']/$s['weight'],2):'—' ?><span class="fs-6 text-muted"> / 100</span></div>
         <div class="small text-muted">มีผล <?= (int)$s['filled'] ?> / <?= (int)$s['total'] ?> หัวข้อ <?= $s['filled']<$s['total']?'· คะแนนชั่วคราว':'' ?></div>
+        <a class="small d-inline-block mt-2" href="<?= APP_URL ?>/kpi?period=<?= Portal::esc($period) ?>&amp;department_id=<?= (int)$s['department_id'] ?>">ดู KPI แผนกนี้</a>
     </div></div></div>
 <?php endforeach; ?>
 </div>
-<?php if (!$rows): ?><div class="card"><div class="card-body text-center py-5"><h2 class="h5">ยังไม่มี KPI ในเดือนนี้</h2><p class="text-muted mb-0">ให้ผู้จัดการแผนกหรือผู้ดูแลระบบกำหนดหัวข้อ เป้าหมาย และน้ำหนักก่อนเริ่มบันทึกผล</p></div></div><?php endif; ?>
+<?php if (!$rows): ?><div class="card"><div class="card-body text-center py-5"><h2 class="h5">ยังไม่มี KPI แผนกในเดือนนี้</h2><p class="text-muted mb-0">เริ่มกำหนดหัวข้อ เป้าหมาย และน้ำหนักของแผนก แล้วให้ทีมร่วมกันบันทึกผล</p></div></div><?php endif; ?>
 <?php foreach ($rows as $row): ?>
 <section class="card mb-3"><div class="card-body">
     <div class="d-flex justify-content-between gap-3 flex-wrap">

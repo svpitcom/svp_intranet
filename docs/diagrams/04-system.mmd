@@ -1,0 +1,19 @@
+flowchart LR
+    DEP["department<br/>ข้อมูลแผนกกลาง"]
+    USER["users<br/>บัญชีผู้ใช้กลาง"]
+    MACHINE["machines<br/>PK id<br/>รหัส · ชื่อ · ที่ตั้ง · ผู้รับผิดชอบ"]
+    PLAN["machine_pm_schedules<br/>PK id<br/>รอบ PM · Checklist · กำหนดถัดไป"]
+    RECORD["machine_pm_records<br/>PK id<br/>ผลตรวจและ Snapshot"]
+    EVENTS["machine_events<br/>PK id<br/>entity_type + entity_id"]
+    SCHEMA["machine_schema<br/>PK version<br/>เวอร์ชันโครงสร้างตาราง"]
+    DEP -.->|department_id| MACHINE
+    USER -.->|owner_id| MACHINE
+    MACHINE -->|machine_id| PLAN
+    MACHINE -->|machine_id| RECORD
+    PLAN -->|schedule_id| RECORD
+    USER -.->|responsible_id| PLAN
+    USER -.->|performed_by| RECORD
+    MACHINE -.->|ทะเบียน| EVENTS
+    PLAN -.->|แผน| EVENTS
+    RECORD -.->|ผลตรวจ| EVENTS
+    USER -.->|actor_id| EVENTS

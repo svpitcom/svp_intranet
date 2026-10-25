@@ -1,0 +1,41 @@
+flowchart TB
+    U["ผู้ใช้งานผ่าน Web browser"]
+    A["เข้าสู่ระบบและตรวจสิทธิ์<br/>สถานะบัญชี · Role · แผนก · CSRF"]
+    H["SVP Intranet<br/>Dashboard และ Sidebar"]
+    PEOPLE["บุคลากร<br/>ผู้ใช้ · แผนก · ตำแหน่ง"]
+    IT["อุปกรณ์ IT และ PM<br/>ทะเบียน · แผน · ผลตรวจ IT-F-005"]
+    MACHINE["เครื่องจักรและ PM<br/>ทะเบียน · แผน · ประวัติ"]
+    WORK["แจ้งซ่อมและคำขอ<br/>มอบหมาย · ติดตาม · อนุมัติ"]
+    COMMS["ประกาศและการแจ้งเตือน<br/>กลุ่มเป้าหมาย · รับทราบ · ติดตามงาน"]
+    DCC["Document Control<br/>ทะเบียนเอกสาร · Revision · ประวัติ"]
+    KPI["KPI ของแต่ละแผนก<br/>รายเดือน · MR-F-027-01 รายปี"]
+    BACKUP["บันทึกตรวจ Backup Server<br/>IT-F-004"]
+    DB[("svpintranet<br/>28 ตาราง")]
+    EXPORT["สร้างไฟล์ / เชื่อมต่อเอกสาร<br/>Excel · PDF · CSV"]
+    GRAPH["SharePointClient<br/>Microsoft Graph"]
+    SP["SharePoint<br/>โฟลเดอร์ที่ตั้งค่าไว้"]
+    U --> A
+    A --> H
+    H --> PEOPLE
+    H --> IT
+    H --> MACHINE
+    H --> WORK
+    H --> COMMS
+    H --> DCC
+    H --> KPI
+    H --> BACKUP
+    PEOPLE --> DB
+    IT --> DB
+    MACHINE --> DB
+    WORK --> DB
+    COMMS --> DB
+    DCC --> DB
+    KPI --> DB
+    BACKUP --> DB
+    IT --> EXPORT
+    KPI --> EXPORT
+    BACKUP --> EXPORT
+    PEOPLE --> EXPORT
+    EXPORT --> GRAPH
+    DCC --> GRAPH
+    GRAPH --> SP

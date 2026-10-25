@@ -1,0 +1,1 @@
+<div class="d-flex flex-wrap gap-2 mb-4" aria-label="เมนูเครื่องจักร"><a class="btn btn-outline-primary" href="<?= APP_URL ?>/machines">ทะเบียนเครื่องจักร</a><a class="btn btn-outline-primary" href="<?= APP_URL ?>/machine-pm">แผน PM เครื่องจักร</a><a class="btn btn-outline-primary" href="<?= APP_URL ?>/machine-pm/records">ประวัติ PM เครื่องจักร</a></div>

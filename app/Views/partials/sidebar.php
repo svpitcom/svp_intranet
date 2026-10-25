@@ -6,15 +6,12 @@ if ($basePath !== '' && str_starts_with($currentPath, $basePath . '/')) $current
 $navGroups = [
     'ภาพรวม' => [['/', 'หน้าแรก', 'house-door'], ['/announcements', 'ประกาศภายใน', 'megaphone'], ['/notifications', 'การแจ้งเตือน', 'bell']],
     'บุคลากร' => [['/users', 'ผู้ใช้งาน', 'people'], ['/departments', 'แผนก', 'diagram-3'], ['/positions', 'ตำแหน่ง', 'person-badge']],
-    'อุปกรณ์' => [['/it-devices', 'อุปกรณ์ IT', 'laptop'], ['/machines', 'เครื่องจักร', 'gear'], ['/devices', 'ทะเบียนรวม', 'list-ul'], ['/device_types', 'ประเภทอุปกรณ์', 'grid']],
+    'อุปกรณ์' => [['/devices', 'ทะเบียนอุปกรณ์', 'laptop'], ['/device_types', 'ประเภทอุปกรณ์', 'grid']],
     'งานบำรุงรักษา' => [['/tickets', 'แจ้งซ่อม / ติดตามงาน', 'tools'], ['/pm-schedules', 'แผนบำรุงรักษา', 'calendar2-check'], ['/pm-records', 'ประวัติการทำ PM', 'clock-history']],
     'คำขอและอนุมัติ' => [['/requests', 'คำขออนุมัติ', 'clipboard-check']],
 ];
-if (!MachineAccess::allows(Session::get('user'))) {
-    $navGroups['อุปกรณ์'] = array_values(array_filter($navGroups['อุปกรณ์'], static fn(array $item): bool => $item[0] !== '/machines'));
-}
-if (!ItDeviceAccess::allows(Session::get('user'))) {
-    $navGroups['อุปกรณ์'] = array_values(array_filter($navGroups['อุปกรณ์'], static fn(array $item): bool => $item[0] !== '/it-devices'));
+if (MachineAccess::allows(Session::get('user'))) {
+    $navGroups['เครื่องจักร']=[['/machines','ทะเบียนเครื่องจักร','gear'],['/machine-pm','แผน PM เครื่องจักร','calendar2-check'],['/machine-pm/records','ประวัติ PM เครื่องจักร','clock-history']];
 }
 if (DccWorkspace::restricted(Session::get('user'))) {
     $navGroups = [
@@ -22,7 +19,10 @@ if (DccWorkspace::restricted(Session::get('user'))) {
     ];
 }
 if (KpiPolicy::allows(Session::get('user'))) {
-    $navGroups['ผลการดำเนินงาน'] = [['/kpi', 'KPI / ผลงาน', 'graph-up-arrow']];
+    $navGroups['ผลการดำเนินงาน'] = [['/kpi', 'KPI แผนก', 'graph-up-arrow']];
+}
+if (ItDeviceAccess::allows(Session::get('user'))) {
+    $navGroups['แบบฟอร์ม IT'] = [['/it-backup', 'ตรวจ Backup Server', 'hdd-network']];
 }
 if (DocumentControlAccess::allows(Session::get('user'))) {
     $navGroups['เอกสาร'] = [['/document-control', 'Document Control', 'file-earmark-check']];
@@ -48,6 +48,8 @@ if ((Session::get('user')['user_role'] ?? '') === 'admin') {
                 <ul class="nav flex-column">
                     <?php foreach ($items as [$path, $label, $icon]):
                         $active = $currentPath === $path || ($path !== '/' && str_starts_with($currentPath, $path . '/'));
+                        if ($path === '/devices' && $currentPath === '/it-devices') $active = true;
+                        if ($path==='/machine-pm' && str_starts_with($currentPath,'/machine-pm/records')) $active=false;
                         if ($path === '/document-control' && $currentPath === '/document-control/files' && DccWorkspace::restricted(Session::get('user'))) $active = false;
                     ?>
                         <li class="nav-item">

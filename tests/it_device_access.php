@@ -6,7 +6,7 @@ foreach ([['user',2,true],['manager','2',true],['admin',6,true],['user',6,false]
     $u = ['user_role'=>$role,'svp_department_id'=>$dept,'is_active'=>1];
     check(ItDeviceAccess::allows($u) === $expected, 'IT policy role/department');
     $_SESSION['user'] = $u;
-    check(str_contains(render('partials/sidebar', []), APP_URL.'/it-devices') === $expected, 'IT sidebar role/department');
+    check(!str_contains(render('partials/sidebar', []), APP_URL.'/it-devices'), 'filtered IT page has no duplicate sidebar entry');
 }
 check(!ItDeviceAccess::allows(null), 'guest denied');
 check(!ItDeviceAccess::allows(['user_role'=>'admin','is_active'=>0]), 'inactive admin denied');

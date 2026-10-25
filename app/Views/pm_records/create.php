@@ -1,3 +1,10 @@
+<?php if (($schedule['asset_group']??'')==='it') {
+    $data=PmInspection::restore($old??[],PmInspection::defaults($schedule,Session::get('user',[])));
+    if ($data['performed_date']==='') $data['performed_date']=Portal::today();
+    $readOnly=false;
+    require __DIR__.'/inspection.php';
+    return;
+} ?>
 <h4 class="mb-1">บันทึกการทำ PM: <?= htmlspecialchars($schedule['pm_title']) ?></h4>
 <p class="text-muted">อุปกรณ์: <?= htmlspecialchars($schedule['svp_device_name']) ?></p>
 

@@ -1,0 +1,21 @@
+flowchart LR
+    DEP["department"]
+    USER["users"]
+    DEF["kpi_definitions<br/>PK id<br/>เดือน · แผนก · เป้าหมาย · น้ำหนัก"]
+    RESULT["kpi_results<br/>PK kpi_id<br/>ผลล่าสุด + version"]
+    HISTORY["kpi_history<br/>PK id<br/>ประวัติผลและผู้บันทึก"]
+    FORM["kpi_forms<br/>PK id<br/>MR-F-027-01 รายปี"]
+    FH["kpi_form_history<br/>PK id<br/>Snapshot ตามฉบับ"]
+    DELIVERY["kpi_form_deliveries<br/>PK id<br/>หลักฐานส่ง SharePoint"]
+    DEP -.->|department_id| DEF
+    USER -.->|created_by| DEF
+    DEF -.->|kpi_id : ผลล่าสุด 0 หรือ 1| RESULT
+    DEF -.->|kpi_id : หลายครั้ง| HISTORY
+    USER -.->|updated_by| RESULT
+    USER -.->|actor_id| HISTORY
+    DEP -.->|department_id| FORM
+    USER -.->|updated_by| FORM
+    FORM -.->|form_id| FH
+    FORM -.->|form_id| DELIVERY
+    USER -.->|actor_id| FH
+    USER -.->|sent_by| DELIVERY

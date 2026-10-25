@@ -1,0 +1,34 @@
+flowchart LR
+    USER["ทะเบียนผู้ใช้ / อุปกรณ์ IT"]
+    WB["UserWorkbook / DeviceWorkbook<br/>Build · Parse · Import"]
+    MASTER["app/Templates/*.xlsx"]
+    ANNUAL["KPI รายปีที่บันทึกแล้ว"]
+    KEXPORT["KpiFormExport<br/>Excel / PDF"]
+    BACKUP["IT-F-004<br/>BackupChecklistExport"]
+    PMFORM["IT-F-005<br/>PmInspectionExport"]
+    DOWNLOAD["ดาวน์โหลดไฟล์ใน Browser"]
+    PMPDF["ไฟล์ PDF แนบผล PM IT<br/>ส่งหลังบันทึกฐานข้อมูลสำเร็จ"]
+    CSV["รายงาน PM / ตารางที่รองรับ<br/>SharePointTables และ Export"]
+    CLIENT["SharePointClient"]
+    GRAPH["Microsoft Graph<br/>App-only access"]
+    SP["SharePoint<br/>Site / Drive / โฟลเดอร์ที่ตั้งค่า"]
+    RECEIPT["kpi_form_deliveries<br/>เก็บหลักฐานส่งตามฉบับ"]
+    DCC["Document Control<br/>อ่านไฟล์ในขอบเขต DCC"]
+    USER --> WB
+    MASTER --> WB
+    WB -->|Admin สั่งอัปเดต / นำเข้า| CLIENT
+    CLIENT -->|ดาวน์โหลด XLSX เพื่อนำเข้า| WB
+    ANNUAL --> KEXPORT
+    MASTER --> KEXPORT
+    KEXPORT --> DOWNLOAD
+    KEXPORT -->|Admin กดส่งฉบับที่บันทึกแล้ว| CLIENT
+    BACKUP --> DOWNLOAD
+    PMFORM --> DOWNLOAD
+    MASTER --> BACKUP
+    MASTER --> PMFORM
+    PMPDF --> CLIENT
+    CSV -->|Admin สั่งส่งออก| CLIENT
+    DCC --> CLIENT
+    CLIENT --> GRAPH
+    GRAPH --> SP
+    CLIENT -->|ผลส่ง KPI สำเร็จ| RECEIPT

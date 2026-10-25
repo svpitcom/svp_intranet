@@ -78,7 +78,7 @@ class PmSchedule extends Model
 
     public function findWithRelations(int $id): ?array
     {
-        $sql = "SELECT ps.*, dv.svp_device_name, d.svp_department_name, u.first_name, u.last_name
+        $sql = "SELECT ps.*, dv.svp_device_name, dv.serial_number, dv.asset_group, d.svp_department_name, u.first_name, u.last_name
                 FROM pm_schedule ps
                 JOIN device dv ON dv.svp_device_id = ps.svp_device_id
                 LEFT JOIN department d ON d.svp_department_id = dv.svp_department_id

@@ -3,18 +3,28 @@ final class KpiPolicy
 {
     public static function allows(?array $user): bool
     {
-        return $user !== null && !empty($user['is_active']) && !DccWorkspace::restricted($user);
+        return $user !== null && !empty($user['is_active'])
+            && (($user['user_role']??'')==='admin' || (int)($user['svp_department_id']??0)>0);
     }
     public static function manages(array $user, int $department): bool
     {
         return self::allows($user) && (($user['user_role'] ?? '') === 'admin'
-            || (($user['user_role'] ?? '') === 'manager' && $department > 0 && (int)($user['svp_department_id'] ?? 0) === $department));
+            || ($department > 0 && (int)($user['svp_department_id'] ?? 0) === $department));
+    }
+    public static function department(array $user, $requested=null): ?int
+    {
+        if (!self::allows($user)) throw new RuntimeException('ไม่มีสิทธิ์เข้า KPI');
+        $department=Portal::id($requested);
+        if (($user['user_role']??'')==='admin') return $department;
+        $own=(int)($user['svp_department_id']??0);
+        if ($own<=0 || ($department!==null && $department!==$own)) throw new RuntimeException('ดู KPI ได้เฉพาะแผนกของตนเอง');
+        return $own;
     }
     public static function reads(array $user, array $row): bool
     {
-        return self::allows($user) && (self::manages($user, (int)$row['department_id'])
+        return self::allows($user) && ((($user['user_role']??'')==='admin')
             || ((int)($user['svp_department_id'] ?? 0) === (int)$row['department_id']
-                && (empty($row['user_id']) || (int)$row['user_id'] === (int)$user['svp_user_id'])));
+                && (empty($row['user_id']) || ($user['user_role']??'')==='manager' || (int)$row['user_id'] === (int)$user['svp_user_id'])));
     }
     public static function writes(array $user, array $row): bool
     {

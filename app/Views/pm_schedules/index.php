@@ -76,7 +76,7 @@ require BASE_PATH . '/app/Views/partials/search.php'; ?>
                         </td>
                         <td><span class="badge <?= $badgeClass ?>"><?= $badgeLabel ?></span></td>
                         <td class="text-end">
-                            <a href="<?= APP_URL ?>/pm-schedules/<?= $s['pm_schedule_id'] ?>/record" class="btn btn-sm btn-outline-success">บันทึกว่าทำแล้ว</a>
+                            <a href="<?= APP_URL ?>/pm-schedules/<?= $s['pm_schedule_id'] ?>/record" class="btn btn-sm btn-outline-success">บันทึกผลตรวจ PM</a>
                             <?php if (in_array($currentUser['user_role'], ['admin', 'manager'], true)): ?>
                                 <a href="<?= APP_URL ?>/pm-schedules/<?= $s['pm_schedule_id'] ?>/edit" class="btn btn-sm btn-outline-primary">แก้ไข</a>
                             <?php endif; ?>

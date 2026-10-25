@@ -62,6 +62,19 @@ class ExportController extends Controller
             $this->redirect('/pm-schedules');
         }
 
+        if (($schedule['asset_group']??'')==='it') {
+            // A plan exports an unfilled inspection sheet, never a completed PM report.
+            $data=PmInspection::defaults($schedule);
+            $format=$this->input('format','pdf');
+            if (!in_array($format,['pdf','xlsx'],true)) { http_response_code(400); echo 'รูปแบบไฟล์ไม่ถูกต้อง'; return; }
+            $bytes=$format==='pdf'?PmInspectionExport::pdf($data):PmInspectionExport::xlsx($data);
+            header('Content-Type: '.($format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'));
+            header('Content-Disposition: attachment; filename="IT-F-005-blank-'.$id.'.'.$format.'"');
+            header('Cache-Control: private, no-store');
+            echo $bytes;
+            return;
+        }
+
         $checklistItems = array_values(array_filter(
             array_map('trim', explode("\n", $schedule['checklist'] ?? '')),
             fn($line) => $line !== ''

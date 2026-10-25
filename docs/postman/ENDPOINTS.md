@@ -6,15 +6,22 @@ Generated from app/Config/routes.php. Middleware is only the first layer; contro
 |---|---|---|---|
 | GET | `/login` | AuthController::showLogin |  |
 | POST | `/login` | AuthController::login |  |
+| GET | `/it-backup` | BackupChecklistController::index | auth |
+| GET | `/it-backup/create` | BackupChecklistController::edit | auth |
+| POST | `/it-backup/create` | BackupChecklistController::save | auth |
+| GET | `/it-backup/{id}` | BackupChecklistController::edit | auth |
+| POST | `/it-backup/{id}` | BackupChecklistController::save | auth |
+| GET | `/it-backup/{id}/export` | BackupChecklistController::export | auth |
 | GET | `/kpi/forms` | KpiFormController::index | auth |
-| GET | `/kpi/forms/create` | KpiFormController::edit | auth, role:admin,manager |
-| POST | `/kpi/forms/create` | KpiFormController::save | auth, role:admin,manager |
+| GET | `/kpi/forms/create` | KpiFormController::edit | auth |
+| POST | `/kpi/forms/create` | KpiFormController::save | auth |
 | GET | `/kpi/forms/{id}` | KpiFormController::edit | auth |
-| POST | `/kpi/forms/{id}` | KpiFormController::save | auth, role:admin,manager |
+| POST | `/kpi/forms/{id}` | KpiFormController::save | auth |
 | GET | `/kpi/forms/{id}/export` | KpiFormController::export | auth |
+| POST | `/kpi/forms/{id}/sharepoint` | KpiFormController::sendSharePoint | auth, role:admin |
 | GET | `/kpi` | KpiController::index | auth |
-| GET | `/kpi/create` | KpiController::create | auth, role:admin,manager |
-| POST | `/kpi/create` | KpiController::store | auth, role:admin,manager |
+| GET | `/kpi/create` | KpiController::create | auth |
+| POST | `/kpi/create` | KpiController::store | auth |
 | POST | `/kpi/{id}/result` | KpiController::result | auth |
 | GET | `/kpi/{id}/history` | KpiController::history | auth |
 | GET | `/tickets` | WorkController::tickets | auth |
@@ -78,7 +85,20 @@ Generated from app/Config/routes.php. Middleware is only the first layer; contro
 | POST | `/device_types/{id}/edit` | DeviceTypeController::update | auth, role:admin |
 | POST | `/device_types/{id}/delete` | DeviceTypeController::destroy | auth, role:admin |
 | GET | `/devices` | DeviceController::index | auth |
-| GET | `/machines` | DeviceController::machines | auth |
+| GET | `/machines` | MachineController::index | auth |
+| GET | `/machines/create` | MachineController::edit | auth |
+| POST | `/machines/create` | MachineController::save | auth |
+| GET | `/machines/{id}/edit` | MachineController::edit | auth |
+| POST | `/machines/{id}/edit` | MachineController::save | auth |
+| GET | `/machine-pm` | MachineController::plans | auth |
+| GET | `/machine-pm/create` | MachineController::planEdit | auth |
+| POST | `/machine-pm/create` | MachineController::planSave | auth |
+| GET | `/machine-pm/{id}/edit` | MachineController::planEdit | auth |
+| POST | `/machine-pm/{id}/edit` | MachineController::planSave | auth |
+| GET | `/machine-pm/{id}/record` | MachineController::recordForm | auth |
+| POST | `/machine-pm/{id}/record` | MachineController::recordSave | auth |
+| GET | `/machine-pm/records` | MachineController::records | auth |
+| GET | `/machine-pm/records/{id}` | MachineController::report | auth |
 | GET | `/it-devices` | DeviceController::itDevices | auth |
 | GET | `/devices/create` | DeviceController::create | auth, role:admin |
 | POST | `/devices/create` | DeviceController::store | auth, role:admin |
@@ -94,6 +114,8 @@ Generated from app/Config/routes.php. Middleware is only the first layer; contro
 | GET | `/pm-schedules/{id}/record` | PmRecordController::create | auth |
 | POST | `/pm-schedules/{id}/record` | PmRecordController::store | auth |
 | GET | `/pm-records` | PmRecordController::index | auth |
+| GET | `/pm-records/{id}/form` | PmRecordController::form | auth |
+| GET | `/pm-records/{id}/form/export` | PmRecordController::exportForm | auth |
 | GET | `/pm-schedules/export` | ExportController::schedules | auth |
 | GET | `/pm-records/export` | ExportController::records | auth |
 | GET | `/pm-schedules/{id}/export` | ExportController::scheduleForm | auth |

@@ -22,7 +22,9 @@ require BASE_PATH . '/app/Views/partials/search.php'; ?>
             <?php foreach ($records as $record): ?>
                 <tr>
                     <td><?= htmlspecialchars($record['performed_date']) ?></td>
-                    <td><?= htmlspecialchars($record['svp_device_name'] . ' / ' . $record['pm_title']) ?></td>
+                    <td><?= htmlspecialchars($record['svp_device_name'] . ' / ' . $record['pm_title']) ?>
+                        <?php if (!empty($record['inspection_id'])): ?><br><a class="btn btn-sm btn-outline-primary mt-2" href="<?= APP_URL ?>/pm-records/<?= (int)$record['pm_record_id'] ?>/form">ดู IT-F-005 / Export</a><?php endif; ?>
+                    </td>
                     <td><?= htmlspecialchars($record['first_name'] . ' ' . $record['last_name']) ?></td>
                     <td><?= htmlspecialchars(['completed' => 'ปกติดี', 'partial' => 'ทำได้บางส่วน', 'issue_found' => 'พบปัญหา'][$record['result_status']] ?? '-') ?></td>
                     <td><?= nl2br(htmlspecialchars($record['notes'] ?? '')) ?></td>

@@ -1,0 +1,30 @@
+flowchart LR
+    USER["users"]
+    DEP["department"]
+    DEVICE["device"]
+    WORK["work_items<br/>PK id<br/>kind = ticket / request"]
+    EVENT["work_events<br/>PK id"]
+    NOTICE["portal_notifications<br/>PK id"]
+    ANN["announcements<br/>PK id"]
+    READ["announcement_reads<br/>PK announcement_id + user_id"]
+    DOC["controlled_documents<br/>PK id<br/>Metadata + SharePoint file reference"]
+    DOCH["controlled_document_history<br/>PK id"]
+    BACKUP["backup_checklists<br/>PK id<br/>ข้อมูลรายวันใน payload"]
+    BACKUPH["backup_checklist_history<br/>PK id"]
+    USER -.->|requester / assignee / approver| WORK
+    DEVICE -.->|device_id| WORK
+    WORK -.->|work_id| EVENT
+    WORK -.->|work_id| NOTICE
+    USER -.->|actor_id| EVENT
+    USER -.->|user_id| NOTICE
+    DEP -.->|department_id| ANN
+    USER -.->|author_id| ANN
+    ANN -.->|announcement_id| READ
+    USER -.->|user_id| READ
+    DEP -.->|department_id| DOC
+    USER -.->|updated_by| DOC
+    DOC -->|document_id| DOCH
+    USER -.->|changed_by| DOCH
+    USER -.->|updated_by| BACKUP
+    BACKUP -.->|form_id| BACKUPH
+    USER -.->|actor_id| BACKUPH

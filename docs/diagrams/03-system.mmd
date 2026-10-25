@@ -1,0 +1,19 @@
+flowchart LR
+    DEP["department<br/>PK svp_department_id"]
+    POS["position<br/>PK svp_position_id"]
+    USER["users<br/>PK svp_user_id"]
+    TYPE["device_type<br/>PK device_type_id"]
+    DEVICE["device<br/>PK svp_device_id"]
+    PLAN["pm_schedule<br/>PK pm_schedule_id"]
+    RECORD["pm_record<br/>PK pm_record_id"]
+    FORM["pm_inspection_form<br/>PK / FK pm_record_id<br/>ข้อมูลใบตรวจ IT-F-005"]
+    DEP -->|svp_department_id| USER
+    POS -->|svp_position_id| USER
+    DEP -->|svp_department_id| DEVICE
+    USER -->|svp_user_id| DEVICE
+    TYPE -->|device_type_id| DEVICE
+    DEVICE -->|svp_device_id| PLAN
+    USER -->|responsible_user_id| PLAN
+    PLAN -->|pm_schedule_id| RECORD
+    USER -->|performed_by| RECORD
+    RECORD -->|pm_record_id| FORM

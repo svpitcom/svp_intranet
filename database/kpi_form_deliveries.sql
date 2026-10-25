@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS kpi_form_deliveries (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ form_id BIGINT UNSIGNED NOT NULL,
+ version INT UNSIGNED NOT NULL,
+ format VARCHAR(4) NOT NULL,
+ destination VARCHAR(64) NOT NULL,
+ item_id VARCHAR(255) NOT NULL,
+ file_name VARCHAR(255) NOT NULL,
+ web_url TEXT NOT NULL,
+ sent_by INT UNSIGNED NOT NULL,
+ sent_at DATETIME NOT NULL,
+ INDEX form_delivery(form_id,id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

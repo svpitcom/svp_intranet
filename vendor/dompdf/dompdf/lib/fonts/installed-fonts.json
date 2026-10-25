@@ -1,8 +1,8 @@
 {
     "sarabun": {
-        "normal": "C:\\xampps\\htdocs\\svp_intranet\\vendor\\dompdf\\dompdf\/lib\/fonts\/sarabun_normal_a3fa28a59026cf62cc1a43f92dd2b06d",
-        "bold": "C:\\xampps\\htdocs\\svp_intranet\\vendor\\dompdf\\dompdf\/lib\/fonts\/sarabun_bold_f299e5548a312361346e34194c5ab901",
-        "italic": "C:\\xampps\\htdocs\\svp_intranet\\vendor\\dompdf\\dompdf\/lib\/fonts\/sarabun_italic_182f65bceb7be4962bb21596435ef6df",
-        "bold_italic": "sarabun_bold_italic_d5a09470afa7589cf43648c4dac40343"
+        "normal": "C:\\xampp\\htdocs\\svp_intranet\\vendor\\dompdf\\dompdf\/lib\/fonts\/sarabun_normal_610aa153a08d432ed6d2b66d6a88424c",
+        "bold": "C:\\xampp\\htdocs\\svp_intranet\\vendor\\dompdf\\dompdf\/lib\/fonts\/sarabun_bold_30897e6ba2a2eb23c5dbc6f2c9f93fcb",
+        "italic": "C:\\xampp\\htdocs\\svp_intranet\\vendor\\dompdf\\dompdf\/lib\/fonts\/sarabun_italic_93676a64ed25dfeb5f21ecd76448e6e9",
+        "bold_italic": "sarabun_bold_italic_1b9fce32b97df24a452331a1ac0d5465"
     }
 }

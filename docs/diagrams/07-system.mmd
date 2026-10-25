@@ -1,0 +1,23 @@
+flowchart LR
+    NEW["แจ้งซ่อม<br/>open"]
+    ASSIGN["มอบหมายผู้รับงาน<br/>ยังคงสถานะเดิม"]
+    DO["เริ่มดำเนินการ<br/>in_progress"]
+    DONE["แจ้งซ่อมเสร็จ<br/>resolved"]
+    CLOSE["ยืนยันปิดงาน<br/>closed"]
+    CANCEL["ยกเลิก<br/>cancelled"]
+    REQ["ส่งคำขอ<br/>pending"]
+    APPROVE["ผู้อนุมัติที่กำหนด<br/>ต้องไม่ใช่ผู้ขอ"]
+    YES["อนุมัติ<br/>approved"]
+    NO["ไม่อนุมัติ<br/>rejected"]
+    NEW --> ASSIGN
+    ASSIGN --> DO
+    NEW --> DO
+    DO --> DONE
+    DONE --> CLOSE
+    DONE -->|เปิดงานอีกครั้ง| DO
+    NEW --> CANCEL
+    DO --> CANCEL
+    REQ --> APPROVE
+    APPROVE --> YES
+    APPROVE --> NO
+    REQ -->|ผู้ขอยกเลิก| CANCEL
