@@ -1,6 +1,17 @@
-# Protect private project files when Apache serves the repository directory.
+# Serve the application from /svp_intranet without exposing project files.
+Options -Indexes
+DirectoryIndex index.php
 RewriteEngine On
-RewriteRule ^(?:app|database|tests|vendor|\.git)(?:/|$) - [F,L,NC]
+RewriteRule (^|/)\. - [F,L]
+RewriteRule ^(?:app|database|tests|vendor|docs|tmp|uploads)(?:/|$) - [F,L,NC]
+RewriteRule ^public/uploads(?:/|$) - [F,L,NC]
 <FilesMatch "^\.">
     Require all denied
 </FilesMatch>
+
+# Public resources retain their existing URLs. Let public/.htaccess handle
+# direct /public requests; never serve arbitrary repository files as static files.
+RewriteRule ^public(?:/|$) - [L]
+RewriteRule ^(assets|imgs)/(.*)$ public/$1/$2 [L]
+RewriteRule ^index\.php$ - [L]
+RewriteRule ^ index.php [L]
