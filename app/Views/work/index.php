@@ -4,7 +4,7 @@ $available = $kind === 'ticket' ? ['open', 'in_progress', 'resolved', 'closed', 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
     <div>
         <h1 class="h3"><?= $title ?></h1>
-        <p class="text-muted mb-0">รายการที่คุณมีสิทธิ์ดู พร้อมประวัติการดำเนินการ</p>
+        <p class="text-muted mb-0"><?= $kind==='ticket' && WorkItem::receivesMachineTickets(Session::get('user')) && !WorkItem::managesTickets(Session::get('user')) ? 'งานแจ้งซ่อมเครื่องจักรทั้งหมด รวมถึงงานที่คุณแจ้งหรือได้รับมอบหมาย' : 'รายการที่คุณมีสิทธิ์ดู พร้อมประวัติการดำเนินการ' ?></p>
     </div><a class="btn btn-primary" href="<?= APP_URL . $listPath ?>/create">+ <?= $kind === 'ticket' ? 'แจ้งซ่อม' : 'ยื่นคำขอ' ?></a>
 </div>
 <form class="d-flex flex-wrap gap-2 mb-3" method="get" action="<?= APP_URL . $listPath ?>">

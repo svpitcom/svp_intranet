@@ -8,9 +8,20 @@ class WorkItem extends Model
 
     public static function canRead(array $row, array $user): bool
     {
+        if (empty($user['is_active']) || (DccWorkspace::restricted($user) && $row['kind']!=='ticket')) return false;
         $id = (int)$user['svp_user_id'];
         return ($user['user_role'] ?? '') === 'admin' || (int)$row['requester_id'] === $id
-            || ($row['kind'] === 'ticket' ? (Portal::manager($user) || (int)($row['assignee_id'] ?? 0) === $id) : (int)($row['approver_id'] ?? 0) === $id);
+            || ($row['kind'] === 'ticket' ? (self::managesTickets($user)
+                || (self::receivesMachineTickets($user) && ($row['category']??'')==='machine')
+                || (int)($row['assignee_id'] ?? 0) === $id) : (int)($row['approver_id'] ?? 0) === $id);
+    }
+    public static function receivesMachineTickets(array $user): bool
+    {
+        return !empty($user['is_active']) && in_array($user['svp_department_id']??null,[6,'6'],true);
+    }
+    public static function managesTickets(array $user): bool
+    {
+        return !empty($user['is_active']) && Portal::manager($user) && !DccWorkspace::restricted($user);
     }
     public static function actions(array $row, array $user): array
     {
@@ -23,14 +34,15 @@ class WorkItem extends Model
             if ($status === 'pending' && (int)$row['approver_id'] === $id && !$owner && Portal::manager($user)) $actions = ['approve', 'reject'];
             if ($status === 'pending' && $owner) $actions[] = 'cancel';
         } else {
-            $operator = Portal::manager($user) || (int)($row['assignee_id'] ?? 0) === $id;
+            $operator = self::managesTickets($user) || (int)($row['assignee_id'] ?? 0) === $id;
             if (in_array($status, ['open', 'in_progress'], true)) {
-                if (Portal::manager($user)) $actions[] = 'assign';
+                if (self::managesTickets($user)) $actions[] = 'assign';
+                if ($status === 'open' && empty($row['assignee_id']) && $row['category'] === 'machine' && self::receivesMachineTickets($user)) $actions[] = 'claim';
                 if ($operator && $status === 'open') $actions[] = 'start';
                 if ($operator && $status === 'in_progress') $actions[] = 'resolve';
-                if ($owner || Portal::manager($user)) $actions[] = 'cancel';
+                if ($owner || self::managesTickets($user)) $actions[] = 'cancel';
             }
-            if ($status === 'resolved' && ($owner || Portal::manager($user))) $actions = ['close', 'reopen'];
+            if ($status === 'resolved' && ($owner || self::managesTickets($user))) $actions = ['close', 'reopen'];
         }
         return $actions;
     }
@@ -38,10 +50,13 @@ class WorkItem extends Model
     {
         $where = 'w.kind=:kind';
         $params = ['kind' => $kind];
-        if (($user['user_role'] ?? '') !== 'admin' && !($kind === 'ticket' && Portal::manager($user))) {
+        if (empty($user['is_active']) || (DccWorkspace::restricted($user) && $kind!=='ticket')) $where.=' AND 1=0';
+        if (($user['user_role'] ?? '') !== 'admin' && !($kind === 'ticket' && self::managesTickets($user))) {
             $column = $kind === 'ticket' ? 'assignee_id' : 'approver_id';
-            $where .= " AND (w.requester_id=:owner OR w.{$column}=:participant)";
+            $machineQueue=$kind==='ticket' && self::receivesMachineTickets($user);
+            $where .= " AND (w.requester_id=:owner OR w.{$column}=:participant" . ($machineQueue ? " OR w.category=:repair_category" : '') . ')';
             $params += ['owner' => (int)$user['svp_user_id'], 'participant' => (int)$user['svp_user_id']];
+            if ($machineQueue) $params['repair_category']='machine';
         }
         return [$where, $params];
     }
@@ -72,7 +87,7 @@ class WorkItem extends Model
     }
     public function people(bool $approvers = false): array
     {
-        return $this->query("SELECT svp_user_id,first_name,last_name,user_role FROM users WHERE is_active=1" . ($approvers ? " AND user_role IN ('admin','manager')" : '') . ' ORDER BY first_name')->fetchAll();
+        return $this->query("SELECT svp_user_id,first_name,last_name,user_role,is_active,svp_department_id FROM users WHERE is_active=1" . ($approvers ? " AND user_role IN ('admin','manager')" : '') . ' ORDER BY first_name')->fetchAll();
     }
     private function activeUser(int $id, bool $approver = false): void
     {
@@ -92,6 +107,7 @@ class WorkItem extends Model
     }
     public function createItem(string $kind, array $data, array $user, ?array $file = null): int
     {
+        if (empty($user['is_active']) || empty($user['svp_user_id']) || (DccWorkspace::restricted($user) && $kind!=='ticket')) throw new RuntimeException('ไม่มีสิทธิ์สร้างรายการนี้');
         if (!isset(self::CATEGORIES[$kind])) throw new RuntimeException('ประเภทงานไม่ถูกต้อง');
         $title = Portal::text($data, 'title', 200);
         $description = Portal::text($data, 'description', 10000);
@@ -112,7 +128,7 @@ class WorkItem extends Model
         try {
             $id = $this->insert($payload);
             $this->event($id, (int)$user['svp_user_id'], 'create', 'สร้างรายการ');
-            $recipients = $kind === 'request' ? [$approver] : array_column($this->people(true), 'svp_user_id');
+            $recipients = $kind === 'request' ? [$approver] : array_column(array_filter($this->people(true),[self::class,'managesTickets']), 'svp_user_id');
             $this->notify($id, $recipients, (int)$user['svp_user_id'], 'รายการใหม่ #' . $id . ' ' . $title);
             $this->db->commit();
             return $id;
@@ -135,8 +151,9 @@ class WorkItem extends Model
             if ((int)$row['version'] !== $version) throw new RuntimeException('รายการถูกแก้ไขแล้ว กรุณาโหลดหน้าใหม่ก่อนทำรายการ');
             if ($action !== 'comment' && !in_array($action, self::actions($row, $user), true)) throw new RuntimeException('ไม่มีสิทธิ์ทำรายการนี้ในสถานะปัจจุบัน');
             if (in_array($action, ['comment', 'resolve', 'reject', 'cancel', 'reopen'], true) && trim($note) === '') throw new RuntimeException('กรุณาระบุรายละเอียดหรือเหตุผล');
-            $next = ['start' => 'in_progress', 'resolve' => 'resolved', 'close' => 'closed', 'reopen' => 'in_progress', 'cancel' => 'cancelled', 'approve' => 'approved', 'reject' => 'rejected'][$action] ?? $row['status'];
+            $next = ['claim' => 'in_progress', 'start' => 'in_progress', 'resolve' => 'resolved', 'close' => 'closed', 'reopen' => 'in_progress', 'cancel' => 'cancelled', 'approve' => 'approved', 'reject' => 'rejected'][$action] ?? $row['status'];
             $data = ['status' => $next, 'updated_at' => Portal::now(), 'version' => $version + 1];
+            if ($action === 'claim') $data['assignee_id'] = (int)$user['svp_user_id'];
             if ($action === 'assign') {
                 if (!$assignee) throw new RuntimeException('กรุณาเลือกผู้รับงาน');
                 $this->activeUser($assignee);
@@ -147,7 +164,13 @@ class WorkItem extends Model
             $this->update($id, $data);
             $actor = (int)$user['svp_user_id'];
             $this->event($id, $actor, $action, $note !== '' ? $note : (self::STATUSES[$next] ?? $next));
-            $this->notify($id, [$row['requester_id'], $data['assignee_id'] ?? $row['assignee_id'], $row['approver_id']], $actor, 'อัปเดต #' . $id . ' ' . self::STATUSES[$next] . ' · ' . $row['title']);
+            $message = match ($action) {
+                'resolve' => 'ซ่อมเสร็จแล้ว กรุณาตรวจสอบและยืนยันปิดเคส หรือส่งกลับแก้ไข',
+                'close' => 'ปิดเคสแล้ว',
+                'reopen' => 'ส่งกลับแก้ไข กรุณาตรวจสอบรายละเอียดจากผู้แจ้ง',
+                default => self::STATUSES[$next],
+            };
+            $this->notify($id, [$row['requester_id'], $data['assignee_id'] ?? $row['assignee_id'], $row['approver_id']], $actor, '#' . $id . ' ' . $message . ' · ' . $row['title']);
             $this->db->commit();
         } catch (Throwable $e) {
             if ($this->db->inTransaction()) $this->db->rollBack();
@@ -162,7 +185,7 @@ class WorkItem extends Model
             $counts[$kind] = (int)$this->query("SELECT COUNT(*) FROM work_items w WHERE {$where} AND w.status IN ('open','in_progress','resolved','pending')", $params)->fetchColumn();
         }
         $counts['approval'] = (int)$this->query("SELECT COUNT(*) FROM work_items WHERE kind='request' AND status='pending' AND approver_id=:id", ['id' => $user['svp_user_id']])->fetchColumn();
-        $counts['unread'] = (int)$this->query('SELECT COUNT(*) FROM portal_notifications WHERE user_id=:id AND read_at IS NULL', ['id' => $user['svp_user_id']])->fetchColumn();
+        $counts['unread'] = (new PortalNotification())->unread((int)$user['svp_user_id'], DccWorkspace::restricted($user));
         return $counts;
     }
 }

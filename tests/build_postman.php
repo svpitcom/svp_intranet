@@ -81,6 +81,7 @@ foreach ($ordered as $key=>$handler) {
     if ($segment === 'document-control') $description .= "Active DCC department 13 or admin only. Category and department_id are different fields.\n";
     if ($path === '/machines') $description .= "Maintenance department 6 or admin only.\n";
     if ($path === '/it-devices') $description .= "IT department 2 or admin only.\n";
+    if ($controller === 'WorkController') $description .= "All active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n";
     if (in_array($controller,['KpiController','KpiFormController'],true)) $description .= "Department KPI: active staff including DCC create and enter results for their own department; admin can select any department. Monthly definitions are department-only (no user_id). SharePoint sending remains admin-only.\n";
     if ($controller === 'PmRecordController' && $action === 'store') $description .= "For IT devices, load GET /pm-schedules/{id}/record first and submit its IT-F-005 fields: inspection_device_id, device_name, serial_number, department, inspector, manager, acknowledged_by, start_time, end_time and checks/work/safety arrays. The minimal example below is for generic PM only. Use actual inspection data; missing results must not be marked completed. See PM_INSPECTION.md.\n";
     $fields = []; $file = null; $query = [];

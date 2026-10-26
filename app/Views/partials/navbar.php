@@ -18,6 +18,12 @@ if (str_starts_with($currentPath, '/work/')) $sectionName = 'รายละเ�
         <div class="topbar-breadcrumb"><span>พื้นที่ทำงาน</span><span class="breadcrumb-divider">/</span><strong><?= htmlspecialchars($sectionName) ?></strong></div>
     </div>
     <?php if ($navUser): ?>
+        <div class="d-flex align-items-center gap-2">
+        <?php $unreadNotifications = (new PortalNotification())->unread((int)$navUser['svp_user_id'], DccWorkspace::restricted($navUser)); ?>
+        <a href="<?= APP_URL ?>/notifications" class="btn btn-outline-primary position-relative" aria-label="การแจ้งเตือน ยังไม่อ่าน <?= $unreadNotifications ?> รายการ" title="การแจ้งเตือน">
+            <i class="bi bi-bell" aria-hidden="true"></i>
+            <?php if ($unreadNotifications > 0): ?><span class="badge bg-danger"><?= $unreadNotifications > 99 ? '99+' : $unreadNotifications ?></span><?php endif; ?>
+        </a>
         <div class="dropdown">
             <button class="user-menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="เมนูบัญชีผู้ใช้">
                 <span class="user-avatar"><?= htmlspecialchars(mb_substr($navUser['first_name'], 0, 1)) ?></span>
@@ -32,6 +38,7 @@ if (str_starts_with($currentPath, '/work/')) $sectionName = 'รายละเ�
                     </form>
                 </li>
             </ul>
+        </div>
         </div>
     <?php endif; ?>
 </header>

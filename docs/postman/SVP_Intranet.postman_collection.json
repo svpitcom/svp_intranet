@@ -2125,7 +2125,7 @@
                                 }
                             ]
                         },
-                        "description": "Handler: WorkController::tickets\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: WorkController::tickets\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2147,7 +2147,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: WorkController::newTicket\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: WorkController::newTicket\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2169,7 +2169,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: WorkController::createTicket\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /tickets/create' for ONE send only. Read the response destination to verify success.\nRequest approver must be another active manager/admin; user_id is not the logged-in requester.\n",
+                        "description": "Handler: WorkController::createTicket\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /tickets/create' for ONE send only. Read the response destination to verify success.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\nRequest approver must be another active manager/admin; user_id is not the logged-in requester.\n",
                         "body": {
                             "mode": "formdata",
                             "formdata": [
@@ -2269,7 +2269,7 @@
                                 }
                             ]
                         },
-                        "description": "Handler: WorkController::requests\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: WorkController::requests\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2291,7 +2291,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: WorkController::newRequest\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: WorkController::newRequest\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2313,7 +2313,7 @@
                                 "create"
                             ]
                         },
-                        "description": "Handler: WorkController::createRequest\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /requests/create' for ONE send only. Read the response destination to verify success.\nRequest approver must be another active manager/admin; user_id is not the logged-in requester.\n",
+                        "description": "Handler: WorkController::createRequest\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /requests/create' for ONE send only. Read the response destination to verify success.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\nRequest approver must be another active manager/admin; user_id is not the logged-in requester.\n",
                         "body": {
                             "mode": "formdata",
                             "formdata": [
@@ -2392,7 +2392,7 @@
                                 "{{work_id}}"
                             ]
                         },
-                        "description": "Handler: WorkController::show\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: WorkController::show\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2427,7 +2427,7 @@
                                 "action"
                             ]
                         },
-                        "description": "Handler: WorkController::action\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /work/{id}/action' for ONE send only. Read the response destination to verify success.\n",
+                        "description": "Handler: WorkController::action\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nWARNING: changes data/session or writes to SharePoint. Set allow_write_request to 'POST /work/{id}/action' for ONE send only. Read the response destination to verify success.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n",
                         "body": {
                             "mode": "urlencoded",
                             "urlencoded": [
@@ -2480,7 +2480,7 @@
                                 "attachment"
                             ]
                         },
-                        "description": "Handler: WorkController::attachment\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: WorkController::attachment\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nAll active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {

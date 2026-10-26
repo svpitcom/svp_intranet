@@ -16,6 +16,7 @@ if (MachineAccess::allows(Session::get('user'))) {
 if (DccWorkspace::restricted(Session::get('user'))) {
     $navGroups = [
         'พื้นที่ทำงาน DCC' => [['/', 'หน้าแรก DCC', 'house-door'], ['/users', 'รายชื่อผู้ใช้งาน', 'people']],
+        'งานแจ้งซ่อม' => [['/tickets', 'แจ้งซ่อม / ติดตามงาน', 'tools'], ['/notifications', 'การแจ้งเตือนงานซ่อม', 'bell']],
     ];
 }
 if (KpiPolicy::allows(Session::get('user'))) {
