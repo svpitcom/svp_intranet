@@ -317,37 +317,37 @@ flowchart LR
 
 ## 10. สิทธิ์ใช้งานตามโค้ดปัจจุบัน
 
-| ส่วนงาน | ผู้มีสิทธิ์หลัก | ขอบเขต |
-|---|---|---|
-| จัดการผู้ใช้/แผนก/ตำแหน่ง/ประเภทอุปกรณ์ | Admin | เพิ่ม แก้ไข ลบตาม route |
-| ทะเบียนอุปกรณ์รวม | ผู้เข้าสู่ระบบที่ไม่ถูกจำกัด DCC | ดู; เพิ่ม/แก้ไข/ลบเป็น Admin |
-| ตัวกรองเฉพาะอุปกรณ์ IT | แผนก IT (2) และ Admin | `/it-devices` หรือ group=it |
-| แผน PM ฝั่ง IT/ทะเบียนเดิม | ผู้เข้าสู่ระบบที่ไม่ถูกจำกัด DCC | เพิ่ม/แก้ไขแผนเป็น Admin/manager; ลบเป็น Admin |
-| บันทึก/ดู PM ฝั่ง IT | ผู้เข้าสู่ระบบที่ไม่ถูกจำกัด DCC | ตรวจตาม route และ validation ของโมดูลเดิม |
-| เครื่องจักรและ PM | Maintenance (6) ทุก role และ Admin | เพิ่ม/แก้ไขทะเบียน แผน และบันทึกผล |
-| Backup IT-F-004 | IT (2) และ Admin | สร้าง แก้ไข กรอกผล ส่งออก |
-| KPI รายเดือน/รายปี | พนักงานทุกแผนก รวม DCC | เฉพาะแผนกตน; Admin ทุกแผนก |
-| แจ้งซ่อม | ผู้เข้าสู่ระบบทุกแผนก รวม DCC และผู้ยังไม่สังกัดแผนก | สร้างได้ทุกคน; ผู้ขอ/ผู้รับงานเห็นงานที่เกี่ยวข้อง; Maintenance เห็นคิวเครื่องจักรแม้ยังไม่มอบหมาย; manager ที่ไม่อยู่ใน DCC และ Admin จัดการภาพรวม |
-| คำขออนุมัติ | ผู้ขอ/ผู้อนุมัติ/Admin | อนุมัติต้องเป็นผู้อนุมัติที่ระบุ มี role manager/admin และไม่ใช่ผู้ขอ |
-| ประกาศ | ผู้มีสิทธิ์และอยู่ในกลุ่มเป้าหมาย | manager/Admin จัดการ; DCC non-admin ยังจำกัดตาม workspace |
-| Document Control | DCC (13) และ Admin | ทะเบียนเอกสารและไฟล์ในขอบเขตที่กำหนด |
-| SharePoint ทั่วไป / ส่ง KPI | Admin | พนักงานกรอก KPI ได้ แต่กดส่ง SharePoint ไม่ได้ |
+| ส่วนงาน                                                              | ผู้มีสิทธิ์หลัก                                                                     | ขอบเขต                                                                                                                                                                                                                                                    |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| จัดการผู้ใช้/แผนก/ตำแหน่ง/ประเภทอุปกรณ์ | Admin                                                                                              | เพิ่ม แก้ไข ลบตาม route                                                                                                                                                                                                                          |
+| ทะเบียนอุปกรณ์รวม                                          | ผู้เข้าสู่ระบบที่ไม่ถูกจำกัด DCC                                       | ดู; เพิ่ม/แก้ไข/ลบเป็น Admin                                                                                                                                                                                                                  |
+| ตัวกรองเฉพาะอุปกรณ์ IT                                   | แผนก IT (2) และ Admin                                                                       | `/it-devices` หรือ group=it                                                                                                                                                                                                                               |
+| แผน PM ฝั่ง IT/ทะเบียนเดิม                                | ผู้เข้าสู่ระบบที่ไม่ถูกจำกัด DCC                                       | เพิ่ม/แก้ไขแผนเป็น Admin/manager; ลบเป็น Admin                                                                                                                                                                                           |
+| บันทึก/ดู PM ฝั่ง IT                                            | ผู้เข้าสู่ระบบที่ไม่ถูกจำกัด DCC                                       | ตรวจตาม route และ validation ของโมดูลเดิม                                                                                                                                                                                                 |
+| เครื่องจักรและ PM                                             | Maintenance (6) ทุก role และ Admin                                                           | เพิ่ม/แก้ไขทะเบียน แผน และบันทึกผล                                                                                                                                                                                               |
+| Backup IT-F-004                                                             | IT (2) และ Admin                                                                                | สร้าง แก้ไข กรอกผล ส่งออก                                                                                                                                                                                                                 |
+| KPI รายเดือน/รายปี                                             | พนักงานทุกแผนก รวม DCC                                                            | เฉพาะแผนกตน; Admin ทุกแผนก                                                                                                                                                                                                                    |
+| แจ้งซ่อม                                                            | ผู้เข้าสู่ระบบทุกแผนก รวม DCC และผู้ยังไม่สังกัดแผนก | สร้างได้ทุกคน; ผู้ขอ/ผู้รับงานเห็นงานที่เกี่ยวข้อง; Maintenance เห็นคิวเครื่องจักรแม้ยังไม่มอบหมาย; manager ที่ไม่อยู่ใน DCC และ Admin จัดการภาพรวม |
+| คำขออนุมัติ                                                      | ผู้ขอ/ผู้อนุมัติ/Admin                                                              | อนุมัติต้องเป็นผู้อนุมัติที่ระบุ มี role manager/admin และไม่ใช่ผู้ขอ                                                                                                                                           |
+| ประกาศ                                                                | ผู้มีสิทธิ์และอยู่ในกลุ่มเป้าหมาย                                 | manager/Admin จัดการ; DCC non-admin ยังจำกัดตาม workspace                                                                                                                                                                                      |
+| Document Control                                                            | DCC (13) และ Admin                                                                              | ทะเบียนเอกสารและไฟล์ในขอบเขตที่กำหนด                                                                                                                                                                                        |
+| SharePoint ทั่วไป / ส่ง KPI                                        | Admin                                                                                              | พนักงานกรอก KPI ได้ แต่กดส่ง SharePoint ไม่ได้                                                                                                                                                                                      |
 
 สิทธิ์เป็นการผสม role + แผนก + สถานะบัญชี + เจ้าของรายการ จึงไม่ควรใช้ภาพ Role อย่างเดียวแทนเงื่อนไขใน Controller/Model บัญชีที่ปิดใช้งานถูกปฏิเสธโดย AuthMiddleware
 
 ## 11. รายการตารางครบ 28 ตาราง
 
-| กลุ่ม | ตาราง |
-|---|---|
-| บุคลากร (3) | `department`, `position`, `users` |
-| อุปกรณ์ IT และ PM (5) | `device_type`, `device`, `pm_schedule`, `pm_record`, `pm_inspection_form` |
-| เครื่องจักร (5) | `machines`, `machine_pm_schedules`, `machine_pm_records`, `machine_events`, `machine_schema` |
-| ใบงานและแจ้งเตือน (3) | `work_items`, `work_events`, `portal_notifications` |
-| ประกาศ (2) | `announcements`, `announcement_reads` |
-| Document Control (2) | `controlled_documents`, `controlled_document_history` |
-| Backup (2) | `backup_checklists`, `backup_checklist_history` |
-| KPI รายเดือน (3) | `kpi_definitions`, `kpi_results`, `kpi_history` |
-| KPI รายปี (3) | `kpi_forms`, `kpi_form_history`, `kpi_form_deliveries` |
+| กลุ่ม                             | ตาราง                                                                                             |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| บุคลากร (3)                     | `department`, `position`, `users`                                                                |
+| อุปกรณ์ IT และ PM (5)        | `device_type`, `device`, `pm_schedule`, `pm_record`, `pm_inspection_form`                    |
+| เครื่องจักร (5)             | `machines`, `machine_pm_schedules`, `machine_pm_records`, `machine_events`, `machine_schema` |
+| ใบงานและแจ้งเตือน (3) | `work_items`, `work_events`, `portal_notifications`                                              |
+| ประกาศ (2)                       | `announcements`, `announcement_reads`                                                              |
+| Document Control (2)                   | `controlled_documents`, `controlled_document_history`                                              |
+| Backup (2)                             | `backup_checklists`, `backup_checklist_history`                                                    |
+| KPI รายเดือน (3)               | `kpi_definitions`, `kpi_results`, `kpi_history`                                                  |
+| KPI รายปี (3)                     | `kpi_forms`, `kpi_form_history`, `kpi_form_deliveries`                                           |
 
 Foreign Key จริงที่ตรวจพบมี 14 ความสัมพันธ์ แสดงครบในภาพ 3–5 ส่วนตารางที่ไม่มี FK ยังอาจตรวจความสัมพันธ์ด้วยโค้ด ตารางที่มี payload เก็บรายละเอียดแบบฟอร์ม/snapshot ใน JSON จึงไม่ได้มีตารางลูกสำหรับทุกช่องกรอก
 
