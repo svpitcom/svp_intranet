@@ -349,7 +349,8 @@ class SharePointClient
         if ($method !== 'GET') curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         $result = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        // PHP 8 releases CurlHandle automatically; curl_close() is deprecated in 8.5.
+        unset($ch);
         if ($result === false) throw new RuntimeException('ติดต่อ Microsoft ไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตและใบรับรอง CA ของ PHP');
         return ['status' => $status, 'body' => $result, 'headers' => $responseHeaders];
     }
