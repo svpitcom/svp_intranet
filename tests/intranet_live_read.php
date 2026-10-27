@@ -25,6 +25,7 @@ $work->overview($user);
 $work->people(true);
 (new Announcement())->listing($user);
 (new PortalNotification())->listing((int)$user['svp_user_id']);
+(new MachineRepairForm())->load(1);
 $devices = new Device();
 foreach (['it', 'machine', 'unclassified'] as $group) {
     $devices->countAll('', $group);

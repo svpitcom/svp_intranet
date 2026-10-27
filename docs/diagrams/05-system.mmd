@@ -3,6 +3,7 @@ flowchart LR
     DEP["department"]
     DEVICE["device"]
     WORK["work_items<br/>PK id<br/>kind = ticket / request"]
+    REPAIRFORM["work_machine_forms<br/>PK work_id<br/>MN-F-001-02"]
     EVENT["work_events<br/>PK id"]
     NOTICE["portal_notifications<br/>PK id"]
     ANN["announcements<br/>PK id"]
@@ -15,6 +16,7 @@ flowchart LR
     DEVICE -.->|device_id| WORK
     WORK -.->|work_id| EVENT
     WORK -.->|work_id| NOTICE
+    WORK -.->|work_id| REPAIRFORM
     USER -.->|actor_id| EVENT
     USER -.->|user_id| NOTICE
     DEP -.->|department_id| ANN

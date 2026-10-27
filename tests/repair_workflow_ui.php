@@ -3,7 +3,7 @@ if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 ob_start();
 require __DIR__.'/repair_access.php';
 $start=$checks;
-$case=$work->createItem('ticket',array_replace($data,['category'=>'machine']),$dcc);
+$case=$work->createItem('ticket',array_replace($data,$machineRequestInput,['category'=>'machine']),$dcc);
 $row=$work->detail($case,$maintenance);
 check(in_array('claim',WorkItem::actions($row,$maintenance),true),'Maintenance can claim unassigned machine repair');
 check(!in_array('claim',WorkItem::actions($row,$dcc),true),'requester cannot claim machine work');
@@ -32,7 +32,7 @@ check(str_contains($html,'name="action" value="resolve"') && str_contains($html,
 denied(fn()=>$work->act($case,$maintenance,'resolve',2,'',null),'completion requires repair result');
 $work->act($case,$maintenance,'comment',2,'ซ่อมเสร็จ',null);
 check($work->detail($case,$maintenance)['status']==='in_progress','comment cannot accidentally change status');
-$_POST=['_csrf'=>Session::csrfToken(),'action'=>'resolve','version'=>'3','note'=>'ซ่อมและทดสอบเรียบร้อย'];
+$_POST=$machineRepairInput+['_csrf'=>Session::csrfToken(),'action'=>'resolve','version'=>'3','note'=>'ซ่อมและทดสอบเรียบร้อย'];
 try { $router->dispatch('POST','/work/'.$case.'/action'); } catch(RedirectSignal $e) {}
 check($work->detail($case,$dcc)['status']==='resolved','resolve button moves case to awaiting confirmation');
 check(str_contains($db->query('SELECT message FROM portal_notifications WHERE user_id=24 AND work_id='.$case.' ORDER BY id DESC')->fetchColumn(),'ยืนยันปิดเคส'),'completion notifies requester');

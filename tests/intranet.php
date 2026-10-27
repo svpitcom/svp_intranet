@@ -29,6 +29,7 @@ $schema = str_replace('BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY', 'INTEGER PRI
 $schema = preg_replace('/,\s*INDEX\s+.*?(?=\n\)\s*ENGINE)/s', '', $schema);
 $schema = preg_replace('/ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci/', '', $schema);
 $db->exec($schema);
+$db->exec(str_replace('ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci','',file_get_contents(BASE_PATH.'/database/machine_repair_forms.sql')));
 $db->exec('CREATE TABLE users(svp_user_id INTEGER PRIMARY KEY,username TEXT,first_name TEXT,last_name TEXT,email TEXT,user_role TEXT,is_active INTEGER,svp_department_id INTEGER); CREATE TABLE device(svp_device_id INTEGER PRIMARY KEY,svp_device_name TEXT,is_active INTEGER); CREATE TABLE department(svp_department_id INTEGER PRIMARY KEY,svp_department_name TEXT)');
 $db->exec("INSERT INTO users VALUES (1,'owner','Owner','One','one@example.test','user',1,1),(2,'manager','Manager','Two','two@example.test','manager',1,1),(3,'other','Other','Three','three@example.test','user',1,2),(4,'admin','Admin','Four','four@example.test','admin',1,1),(5,'disabled','Disabled','Five','five@example.test','manager',0,1); INSERT INTO device VALUES (1,'Device',1); INSERT INTO department VALUES (1,'IT'),(2,'Production')");
 $owner = (new User())->findById(1);

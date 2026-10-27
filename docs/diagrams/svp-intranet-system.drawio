@@ -41,7 +41,7 @@
         <mxCell id="BACKUP" value="บันทึกตรวจ Backup Server&lt;br/&gt;IT-F-004" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
           <mxGeometry x="2350.0" y="630" width="280" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="DB" value="svpintranet&lt;br/&gt;28 ตาราง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;shape=cylinder3;boundedLbl=1;size=15;" vertex="1" parent="1">
+        <mxCell id="DB" value="svpintranet&lt;br/&gt;29 ตาราง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;shape=cylinder3;boundedLbl=1;size=15;" vertex="1" parent="1">
           <mxGeometry x="865.0" y="800" width="280" height="105" as="geometry" />
         </mxCell>
         <mxCell id="EXPORT" value="สร้างไฟล์ / เชื่อมต่อเอกสาร&lt;br/&gt;Excel · PDF · CSV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
@@ -394,6 +394,9 @@
         <mxCell id="BACKUPH" value="backup_checklist_history&lt;br/&gt;PK id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
           <mxGeometry x="370" y="1480.0" width="280" height="105" as="geometry" />
         </mxCell>
+        <mxCell id="REPAIRFORM" value="work_machine_forms&lt;br/&gt;PK work_id&lt;br/&gt;MN-F-001-02" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#64748b;fontColor=#16344a;fontSize=16;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="800.0" width="280" height="105" as="geometry" />
+        </mxCell>
         <mxCell id="edge-0" value="requester / assignee / approver" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="WORK">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -406,43 +409,46 @@
         <mxCell id="edge-3" value="work_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="WORK" target="NOTICE">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-4" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="EVENT">
+        <mxCell id="edge-4" value="work_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="WORK" target="REPAIRFORM">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-5" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="NOTICE">
+        <mxCell id="edge-5" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="EVENT">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-6" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="ANN">
+        <mxCell id="edge-6" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="NOTICE">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-7" value="author_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="ANN">
+        <mxCell id="edge-7" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="ANN">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-8" value="announcement_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="ANN" target="READ">
+        <mxCell id="edge-8" value="author_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="ANN">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-9" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="READ">
+        <mxCell id="edge-9" value="announcement_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="ANN" target="READ">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-10" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="DOC">
+        <mxCell id="edge-10" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="READ">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-11" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DOC">
+        <mxCell id="edge-11" value="department_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="DEP" target="DOC">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-12" value="document_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DOC" target="DOCH">
+        <mxCell id="edge-12" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DOC">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-13" value="changed_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DOCH">
+        <mxCell id="edge-13" value="document_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;" edge="1" parent="1" source="DOC" target="DOCH">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-14" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="BACKUP">
+        <mxCell id="edge-14" value="changed_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="DOCH">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-15" value="form_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="BACKUP" target="BACKUPH">
+        <mxCell id="edge-15" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="BACKUP">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge-16" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="BACKUPH">
+        <mxCell id="edge-16" value="form_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="BACKUP" target="BACKUPH">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-17" value="actor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeColor=#64748b;dashed=1;" edge="1" parent="1" source="USER" target="BACKUPH">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

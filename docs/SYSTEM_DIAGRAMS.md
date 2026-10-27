@@ -8,7 +8,7 @@
 
 Maintenance รับงานเครื่องจักรสถานะแจ้งใหม่ที่ยังไม่มอบหมายให้ตนเองได้ด้วยปุ่ม “รับงานและเริ่มซ่อม” จากนั้นบันทึกผลด้วย “ซ่อมเสร็จ / แจ้งผู้แจ้งตรวจรับ” การเพิ่มข้อความไม่เปลี่ยนสถานะใบงาน
 
-เอกสารนี้อธิบายระบบที่มีอยู่ในปัจจุบัน ไม่ใช่รายการฟีเจอร์ที่วางแผนไว้ ฐานข้อมูลหลักคือ `svpintranet` มี 28 ตาราง เครื่องจักรและ IT แยก **ตาราง** โดยใช้ฐานข้อมูลและบัญชีผู้ใช้กลางร่วมกัน
+เอกสารนี้อธิบายระบบที่มีอยู่ในปัจจุบัน ไม่ใช่รายการฟีเจอร์ที่วางแผนไว้ ฐานข้อมูลหลักคือ `svpintranet` มี 29 ตารางหลังเพิ่มแบบฟอร์ม MN-F-001-02 เครื่องจักรและ IT แยก **ตาราง** โดยใช้ฐานข้อมูลและบัญชีผู้ใช้กลางร่วมกัน
 
 ไฟล์ [svp-intranet-system.drawio](diagrams/svp-intranet-system.drawio) เปิดแก้ไขด้วย draw.io ได้ มี 9 หน้า ตรงกับ Diagram ด้านล่าง และมี Mermaid แยกเป็น `diagrams/01-system.mmd` ถึง `09-system.mmd` การแก้เอกสารแล้วรัน `python docs/diagrams/build_system_diagrams.py` จะสร้างไฟล์เหล่านี้ใหม่
 
@@ -27,7 +27,7 @@ flowchart TB
     DCC["Document Control<br/>ทะเบียนเอกสาร · Revision · ประวัติ"]
     KPI["KPI ของแต่ละแผนก<br/>รายเดือน · MR-F-027-01 รายปี"]
     BACKUP["บันทึกตรวจ Backup Server<br/>IT-F-004"]
-    DB[("svpintranet<br/>28 ตาราง")]
+    DB[("svpintranet<br/>29 ตาราง")]
     EXPORT["สร้างไฟล์ / เชื่อมต่อเอกสาร<br/>Excel · PDF · CSV"]
     GRAPH["SharePointClient<br/>Microsoft Graph"]
     SP["SharePoint<br/>โฟลเดอร์ที่ตั้งค่าไว้"]
@@ -155,6 +155,7 @@ flowchart LR
     DEP["department"]
     DEVICE["device"]
     WORK["work_items<br/>PK id<br/>kind = ticket / request"]
+    REPAIRFORM["work_machine_forms<br/>PK work_id<br/>MN-F-001-02"]
     EVENT["work_events<br/>PK id"]
     NOTICE["portal_notifications<br/>PK id"]
     ANN["announcements<br/>PK id"]
@@ -167,6 +168,7 @@ flowchart LR
     DEVICE -.->|device_id| WORK
     WORK -.->|work_id| EVENT
     WORK -.->|work_id| NOTICE
+    WORK -.->|work_id| REPAIRFORM
     USER -.->|actor_id| EVENT
     USER -.->|user_id| NOTICE
     DEP -.->|department_id| ANN
@@ -335,14 +337,14 @@ flowchart LR
 
 สิทธิ์เป็นการผสม role + แผนก + สถานะบัญชี + เจ้าของรายการ จึงไม่ควรใช้ภาพ Role อย่างเดียวแทนเงื่อนไขใน Controller/Model บัญชีที่ปิดใช้งานถูกปฏิเสธโดย AuthMiddleware
 
-## 11. รายการตารางครบ 28 ตาราง
+## 11. รายการตารางครบ 29 ตาราง
 
 | กลุ่ม                             | ตาราง                                                                                             |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | บุคลากร (3)                     | `department`, `position`, `users`                                                                |
 | อุปกรณ์ IT และ PM (5)        | `device_type`, `device`, `pm_schedule`, `pm_record`, `pm_inspection_form`                    |
 | เครื่องจักร (5)             | `machines`, `machine_pm_schedules`, `machine_pm_records`, `machine_events`, `machine_schema` |
-| ใบงานและแจ้งเตือน (3) | `work_items`, `work_events`, `portal_notifications`                                              |
+| ใบงานและแจ้งเตือน (4) | `work_items`, `work_events`, `portal_notifications`, `work_machine_forms`                        |
 | ประกาศ (2)                       | `announcements`, `announcement_reads`                                                              |
 | Document Control (2)                   | `controlled_documents`, `controlled_document_history`                                              |
 | Backup (2)                             | `backup_checklists`, `backup_checklist_history`                                                    |

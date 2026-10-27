@@ -7,3 +7,4 @@ foreach (explode(';', file_get_contents(__DIR__ . '/intranet_modules.sql')) as $
     if (trim($sql) !== '') $db->exec($sql);
 }
 echo "Intranet module tables are ready. Existing data was retained.\n";
+$db->exec(file_get_contents(__DIR__.'/machine_repair_forms.sql'));

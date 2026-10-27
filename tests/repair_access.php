@@ -4,6 +4,9 @@ ob_start();
 require __DIR__.'/intranet.php';
 require_once BASE_PATH.'/app/Middleware/AuthMiddleware.php';
 $start=$checks;
+$fixtureDate=(new DateTimeImmutable('yesterday',new DateTimeZone('Asia/Bangkok')))->format('Y-m-d');
+$machineRequestInput=['machine_name'=>'TEST-MACHINE','department_name'=>'Production','report_date'=>$fixtureDate,'report_time'=>'08:00','request_priority'=>'P2'];
+$machineRepairInput=['receiver_name'=>'Repairer','received_date'=>$fixtureDate,'repair_priority'=>'P2','repair_method'=>'internal','abnormality'=>'ME','repairer_name'=>'Repairer','repair_date'=>$fixtureDate,'repair_end_date'=>$fixtureDate,'start_time'=>'09:00','end_time'=>'10:00','cause'=>'Wear','repair_detail'=>'Replaced part','prevention'=>'Inspect regularly','technicians'=>['Repairer'],'parts'=>[]];
 class RepairAccessHarness extends WorkController {
     protected function view(string $view,array $data=[],string $layout='main'): void { extract($data); require BASE_PATH.'/app/Views/'.$view.'.php'; }
     protected function redirect(string $path): void { throw new RedirectSignal($path); }
@@ -63,7 +66,7 @@ check(!WorkItem::canRead($work->detail($dccId,$dcc),$disabled),'inactive account
 foreach(['GET /tickets','GET /tickets/create','POST /tickets/create','GET /work/{id}','POST /work/{id}/action','GET /work/{id}/attachment'] as $route) check(in_array('auth',$routes[$route][2],true),'repair route still requires login');
 http_response_code(200);
 $maintenance=(new User())->findById(23);
-$machineTicket=$work->createItem('ticket',array_replace($data,['title'=>'Machine queue test','category'=>'machine']),$owner);
+$machineTicket=$work->createItem('ticket',array_replace($data,$machineRequestInput,['title'=>'Machine queue test','category'=>'machine']),$owner);
 check(WorkItem::canRead($work->detail($machineTicket,$owner),$maintenance),'Maintenance reads unassigned machine ticket');
 check(WorkItem::receivesMachineTickets(array_replace($maintenance,['svp_department_id'=>'6'])),'string department ID supported');
 check((int)$work->detail($machineTicket,$maintenance)['id']===$machineTicket,'Maintenance opens machine details directly');
@@ -76,7 +79,7 @@ denied(fn()=>$work->detail($rid,$maintenance),'machine visibility does not expos
 denied(fn()=>$work->detail($machineTicket,array_replace($maintenance,['is_active'=>0])),'inactive Maintenance cannot read machine queue');
 check(!in_array('assign',WorkItem::actions($work->detail($machineTicket,$maintenance),$maintenance),true),'queue visibility does not grant assignment authority');
 denied(fn()=>$work->act($machineTicket,$maintenance,'start',1,'',null),'unassigned reader cannot start another ticket');
-$work->act($machineTicket,$manager,'assign',1,'',3);
+$work->act($machineTicket,$manager,'assign',1,'',23);
 check($work->listing($maintenance,'ticket','Machine queue test')['total']===1,'machine queue remains visible after assignment');
 $_SESSION['user']=$maintenance; $_GET=['q'=>'Machine queue test']; $_POST=[];
 http_response_code(200); ob_start(); $router->dispatch('GET','/tickets'); $queueHtml=ob_get_clean();

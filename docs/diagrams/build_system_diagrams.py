@@ -93,6 +93,6 @@ target = HERE / "svp-intranet-system.drawio"
 ET.indent(document)
 ET.ElementTree(document).write(target, encoding="utf-8", xml_declaration=True)
 assert len(ET.parse(target).getroot().findall("diagram")) == 9
-expected = "announcement_reads announcements backup_checklist_history backup_checklists controlled_document_history controlled_documents department device device_type kpi_definitions kpi_form_deliveries kpi_form_history kpi_forms kpi_history kpi_results machine_events machine_pm_records machine_pm_schedules machine_schema machines pm_inspection_form pm_record pm_schedule portal_notifications position users work_events work_items".split()
+expected = "announcement_reads announcements backup_checklist_history backup_checklists controlled_document_history controlled_documents department device device_type kpi_definitions kpi_form_deliveries kpi_form_history kpi_forms kpi_history kpi_results machine_events machine_pm_records machine_pm_schedules machine_schema machines pm_inspection_form pm_record pm_schedule portal_notifications position users work_events work_items work_machine_forms".split()
 assert not set(expected) - all_nodes, set(expected) - all_nodes
 print(f"Validated {len(blocks)} diagrams, {edge_count} edges, all {len(expected)} tables, and editable drawio XML.")

@@ -1,4 +1,4 @@
-<?php $path = $kind === 'ticket' ? '/tickets' : '/requests'; ?>
+<?php if ($kind==='ticket') { require __DIR__.'/ticket_form.php'; return; } $path = '/requests'; ?>
 <h1 class="h3 mb-3"><?= $kind === 'ticket' ? 'แจ้งซ่อมใหม่' : 'ยื่นคำขออนุมัติ' ?></h1>
 <?php if ($error): ?><div class="alert alert-danger" role="alert"><?= Portal::esc($error) ?></div><?php endif; ?>
 <form method="post" action="<?= APP_URL . $path ?>/create" enctype="multipart/form-data" class="card p-4" style="max-width:850px">
