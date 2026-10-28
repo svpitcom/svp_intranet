@@ -54,7 +54,7 @@ Generated from app/Config/routes.php. Middleware is only the first layer; contro
 | POST | `/users/import-excel` | SharePointController::importUsers | auth, role:admin |
 | POST | `/sharepoint/export-tables` | SharePointController::exportTables | auth, role:admin |
 | POST | `/pm-records/{id}/sharepoint` | PmRecordController::retryPdf | auth, role:admin |
-| GET | `/sharepoint` | SharePointController::index | auth, role:admin |
+| GET | `/sharepoint` | SharePointController::index | auth |
 | POST | `/sharepoint/export` | SharePointController::export | auth, role:admin |
 | GET | `/pm-records/{id}/attachment` | FileController::record | auth |
 | GET | `/pm-schedules/{id}/attachment` | FileController::schedule | auth |

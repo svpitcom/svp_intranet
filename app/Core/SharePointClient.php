@@ -86,23 +86,43 @@ class SharePointClient
     /** Resolve only items inside configured DCC, including nested folders. */
     public function dccItem(string $id = ''): array
     {
-        $root = trim((string)($this->config['department_folders']['DCC'] ?? ''));
-        if ($root === '') throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ DCC');
+        return $this->departmentItem('DCC',$id);
+    }
+
+    /** Resolve an item only after proving ancestry within the server-selected department. */
+    public function departmentItem(string $department,string $id=''): array
+    {
+        $root = trim((string)($this->config['department_folders'][$department] ?? ''));
+        if ($root === '') throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ของแผนก กรุณาติดต่อผู้ดูแลระบบ');
         $id = $id === '' ? $root : $id;
         if (strlen($id) > 255) throw new RuntimeException('รหัสไฟล์ไม่ถูกต้อง');
-        $read = fn($itemId) => $this->graph('GET', $this->drivePath() . '/items/' . rawurlencode($itemId) . '?$select=id,name,webUrl,folder,file,parentReference');
+        $read = fn($itemId) => $this->graph('GET', $this->drivePath() . '/items/' . rawurlencode($itemId) . '?$select=id,name,webUrl,folder,file,parentReference,remoteItem');
         $item = $read($id);
+        if (($item['id']??'')!==$id) throw new RuntimeException('SharePoint ส่งรหัสรายการไม่ตรงกับที่ร้องขอ');
         $node = $item;
         $visited = [];
         for ($depth = 0; $depth < 32; $depth++) {
-            if (($node['parentReference']['driveId'] ?? '') !== $this->config['drive_id']) break;
+            if (isset($node['remoteItem']) || ($node['parentReference']['driveId'] ?? '') !== $this->config['drive_id']) break;
             if (($node['id'] ?? '') === $root && isset($node['folder'])) return $item;
             $parent = $node['parentReference']['id'] ?? '';
             if ($parent === '' || isset($visited[$parent])) break;
             $visited[$parent] = true;
             $node = $read($parent);
+            if (($node['id']??'')!==$parent) break;
         }
-        throw new RuntimeException('ไฟล์หรือโฟลเดอร์นี้ไม่ได้อยู่ภายใน DCC');
+        throw new RuntimeException('ไม่มีสิทธิ์เข้าถึงไฟล์หรือโฟลเดอร์นอกพื้นที่แผนก');
+    }
+
+    public function departmentFiles(string $department,string $folder='',string $cursor=''): array
+    {
+        $item=$this->departmentItem($department,$folder);
+        if (!isset($item['folder'])) throw new RuntimeException('ปลายทางไม่ใช่โฟลเดอร์');
+        $page=$this->files($item['id'],$cursor);
+        foreach ($page['items'] as $child) {
+            if (!is_array($child) || ($child['parentReference']['driveId']??'')!==$this->config['drive_id'] || ($child['parentReference']['id']??'')!==$item['id']) throw new RuntimeException('ไม่สามารถยืนยันขอบเขตรายการไฟล์ของแผนกได้');
+        }
+        $page['items']=array_values(array_filter($page['items'],static fn($child)=>!isset($child['remoteItem']) && (isset($child['folder']) || isset($child['file']))));
+        return $page+['folder'=>$item];
     }
 
     public function dccFiles(string $folder = '', string $cursor = ''): array
@@ -122,7 +142,7 @@ class SharePointClient
     {
         if (strlen($folder) > 256 || strlen($cursor) > 8192) throw new InvalidArgumentException('พารามิเตอร์โฟลเดอร์ไม่ถูกต้อง');
         $path = $this->drivePath() . ($folder === '' ? '/root' : '/items/' . rawurlencode($folder)) . '/children';
-        $query = ['$select' => 'id,name,webUrl,size,lastModifiedDateTime,folder,file', '$top' => 50];
+        $query = ['$select' => 'id,name,webUrl,size,lastModifiedDateTime,folder,file,parentReference,remoteItem', '$top' => 50];
         if ($cursor !== '') $query['$skiptoken'] = $cursor;
         $data = $this->graph('GET', $path . '?' . http_build_query($query, '', '&', PHP_QUERY_RFC3986));
         if (!isset($data['value']) || !is_array($data['value'])) throw new RuntimeException('SharePoint ส่งรูปแบบรายการไฟล์ไม่ถูกต้อง');

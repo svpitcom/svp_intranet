@@ -3290,7 +3290,7 @@
                                 }
                             ]
                         },
-                        "description": "Handler: SharePointController::index\nMiddleware: auth, role:admin\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\n"
+                        "description": "Handler: SharePointController::index\nMiddleware: auth\nReturns HTML, redirect or a file; not a JSON API. All POST requests require a session cookie and _csrf.\nAll active signed-in staff may browse their own department folder and descendants. Department comes from the authenticated account, not query parameters. Operation/Marketing share a folder; Purchase Raw Material shares Purchase. Admin retains library-wide browsing. Unmapped departments fail closed. Microsoft 365 links use the user's existing Microsoft permissions.\n"
                     },
                     "response": [],
                     "protocolProfileBehavior": {

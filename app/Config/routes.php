@@ -48,8 +48,8 @@ return [
     'POST /users/import-excel' => ['SharePointController', 'importUsers', ['auth', 'role:admin']],
     'POST /sharepoint/export-tables' => ['SharePointController', 'exportTables', ['auth', 'role:admin']],
     'POST /pm-records/{id}/sharepoint' => ['PmRecordController', 'retryPdf', ['auth', 'role:admin']],
-    // App-only SharePoint metadata and exports are restricted to administrators.
-    'GET /sharepoint' => ['SharePointController', 'index', ['auth', 'role:admin']],
+    // Staff browse their authenticated department; global exports remain admin-only.
+    'GET /sharepoint' => ['SharePointController', 'index', ['auth']],
     'POST /sharepoint/export' => ['SharePointController', 'export', ['auth', 'role:admin']],
     // Auth
     'GET /pm-records/{id}/attachment' => ['FileController', 'record', ['auth']],

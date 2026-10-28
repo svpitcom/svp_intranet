@@ -17,5 +17,9 @@ return [
         'PRODUCTION' => env('SHAREPOINT_FOLDER_PRODUCTION_ID', ''),
         'QC' => env('SHAREPOINT_FOLDER_QC_ID', ''),
         'SUSTAINABILITY' => env('SHAREPOINT_FOLDER_SUSTAINABILITY_ID', ''),
+        'TECHNICAL' => env('SHAREPOINT_FOLDER_TECHNICAL_ID', ''),
+        'PURCHASE' => env('SHAREPOINT_FOLDER_PURCHASE_ID', ''),
+        'RAW_MATERIAL' => env('SHAREPOINT_FOLDER_RAW_MATERIAL_ID', ''),
+        'SAFETY' => env('SHAREPOINT_FOLDER_SAFETY_ID', ''),
     ], static fn($id) => trim((string)$id) !== ''),
 ];

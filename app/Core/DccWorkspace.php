@@ -27,6 +27,7 @@ final class DccWorkspace
             'GET /work/{id}/attachment',
             'GET /document-control',
             'GET /document-control/files',
+            'GET /sharepoint',
             'GET /document-control/create',
             'POST /document-control/create',
             'GET /document-control/{id}/edit',

@@ -8,6 +8,7 @@ $allowed=['GET /','GET /login','POST /login','POST /logout','GET /users','GET /u
 $allowed=array_merge($allowed,['GET /kpi','GET /kpi/create','POST /kpi/create','POST /kpi/{id}/result','GET /kpi/{id}/history','GET /kpi/forms','GET /kpi/forms/create','POST /kpi/forms/create','GET /kpi/forms/{id}','POST /kpi/forms/{id}','GET /kpi/forms/{id}/export']);
 $allowed=array_merge($allowed,['GET /tickets','GET /tickets/create','POST /tickets/create','GET /work/{id}','POST /work/{id}/action','GET /work/{id}/attachment']);
 $allowed=array_merge($allowed,['GET /notifications','POST /notifications/read']);
+$allowed[]='GET /sharepoint';
 foreach (require BASE_PATH.'/app/Config/routes.php' as $route=>$handler) {
     check(DccWorkspace::allows($dcc,$route)===in_array($route,$allowed,true),'DCC route '.$route);
     check(DccWorkspace::allows(array_replace($dcc,['user_role'=>'admin']),$route),'admin unchanged '.$route);
@@ -17,17 +18,17 @@ check(!DccWorkspace::restricted(array_replace($dcc,['svp_department_id'=>2])),'o
 check(!DccWorkspace::allows($dcc,'GET /future-module'),'new routes denied by default');
 $_SESSION['user']=$dcc;
 $html=render('partials/sidebar',[]);
-foreach(['/devices','/requests','/announcements','/departments','/positions','/pm-schedules','/sharepoint'] as $path) check(!str_contains($html,APP_URL.$path),'hidden sidebar '.$path);
+foreach(['/devices','/requests','/announcements','/departments','/positions','/pm-schedules'] as $path) check(!str_contains($html,APP_URL.$path),'hidden sidebar '.$path);
 check(str_contains($html,APP_URL.'/notifications'),'DCC has own repair notification menu');
 check(str_contains($html,APP_URL.'/tickets'),'DCC has repair menu');
 check(str_contains($html,APP_URL.'/users') && str_contains($html,APP_URL.'/document-control'),'DCC sidebar allowed links');
 check(str_contains($html,APP_URL.'/kpi'),'DCC sidebar includes own department KPI');
 check(!DccWorkspace::allows($dcc,'POST /kpi/forms/{id}/sharepoint'),'DCC cannot send KPI to SharePoint');
-check(str_contains($html,'SharePoint DCC') && str_contains($html,APP_URL.'/document-control/files'),'DCC SharePoint menu targets scoped browser');
+check(str_contains($html,'SharePoint แผนกของฉัน') && str_contains($html,APP_URL.'/sharepoint'),'DCC SharePoint menu targets scoped browser');
 $_SERVER['REQUEST_URI']=APP_URL.'/document-control/files';
 $html=render('partials/sidebar',[]);
 check(substr_count($html,'aria-current="page"')===1,'only SharePoint DCC is active on file browser');
-check(!DccWorkspace::allows($dcc,'GET /sharepoint') && !DccWorkspace::allows($dcc,'POST /sharepoint/export'),'general library and exports remain forbidden');
+check(DccWorkspace::allows($dcc,'GET /sharepoint') && !DccWorkspace::allows($dcc,'POST /sharepoint/export'),'department browser allowed but exports remain forbidden');
 $_SERVER['REQUEST_URI']=APP_URL.'/document-control?category=IT';
 $_GET['category']='IT';
 $menuHtml=render('partials/sidebar',[]);

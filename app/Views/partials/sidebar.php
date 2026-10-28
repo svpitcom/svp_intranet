@@ -28,10 +28,8 @@ if (ItDeviceAccess::allows(Session::get('user'))) {
 if (DocumentControlAccess::allows(Session::get('user'))) {
     $navGroups['เอกสาร'] = [['/document-control', 'Document Control', 'file-earmark-check']];
 }
-if ((Session::get('user')['user_role'] ?? '') === 'admin') {
-    $navGroups['เชื่อมต่อระบบ'] = [['/sharepoint', 'SharePoint', 'cloud']];
-} elseif (DccWorkspace::restricted(Session::get('user')) && DocumentControlAccess::allows(Session::get('user'))) {
-    $navGroups['เชื่อมต่อระบบ'] = [['/document-control/files', 'SharePoint DCC', 'cloud']];
+if (SharePointAccess::allows(Session::get('user'))) {
+    $navGroups['เชื่อมต่อระบบ'] = [['/sharepoint', SharePointAccess::admin(Session::get('user')) ? 'SharePoint' : 'SharePoint แผนกของฉัน', 'cloud']];
 }
 ?>
 <aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="app-sidebar" aria-labelledby="sidebar-title">
@@ -51,6 +49,7 @@ if ((Session::get('user')['user_role'] ?? '') === 'admin') {
                         $active = $currentPath === $path || ($path !== '/' && str_starts_with($currentPath, $path . '/'));
                         if ($path === '/devices' && $currentPath === '/it-devices') $active = true;
                         if ($path==='/machine-pm' && str_starts_with($currentPath,'/machine-pm/records')) $active=false;
+                        if ($path==='/sharepoint' && $currentPath==='/document-control/files' && DccWorkspace::restricted(Session::get('user'))) $active=true;
                         if ($path === '/document-control' && $currentPath === '/document-control/files' && DccWorkspace::restricted(Session::get('user'))) $active = false;
                     ?>
                         <li class="nav-item">

@@ -79,6 +79,7 @@ foreach ($ordered as $key=>$handler) {
     if ($method === 'POST' && $path !== '/login') $description .= "WARNING: changes data/session or writes to SharePoint. Set allow_write_request to '$key' for ONE send only. Read the response destination to verify success.\n";
     if (str_contains($path,'delete')) $description .= "DESTRUCTIVE: verify the record ID and backup first. PM schedule deletion can affect records and attachments.\n";
     if ($segment === 'document-control') $description .= "Active DCC department 13 or admin only. Category and department_id are different fields.\n";
+    if ($path === '/sharepoint' && $method === 'GET') $description .= "All active signed-in staff may browse their own department folder and descendants. Department comes from the authenticated account, not query parameters. Operation/Marketing share a folder; Purchase Raw Material shares Purchase. Admin retains library-wide browsing. Unmapped departments fail closed. Microsoft 365 links use the user's existing Microsoft permissions.\n";
     if ($path === '/machines') $description .= "Maintenance department 6 or admin only.\n";
     if ($path === '/it-devices') $description .= "IT department 2 or admin only.\n";
     if ($controller === 'WorkController') $description .= "All active signed-in staff, including DCC and users without a department, can create repair tickets. DCC work detail/action/attachment access is ticket-only and scoped to requester/assignee; approval requests remain blocked.\n";
