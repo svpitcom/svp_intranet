@@ -4,7 +4,7 @@ class Device extends Model
     protected string $table = 'device';
     public function insert(array $data): int
     {
-        if (($data['asset_group']??'')==='machine') throw new RuntimeException('เครื่องจักรต้องบันทึกในฐานข้อมูลเครื่องจักร');
+        if (($data['asset_group'] ?? '') === 'machine') throw new RuntimeException('เครื่องจักรต้องบันทึกในฐานข้อมูลเครื่องจักร');
         return parent::insert($data);
     }
     public const GROUPS = ['it' => 'อุปกรณ์ IT', 'machine' => 'เครื่องจักร', 'unclassified' => 'ยังไม่จัดกลุ่ม'];
@@ -50,7 +50,7 @@ class Device extends Model
 
     public function update(int $id, array $data, string $pk = 'svp_device_id'): bool
     {
-        if (($data['asset_group']??'')==='machine') throw new RuntimeException('เครื่องจักรต้องบันทึกในฐานข้อมูลเครื่องจักร');
+        if (($data['asset_group'] ?? '') === 'machine') throw new RuntimeException('เครื่องจักรต้องบันทึกในฐานข้อมูลเครื่องจักร');
         return parent::update($id, $data, $pk);
     }
 

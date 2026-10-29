@@ -20,7 +20,7 @@ class Kpi extends Model
         if (!KpiPolicy::manages($user, $dept)) throw new RuntimeException('ไม่มีสิทธิ์ตั้ง KPI ของแผนกนี้');
         $period = KpiPolicy::period($data['period'] ?? '');
         $person = Portal::id($data['user_id'] ?? '');
-        if ($person!==null) throw new RuntimeException('KPI ใหม่ต้องเป็นระดับแผนก ไม่ระบุพนักงานรายบุคคล');
+        if ($person !== null) throw new RuntimeException('KPI ใหม่ต้องเป็นระดับแผนก ไม่ระบุพนักงานรายบุคคล');
         if (!$this->query('SELECT svp_department_id FROM department WHERE svp_department_id=?', [$dept])->fetch()) throw new RuntimeException('ไม่พบแผนก');
         if ($person && !$this->query('SELECT svp_user_id FROM users WHERE svp_user_id=? AND svp_department_id=? AND is_active=1', [$person, $dept])->fetch()) throw new RuntimeException('พนักงานต้องอยู่ในแผนกที่เลือกและมีสถานะใช้งาน');
         $source = $data['source'] ?? '';
@@ -85,15 +85,15 @@ class Kpi extends Model
         $this->detail($id, $user);
         return $this->query('SELECT h.*,u.first_name,u.last_name FROM kpi_history h LEFT JOIN users u ON u.svp_user_id=h.actor_id WHERE h.kpi_id=? ORDER BY h.version DESC LIMIT 100', [$id])->fetchAll();
     }
-    public function listing(array $user, string $period, $requestedDepartment=null): array
+    public function listing(array $user, string $period, $requestedDepartment = null): array
     {
         KpiPolicy::period($period);
         if (!KpiPolicy::allows($user)) throw new RuntimeException('ไม่มีสิทธิ์เข้า KPI');
-        $departmentId=KpiPolicy::department($user,$requestedDepartment);
-        $departments=$this->departments($user);
+        $departmentId = KpiPolicy::department($user, $requestedDepartment);
+        $departments = $this->departments($user);
         $where = 'k.period=? AND k.user_id IS NULL';
         $params = [$period];
-        if ($departmentId!==null) {
+        if ($departmentId !== null) {
             $where .= ' AND k.department_id=?';
             $params[] = $departmentId;
         }
@@ -101,9 +101,9 @@ class Kpi extends Model
         $auto = [];
         $summaries = [];
         foreach ($departments as $department) {
-            $id=(int)$department['svp_department_id'];
-            if ($departmentId!==null && $id!==$departmentId) continue;
-            $summaries[$id.':0']=['department_id'=>$id,'label'=>$department['svp_department_name'],'total'=>0,'filled'=>0,'weighted'=>0,'weight'=>0];
+            $id = (int)$department['svp_department_id'];
+            if ($departmentId !== null && $id !== $departmentId) continue;
+            $summaries[$id . ':0'] = ['department_id' => $id, 'label' => $department['svp_department_name'], 'total' => 0, 'filled' => 0, 'weighted' => 0, 'weight' => 0];
         }
         foreach ($rows as &$row) {
             if ($row['source'] !== 'manual') {
@@ -113,7 +113,7 @@ class Kpi extends Model
             }
             $row['score'] = KpiPolicy::score($row['actual'] === null ? null : (float)$row['actual'], (float)$row['target'], $row['direction']);
             $scope = $row['department_id'] . ':' . ($row['user_id'] ?? 0);
-            if (!isset($summaries[$scope])) $summaries[$scope] = ['department_id'=>(int)$row['department_id'],'label'=>$row['svp_department_name'],'total'=>0,'filled'=>0,'weighted'=>0,'weight'=>0];
+            if (!isset($summaries[$scope])) $summaries[$scope] = ['department_id' => (int)$row['department_id'], 'label' => $row['svp_department_name'], 'total' => 0, 'filled' => 0, 'weighted' => 0, 'weight' => 0];
             $s = &$summaries[$scope];
             $s['total']++;
             if ($row['score'] !== null) {
@@ -124,7 +124,7 @@ class Kpi extends Model
             unset($s);
         }
         unset($row);
-        return compact('rows', 'summaries','departments','departmentId');
+        return compact('rows', 'summaries', 'departments', 'departmentId');
     }
     protected function automatic(string $period, int $dept, ?int $person): array
     {
