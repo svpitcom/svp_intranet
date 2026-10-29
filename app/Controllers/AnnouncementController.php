@@ -73,7 +73,7 @@ class AnnouncementController extends Controller
         Session::flash('success', 'บันทึกประกาศแล้ว');
         $this->redirect('/announcements/' . $saved);
     }
-    
+
     public function acknowledge(string $id): void
     {
         try {

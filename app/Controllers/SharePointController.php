@@ -1,7 +1,10 @@
 <?php
 class SharePointController extends Controller
 {
-    protected function client(): SharePointClient { return new SharePointClient(); }
+    protected function client(): SharePointClient
+    {
+        return new SharePointClient();
+    }
     private function destinationClient(): SharePointClient
     {
         return (new SharePointClient())->forDepartment($this->input('department_target', ''));
@@ -12,9 +15,15 @@ class SharePointController extends Controller
     }
     public function index(): void
     {
-        $user=$this->currentUser();
-        if (!SharePointAccess::allows($user)) { http_response_code(403); return; }
-        if (!SharePointAccess::admin($user)) { $this->departmentIndex($user); return; }
+        $user = $this->currentUser();
+        if (!SharePointAccess::allows($user)) {
+            http_response_code(403);
+            return;
+        }
+        if (!SharePointAccess::admin($user)) {
+            $this->departmentIndex($user);
+            return;
+        }
         $client = $this->client();
         $missing = $client->missingSettings();
         $site = null;
@@ -34,17 +43,20 @@ class SharePointController extends Controller
 
     private function departmentIndex(array $user): void
     {
-        $department=SharePointAccess::department($user);
-        $label=SharePointAccess::LABELS[$department??'']??'แผนกของฉัน';
-        $page=['items'=>[],'cursor'=>'','folder'=>[]]; $error='';
+        $department = SharePointAccess::department($user);
+        $label = SharePointAccess::LABELS[$department ?? ''] ?? 'แผนกของฉัน';
+        $page = ['items' => [], 'cursor' => '', 'folder' => []];
+        $error = '';
         try {
-            if ($department===null) throw new RuntimeException('ยังไม่ได้ระบุแผนกหรือยังไม่ได้จับคู่พื้นที่ของแผนก กรุณาติดต่อผู้ดูแลระบบ');
-            $client=$this->client();
+            if ($department === null) throw new RuntimeException('ยังไม่ได้ระบุแผนกหรือยังไม่ได้จับคู่พื้นที่ของแผนก กรุณาติดต่อผู้ดูแลระบบ');
+            $client = $this->client();
             if ($client->missingSettings()) throw new RuntimeException('SharePoint ยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
             // Never accept department_target, department_id, or a root from the browser.
-            $page=$client->departmentFiles($department,$this->input('folder',''),$this->input('cursor',''));
-        } catch (RuntimeException | InvalidArgumentException $e) { $error=$e->getMessage(); }
-        $this->view('sharepoint/department',compact('page','error','label','department'));
+            $page = $client->departmentFiles($department, $this->input('folder', ''), $this->input('cursor', ''));
+        } catch (RuntimeException | InvalidArgumentException $e) {
+            $error = $e->getMessage();
+        }
+        $this->view('sharepoint/department', compact('page', 'error', 'label', 'department'));
     }
 
     public function export(): void

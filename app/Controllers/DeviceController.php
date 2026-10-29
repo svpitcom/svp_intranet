@@ -4,7 +4,10 @@ class DeviceController extends Controller
 {
     public function index(): void
     {
-        if ($this->input('group','')==='machine') { $this->machines(); return; }
+        if ($this->input('group', '') === 'machine') {
+            $this->machines();
+            return;
+        }
         $this->listing(Device::groupFilter($this->input('group', '')));
     }
     public function machines(): void
@@ -50,7 +53,10 @@ class DeviceController extends Controller
 
     public function create(): void
     {
-        if ($this->input('group','')==='machine') { $this->redirect('/machines/create'); return; }
+        if ($this->input('group', '') === 'machine') {
+            $this->redirect('/machines/create');
+            return;
+        }
         $this->view('devices/form', [
             'device'      => null,
             'defaultGroup' => Device::groupFilter($this->input('group', '')) ?: 'unclassified',
@@ -141,7 +147,7 @@ class DeviceController extends Controller
     private function validate(): array
     {
         $errors = [];
-        if ($this->input('asset_group')==='machine') $errors[]='กรุณาจัดการเครื่องจักรจากเมนูเครื่องจักร ซึ่งแยกฐานข้อมูลแล้ว';
+        if ($this->input('asset_group') === 'machine') $errors[] = 'กรุณาจัดการเครื่องจักรจากเมนูเครื่องจักร ซึ่งแยกฐานข้อมูลแล้ว';
         if (!isset(Device::GROUPS[$this->input('asset_group', 'unclassified')])) {
             $errors[] = 'กรุณาเลือกกลุ่มอุปกรณ์ที่ถูกต้อง';
         }
