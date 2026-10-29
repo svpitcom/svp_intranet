@@ -45,11 +45,11 @@ $pageUrl = function (int $page, string $sort, string $dir) use ($group): string 
 </div>
 
 <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="กลุ่มอุปกรณ์">
-        <?php foreach (['' => 'ทั้งหมด'] + Device::GROUPS as $key => $label): ?>
-            <?php if ($key === 'machine' || ($key === 'it' && !ItDeviceAccess::allows($currentUser))) continue; ?>
-            <a class="btn btn-<?= $group === $key ? 'primary' : 'outline-primary' ?>" <?= $group === $key ? 'aria-current="page"' : '' ?> href="<?= APP_URL ?>/devices?group=<?= $key ?><?= Search::suffix() ?>"><?= $label ?></a>
-        <?php endforeach; ?>
-    </nav>
+    <?php foreach (['' => 'ทั้งหมด'] + Device::GROUPS as $key => $label): ?>
+        <?php if ($key === 'machine' || ($key === 'it' && !ItDeviceAccess::allows($currentUser))) continue; ?>
+        <a class="btn btn-<?= $group === $key ? 'primary' : 'outline-primary' ?>" <?= $group === $key ? 'aria-current="page"' : '' ?> href="<?= APP_URL ?>/devices?group=<?= $key ?><?= Search::suffix() ?>"><?= $label ?></a>
+    <?php endforeach; ?>
+</nav>
 <?php $searchExtra = ['group' => $group];
 $searchPath = Device::listPath($group);
 $searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง';
