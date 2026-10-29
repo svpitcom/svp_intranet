@@ -9,39 +9,40 @@ class FileUploader
 
     public static function imageInfo(string $path): array
     {
-        $size=is_file($path)?filesize($path):false;
-        if (!$size || $size>self::MAX_SIZE_BYTES) throw new RuntimeException('รูปภาพต้องมีขนาดไม่เกิน 10 MB และไม่ใช่ไฟล์ว่าง');
-        $mime=(new finfo(FILEINFO_MIME_TYPE))->file($path);
-        $types=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'];
+        $size = is_file($path) ? filesize($path) : false;
+        if (!$size || $size > self::MAX_SIZE_BYTES) throw new RuntimeException('รูปภาพต้องมีขนาดไม่เกิน 10 MB และไม่ใช่ไฟล์ว่าง');
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($path);
+        $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
         if (!isset($types[$mime])) throw new RuntimeException('รองรับรูปภาพ JPG, PNG และ WebP เท่านั้น');
-        $info=@getimagesize($path);
-        if (!$info || ($info['mime']??'')!==$mime || $info[0]<1 || $info[1]<1 || $info[0]*$info[1]>40000000) throw new RuntimeException('รูปภาพไม่ถูกต้องหรือมีความละเอียดเกิน 40 ล้านพิกเซล');
-        return ['mime'=>$mime,'extension'=>$types[$mime]];
+        $info = @getimagesize($path);
+        if (!$info || ($info['mime'] ?? '') !== $mime || $info[0] < 1 || $info[1] < 1 || $info[0] * $info[1] > 40000000) throw new RuntimeException('รูปภาพไม่ถูกต้องหรือมีความละเอียดเกิน 40 ล้านพิกเซล');
+        return ['mime' => $mime, 'extension' => $types[$mime]];
     }
-    public static function uploadImage(string $inputName,string $folder): ?array
+    public static function uploadImage(string $inputName, string $folder): ?array
     {
         if (!isset($_FILES[$inputName])) return null;
-        $file=$_FILES[$inputName];
+        $file = $_FILES[$inputName];
         if (!is_array($file) || !isset($file['error']) || !is_int($file['error'])) throw new RuntimeException('ข้อมูลรูปภาพไม่ถูกต้อง');
-        if ($file['error']===UPLOAD_ERR_NO_FILE) return null;
-        if ($file['error']!==UPLOAD_ERR_OK) throw new RuntimeException('อัปโหลดรูปภาพไม่สำเร็จ กรุณาตรวจขนาดไฟล์');
-        if (!isset($file['tmp_name'],$file['name']) || !is_string($file['tmp_name']) || !is_string($file['name']) || !is_uploaded_file($file['tmp_name'])) throw new RuntimeException('ข้อมูลรูปภาพอัปโหลดไม่ถูกต้อง');
-        $info=self::imageInfo($file['tmp_name']);
-        if (!is_dir($folder) && !mkdir($folder,0755,true) && !is_dir($folder)) throw new RuntimeException('ไม่สามารถสร้างที่เก็บรูปภาพ');
-        $name=bin2hex(random_bytes(16)).'.'.$info['extension'];
-        if (!move_uploaded_file($file['tmp_name'],rtrim($folder,'/').'/'.$name)) throw new RuntimeException('บันทึกรูปภาพไม่สำเร็จ');
-        return ['original_name'=>mb_substr(basename(str_replace('\\','/',$file['name'])),0,255),'stored_path'=>$name];
+        if ($file['error'] === UPLOAD_ERR_NO_FILE) return null;
+        if ($file['error'] !== UPLOAD_ERR_OK) throw new RuntimeException('อัปโหลดรูปภาพไม่สำเร็จ กรุณาตรวจขนาดไฟล์');
+        if (!isset($file['tmp_name'], $file['name']) || !is_string($file['tmp_name']) || !is_string($file['name']) || !is_uploaded_file($file['tmp_name'])) throw new RuntimeException('ข้อมูลรูปภาพอัปโหลดไม่ถูกต้อง');
+        $info = self::imageInfo($file['tmp_name']);
+        if (!is_dir($folder) && !mkdir($folder, 0755, true) && !is_dir($folder)) throw new RuntimeException('ไม่สามารถสร้างที่เก็บรูปภาพ');
+        $name = bin2hex(random_bytes(16)) . '.' . $info['extension'];
+        if (!move_uploaded_file($file['tmp_name'], rtrim($folder, '/') . '/' . $name)) throw new RuntimeException('บันทึกรูปภาพไม่สำเร็จ');
+        return ['original_name' => mb_substr(basename(str_replace('\\', '/', $file['name'])), 0, 255), 'stored_path' => $name];
     }
-    public static function resolveImage(string $folder,?string $name): ?string
+    public static function resolveImage(string $folder, ?string $name): ?string
     {
-        if (!$name || !preg_match('/\A[a-f0-9]{32}\.(?:jpg|png|webp)\z/',$name)) return null;
-        $root=realpath($folder); $path=realpath($folder.'/'.$name);
-        return $root!==false && $path!==false && dirname($path)===$root && is_file($path) ? $path : null;
+        if (!$name || !preg_match('/\A[a-f0-9]{32}\.(?:jpg|png|webp)\z/', $name)) return null;
+        $root = realpath($folder);
+        $path = realpath($folder . '/' . $name);
+        return $root !== false && $path !== false && dirname($path) === $root && is_file($path) ? $path : null;
     }
-    public static function discardImage(string $folder,?string $name): void
+    public static function discardImage(string $folder, ?string $name): void
     {
-        $path=self::resolveImage($folder,$name);
-        if ($path!==null && !unlink($path)) error_log('Unable to remove unused repair image');
+        $path = self::resolveImage($folder, $name);
+        if ($path !== null && !unlink($path)) error_log('Unable to remove unused repair image');
     }
 
     /**

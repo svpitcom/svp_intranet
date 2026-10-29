@@ -50,32 +50,32 @@ class SharePointClient
     public function exportDestinations(): array
     {
         if ($this->missingSettings()) return [];
-        $choices=[];
-        if (trim($this->config['export_folder_id'] ?? '') !== '') $choices['default']='โฟลเดอร์ส่งออกหลัก';
-        foreach ($this->config['department_folders'] ?? [] as $key=>$id) {
-            if (is_string($key) && preg_match('/^[A-Z_]+$/D',$key) && trim((string)$id)!=='') $choices[$key]=$key;
+        $choices = [];
+        if (trim($this->config['export_folder_id'] ?? '') !== '') $choices['default'] = 'โฟลเดอร์ส่งออกหลัก';
+        foreach ($this->config['department_folders'] ?? [] as $key => $id) {
+            if (is_string($key) && preg_match('/^[A-Z_]+$/D', $key) && trim((string)$id) !== '') $choices[$key] = $key;
         }
         return $choices;
     }
 
-    public function uploadKpiForm(int $id,int $year,int $version,string $format,string $bytes,string $destination): array
+    public function uploadKpiForm(int $id, int $year, int $version, string $format, string $bytes, string $destination): array
     {
         if (!isset($this->exportDestinations()[$destination])) throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ SharePoint ที่เลือก');
-        if ($id<1 || $version<1 || $year<2000 || $year>2099 || !in_array($format,['xlsx','pdf'],true)) throw new RuntimeException('ข้อมูลไฟล์ KPI ไม่ถูกต้อง');
-        if (strlen($bytes)>10*1024*1024 || !str_starts_with($bytes,$format==='xlsx'?"PK\x03\x04":'%PDF-')) throw new RuntimeException('รูปแบบไฟล์ KPI ไม่ถูกต้องหรือเกิน 10 MB');
-        $client=$destination==='default'?$this:$this->forDepartment($destination);
+        if ($id < 1 || $version < 1 || $year < 2000 || $year > 2099 || !in_array($format, ['xlsx', 'pdf'], true)) throw new RuntimeException('ข้อมูลไฟล์ KPI ไม่ถูกต้อง');
+        if (strlen($bytes) > 10 * 1024 * 1024 || !str_starts_with($bytes, $format === 'xlsx' ? "PK\x03\x04" : '%PDF-')) throw new RuntimeException('รูปแบบไฟล์ KPI ไม่ถูกต้องหรือเกิน 10 MB');
+        $client = $destination === 'default' ? $this : $this->forDepartment($destination);
         // Validate the default folder as well as department destinations before writing.
-        if ($destination==='default') {
-            $folder=$this->graph('GET',$this->drivePath().'/items/'.rawurlencode($this->config['export_folder_id']).'?$select=id,folder,parentReference');
-            if (($folder['id']??'')!==$this->config['export_folder_id'] || !isset($folder['folder']) || ($folder['parentReference']['driveId']??'')!==$this->config['drive_id']) throw new RuntimeException('ปลายทางส่งออกไม่ใช่โฟลเดอร์ใน Document Library ที่ตั้งค่า');
+        if ($destination === 'default') {
+            $folder = $this->graph('GET', $this->drivePath() . '/items/' . rawurlencode($this->config['export_folder_id']) . '?$select=id,folder,parentReference');
+            if (($folder['id'] ?? '') !== $this->config['export_folder_id'] || !isset($folder['folder']) || ($folder['parentReference']['driveId'] ?? '') !== $this->config['drive_id']) throw new RuntimeException('ปลายทางส่งออกไม่ใช่โฟลเดอร์ใน Document Library ที่ตั้งค่า');
         }
-        $name='MR-F-027-01-'.$year.'-'.$id.'-v'.$version.'.'.$format;
-        $type=$format==='xlsx'?'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'application/pdf';
-        $result=$client->graph('PUT',$client->drivePath().'/items/'.rawurlencode($client->config['export_folder_id']).':/'.rawurlencode($name).':/content',$bytes,$type);
-        if (!is_string($result['id']??null) || $result['id']==='' || ($result['name']??'')!==$name) throw new RuntimeException('ยังยืนยันผลการส่งไม่ได้ กรุณาตรวจไฟล์ใน SharePoint ก่อนส่งซ้ำ');
-        $url=$result['webUrl']??'';
-        if (!is_string($url) || !filter_var($url,FILTER_VALIDATE_URL) || strtolower(parse_url($url,PHP_URL_SCHEME)??'')!=='https' || parse_url($url,PHP_URL_USER) || parse_url($url,PHP_URL_PASS)) $url='';
-        return ['id'=>$result['id'],'name'=>$name,'webUrl'=>$url];
+        $name = 'MR-F-027-01-' . $year . '-' . $id . '-v' . $version . '.' . $format;
+        $type = $format === 'xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf';
+        $result = $client->graph('PUT', $client->drivePath() . '/items/' . rawurlencode($client->config['export_folder_id']) . ':/' . rawurlencode($name) . ':/content', $bytes, $type);
+        if (!is_string($result['id'] ?? null) || $result['id'] === '' || ($result['name'] ?? '') !== $name) throw new RuntimeException('ยังยืนยันผลการส่งไม่ได้ กรุณาตรวจไฟล์ใน SharePoint ก่อนส่งซ้ำ');
+        $url = $result['webUrl'] ?? '';
+        if (!is_string($url) || !filter_var($url, FILTER_VALIDATE_URL) || strtolower(parse_url($url, PHP_URL_SCHEME) ?? '') !== 'https' || parse_url($url, PHP_URL_USER) || parse_url($url, PHP_URL_PASS)) $url = '';
+        return ['id' => $result['id'], 'name' => $name, 'webUrl' => $url];
     }
 
     public function site(): array
@@ -86,11 +86,11 @@ class SharePointClient
     /** Resolve only items inside configured DCC, including nested folders. */
     public function dccItem(string $id = ''): array
     {
-        return $this->departmentItem('DCC',$id);
+        return $this->departmentItem('DCC', $id);
     }
 
     /** Resolve an item only after proving ancestry within the server-selected department. */
-    public function departmentItem(string $department,string $id=''): array
+    public function departmentItem(string $department, string $id = ''): array
     {
         $root = trim((string)($this->config['department_folders'][$department] ?? ''));
         if ($root === '') throw new RuntimeException('ยังไม่ได้ตั้งค่าโฟลเดอร์ของแผนก กรุณาติดต่อผู้ดูแลระบบ');
@@ -98,7 +98,7 @@ class SharePointClient
         if (strlen($id) > 255) throw new RuntimeException('รหัสไฟล์ไม่ถูกต้อง');
         $read = fn($itemId) => $this->graph('GET', $this->drivePath() . '/items/' . rawurlencode($itemId) . '?$select=id,name,webUrl,folder,file,parentReference,remoteItem');
         $item = $read($id);
-        if (($item['id']??'')!==$id) throw new RuntimeException('SharePoint ส่งรหัสรายการไม่ตรงกับที่ร้องขอ');
+        if (($item['id'] ?? '') !== $id) throw new RuntimeException('SharePoint ส่งรหัสรายการไม่ตรงกับที่ร้องขอ');
         $node = $item;
         $visited = [];
         for ($depth = 0; $depth < 32; $depth++) {
@@ -108,21 +108,21 @@ class SharePointClient
             if ($parent === '' || isset($visited[$parent])) break;
             $visited[$parent] = true;
             $node = $read($parent);
-            if (($node['id']??'')!==$parent) break;
+            if (($node['id'] ?? '') !== $parent) break;
         }
         throw new RuntimeException('ไม่มีสิทธิ์เข้าถึงไฟล์หรือโฟลเดอร์นอกพื้นที่แผนก');
     }
 
-    public function departmentFiles(string $department,string $folder='',string $cursor=''): array
+    public function departmentFiles(string $department, string $folder = '', string $cursor = ''): array
     {
-        $item=$this->departmentItem($department,$folder);
+        $item = $this->departmentItem($department, $folder);
         if (!isset($item['folder'])) throw new RuntimeException('ปลายทางไม่ใช่โฟลเดอร์');
-        $page=$this->files($item['id'],$cursor);
+        $page = $this->files($item['id'], $cursor);
         foreach ($page['items'] as $child) {
-            if (!is_array($child) || ($child['parentReference']['driveId']??'')!==$this->config['drive_id'] || ($child['parentReference']['id']??'')!==$item['id']) throw new RuntimeException('ไม่สามารถยืนยันขอบเขตรายการไฟล์ของแผนกได้');
+            if (!is_array($child) || ($child['parentReference']['driveId'] ?? '') !== $this->config['drive_id'] || ($child['parentReference']['id'] ?? '') !== $item['id']) throw new RuntimeException('ไม่สามารถยืนยันขอบเขตรายการไฟล์ของแผนกได้');
         }
-        $page['items']=array_values(array_filter($page['items'],static fn($child)=>!isset($child['remoteItem']) && (isset($child['folder']) || isset($child['file']))));
-        return $page+['folder'=>$item];
+        $page['items'] = array_values(array_filter($page['items'], static fn($child) => !isset($child['remoteItem']) && (isset($child['folder']) || isset($child['file']))));
+        return $page + ['folder' => $item];
     }
 
     public function dccFiles(string $folder = '', string $cursor = ''): array

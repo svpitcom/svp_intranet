@@ -5,7 +5,7 @@ final class MachineAccess
     {
         return self::allows($user);
     }
-    public static function requireAccess(?array $user,bool $manage=false): void
+    public static function requireAccess(?array $user, bool $manage = false): void
     {
         if ($manage ? !self::manages($user) : !self::allows($user)) throw new RuntimeException('ไม่มีสิทธิ์เข้าถึงงานเครื่องจักร');
     }
