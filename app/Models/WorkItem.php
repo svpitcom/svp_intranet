@@ -15,14 +15,17 @@ class WorkItem extends Model
                 || (self::receivesMachineTickets($user) && ($row['category'] ?? '') === 'machine')
                 || (int)($row['assignee_id'] ?? 0) === $id) : (int)($row['approver_id'] ?? 0) === $id);
     }
+
     public static function receivesMachineTickets(array $user): bool
     {
         return !empty($user['is_active']) && in_array($user['svp_department_id'] ?? null, [6, '6'], true);
     }
+
     public static function managesTickets(array $user): bool
     {
         return !empty($user['is_active']) && Portal::manager($user) && !DccWorkspace::restricted($user);
     }
+
     public static function actions(array $row, array $user): array
     {
         if (!self::canRead($row, $user)) return [];
@@ -47,6 +50,7 @@ class WorkItem extends Model
         }
         return $actions;
     }
+
     private function scope(array $user, string $kind): array
     {
         $where = 'w.kind=:kind';
@@ -61,6 +65,7 @@ class WorkItem extends Model
         }
         return [$where, $params];
     }
+
     public function listing(array $user, string $kind, string $q = '', string $status = '', int $page = 1, bool $approvalOnly = false): array
     {
         [$where, $params] = $this->scope($user, $kind);
@@ -80,6 +85,7 @@ class WorkItem extends Model
         $rows = $this->query('SELECT w.*, u.first_name, u.last_name FROM work_items w LEFT JOIN users u ON u.svp_user_id=w.requester_id WHERE ' . $where . ' ORDER BY w.updated_at DESC,w.id DESC LIMIT 15 OFFSET ' . $paging['offset'], $params)->fetchAll();
         return $paging + ['rows' => $rows];
     }
+
     public function detail(int $id, array $user): array
     {
         $row = $this->query('SELECT w.*, u.first_name, u.last_name, a.first_name AS assignee_name, a.last_name AS assignee_last, p.first_name AS approver_name, p.last_name AS approver_last, d.svp_device_name FROM work_items w LEFT JOIN users u ON u.svp_user_id=w.requester_id LEFT JOIN users a ON a.svp_user_id=w.assignee_id LEFT JOIN users p ON p.svp_user_id=w.approver_id LEFT JOIN device d ON d.svp_device_id=w.device_id WHERE w.id=:id', ['id' => $id])->fetch();
@@ -87,27 +93,33 @@ class WorkItem extends Model
         $row['machine_form'] = $row['kind'] === 'ticket' && $row['category'] === 'machine' ? (new MachineRepairForm())->load($id) : null;
         return $row;
     }
+
     public function people(bool $approvers = false): array
     {
         return $this->query("SELECT svp_user_id,first_name,last_name,user_role,is_active,svp_department_id FROM users WHERE is_active=1" . ($approvers ? " AND user_role IN ('admin','manager')" : '') . ' ORDER BY first_name')->fetchAll();
     }
+
     public static function canAssignTo(array $item, array $person): bool
     {
         return !empty($person['is_active']) && ($item['category'] !== 'machine' || self::receivesMachineTickets($person));
     }
+
     public function assigneesFor(array $item): array
     {
         return array_values(array_filter($this->people(), static fn($person) => self::canAssignTo($item, $person)));
     }
+
     private function activeUser(int $id, bool $approver = false): void
     {
         $sql = "SELECT svp_user_id FROM users WHERE svp_user_id=:id AND is_active=1" . ($approver ? " AND user_role IN ('admin','manager')" : '');
         if (!$this->query($sql, ['id' => $id])->fetch()) throw new RuntimeException('ผู้รับผิดชอบหรือผู้อนุมัติไม่พร้อมใช้งาน');
     }
+
     private function event(int $id, int $actor, string $action, string $body): void
     {
         $this->query('INSERT INTO work_events(work_id,actor_id,action,body,created_at) VALUES (:id,:actor,:action,:body,:now)', compact('id', 'actor', 'action', 'body') + ['now' => Portal::now()]);
     }
+
     private function notify(int $id, array $recipients, int $actor, string $message): void
     {
         foreach (array_unique(array_map('intval', $recipients)) as $recipient) {
@@ -115,6 +127,7 @@ class WorkItem extends Model
             $this->query('INSERT INTO portal_notifications(user_id,work_id,message,created_at) VALUES (:user,:id,:message,:now)', ['user' => $recipient, 'id' => $id, 'message' => mb_substr($message, 0, 255), 'now' => Portal::now()]);
         }
     }
+
     public function createItem(string $kind, array $data, array $user, ?array $file = null): int
     {
         if (empty($user['is_active']) || empty($user['svp_user_id']) || (DccWorkspace::restricted($user) && $kind !== 'ticket')) throw new RuntimeException('ไม่มีสิทธิ์สร้างรายการนี้');
@@ -154,10 +167,12 @@ class WorkItem extends Model
             throw $e;
         }
     }
+
     public function history(int $id): array
     {
         return $this->query('SELECT e.*,u.first_name,u.last_name FROM work_events e LEFT JOIN users u ON u.svp_user_id=e.actor_id WHERE e.work_id=:id ORDER BY e.id', ['id' => $id])->fetchAll();
     }
+
     public function act(int $id, array $user, string $action, int $version, string $note, ?int $assignee, array $formInput = []): void
     {
         if (mb_strlen($note) > 10000) throw new RuntimeException('ข้อความยาวเกิน 10,000 ตัวอักษร');
@@ -213,6 +228,7 @@ class WorkItem extends Model
             throw $e;
         }
     }
+
     public function overview(array $user): array
     {
         $counts = [];
