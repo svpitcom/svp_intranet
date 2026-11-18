@@ -111,7 +111,7 @@ class Device extends Model
         };
 
         [$where, $params] = $this->searchClause($search, $group);
-        $sql = "SELECT dv.svp_device_id, dv.svp_device_name, dv.brand_name, dv.model_name, dv.serial_number, dv.is_active,
+        $sql = "SELECT dv.svp_device_id, dv.svp_device_name, dv.brand_name, dv.model_name, dv.serial_number, dv.is_active, dv.asset_group,
                        dt.device_type_name, d.svp_department_name, u.first_name, u.last_name
                 FROM device dv
                 LEFT JOIN device_type dt ON dt.device_type_id = dv.device_type_id
