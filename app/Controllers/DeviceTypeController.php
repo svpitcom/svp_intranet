@@ -4,11 +4,11 @@ class DeviceTypeController extends Controller
 {
     public function index(): void
     {
-        $sort = $this->input('sort', 'device_type_id');
+        $sort = $this->input('sort', 'svp_device_type_id');
         $dir  = $this->input('dir', 'asc');
 
         $devicetypes = (new DeviceType())->allSorted($sort, $dir);
-        $devicetypes = Search::rows($devicetypes, Search::term(), ['device_type_id', 'device_type_name']);
+        $devicetypes = Search::rows($devicetypes, Search::term(), ['svp_device_type_id', 'svp_device_type_name']);
 
         $this->view('device_types/index', ['devicetypes' => $devicetypes]);
     }
@@ -28,7 +28,7 @@ class DeviceTypeController extends Controller
         }
 
         (new DeviceType())->insert([
-            'device_type_name' => $this->input('device_type_name'),
+            'svp_device_type_name' => $this->input('svp_device_type_name'),
         ]);
 
         Session::flash('success', 'เพิ่มประเภทอุปกรณ์เรียบร้อยแล้ว');
@@ -66,7 +66,7 @@ class DeviceTypeController extends Controller
         }
 
         (new DeviceType())->update($id, [
-            'device_type_name' => $this->input('device_type_name'),
+            'svp_device_type_name' => $this->input('svp_device_type_name'),
         ]);
 
         Session::flash('success', 'แก้ไขประเภทอุปกรณ์เรียบร้อยแล้ว');
@@ -92,7 +92,7 @@ class DeviceTypeController extends Controller
     private function validateDeviceType(): array
     {
         $errors = [];
-        if (!$this->input('device_type_name')) $errors[] = 'กรุณากรอกชื่อประเภทอุปกรณ์';
+        if (!$this->input('svp_device_type_name')) $errors[] = 'กรุณากรอกชื่อประเภทอุปกรณ์';
         return $errors;
     }
 }

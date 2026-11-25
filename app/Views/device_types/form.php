@@ -25,15 +25,15 @@ $errors = Session::get('errors');
 <div class="card">
     <div class="card-body">
         <form method="POST"
-            action="<?= APP_URL ?><?= $isEdit ? '/device_types/' . $devicetypes['device_type_id'] . '/edit' : '/device_types/create' ?>">
+            action="<?= APP_URL ?><?= $isEdit ? '/device_types/' . $devicetypes['svp_device_type_id'] . '/edit' : '/device_types/create' ?>">
             <div class="mb-3">
-                <label for="device_type_name" class="form-label">ชื่อประเภทอุปกรณ์</label>
+                <label for="svp_device_type_name" class="form-label">ชื่อประเภทอุปกรณ์</label>
                 <input
                     type="text"
-                    name="device_type_name"
-                    id="device_type_name"
+                    name="svp_device_type_name"
+                    id="svp_device_type_name"
                     class="form-control"
-                    value="<?= htmlspecialchars($devicetypes['device_type_name'] ?? '') ?>"
+                    value="<?= htmlspecialchars($devicetypes['svp_device_type_name'] ?? '') ?>"
                     required
                     autofocus>
             </div>
