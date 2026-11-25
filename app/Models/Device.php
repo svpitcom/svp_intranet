@@ -94,7 +94,7 @@ class Device extends Model
         $offset = ($page - 1) * $perPage;
 
         $sortColumn = match ($sort) {
-            'device_type_name'    => 'dt.svp_device_type_name',
+            'svp_device_type_name'    => 'dt.svp_device_type_name',
             'svp_department_name' => 'd.svp_department_name',
             default               => "dv.{$sort}",
         };
