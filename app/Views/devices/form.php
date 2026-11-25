@@ -7,7 +7,6 @@ $errors = Session::get('errors');
 
 <div class="mb-4">
     <h4 class="fw-bold mb-1"><?= $isEdit ? 'แก้ไขอุปกรณ์' : 'เพิ่มอุปกรณ์ใหม่' ?></h4>
-    <span class="text-muted small"><?= $isEdit ? 'แก้ไขข้อมูลอุปกรณ์ในระบบ' : 'กรอกข้อมูลเพื่อเพิ่มอุปกรณ์ใหม่' ?></span>
 </div>
 
 <?php if ($errors): ?>
@@ -33,13 +32,6 @@ $errors = Session::get('errors');
 
     <div class="form-section">
         <div class="section-label"><i class="bi bi-laptop"></i> ข้อมูลอุปกรณ์</div>
-        <div class="mb-3">
-            <label for="asset_group" class="form-label-modern">กลุ่มอุปกรณ์</label>
-            <select id="asset_group" name="asset_group" class="form-select" required>
-                <?php foreach (Device::GROUPS as $key => $label): if ($key === 'machine') continue; ?><option value="<?= $key ?>" <?= ($device['asset_group'] ?? $defaultGroup ?? 'unclassified') === $key ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?>
-            </select>
-            <small class="text-muted">เลือกประเภทอุปกรณ์ เช่น Laptop หรือ Printer สำหรับเครื่องจักรให้ใช้เมนูเครื่องจักร</small>
-        </div>
 
         <div class="mb-3">
             <label for="svp_device_name" class="form-label-modern">ชื่ออุปกรณ์</label>
@@ -93,32 +85,19 @@ $errors = Session::get('errors');
         <div class="section-label"><i class="bi bi-diagram-3-fill"></i> การจัดสรร</div>
 
         <div class="mb-3">
-            <label for="device_type_id" class="form-label-modern">ประเภทอุปกรณ์</label>
-            <select name="device_type_id" id="device_type_id" class="form-select form-control-modern">
+            <label for="svp_device_type_id" class="form-label-modern">ประเภทอุปกรณ์</label>
+            <select name="svp_device_type_id" id="svp_device_type_id" class="form-select form-control-modern">
                 <option value="">-- เลือกประเภทอุปกรณ์ --</option>
                 <?php foreach ($deviceTypes as $type): ?>
-                    <option value="<?= $type['device_type_id'] ?>"
-                        <?= (($device['device_type_id'] ?? null) == $type['device_type_id']) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($type['device_type_name']) ?>
+                    <option value="<?= $type['svp_device_type_id'] ?>"
+                        <?= (($device['svp_device_type_id'] ?? null) == $type['svp_device_type_id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($type['svp_device_type_name']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
 
         <div class="mb-3">
-            <label for="svp_department_id" class="form-label-modern">แผนก</label>
-            <select name="svp_department_id" id="svp_department_id" class="form-select form-control-modern">
-                <option value="">-- เลือกแผนก --</option>
-                <?php foreach ($departments as $dept): ?>
-                    <option value="<?= $dept['svp_department_id'] ?>"
-                        <?= (($device['svp_department_id'] ?? null) == $dept['svp_department_id']) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($dept['svp_department_name']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div class="mb-1">
             <label for="svp_user_id" class="form-label-modern">ผู้ถือครอง</label>
             <select name="svp_user_id" id="svp_user_id" class="form-select form-control-modern">
                 <option value="">-- ไม่ระบุผู้ถือครอง --</option>
@@ -129,6 +108,17 @@ $errors = Session::get('errors');
                     </option>
                 <?php endforeach; ?>
             </select>
+            <div class="form-text">แผนกจะแสดงตามแผนกของผู้ถือครองโดยอัตโนมัติ</div>
+        </div>
+
+        <div class="mb-1">
+            <label for="location_name" class="form-label-modern">สถานที่</label>
+            <input
+                type="text"
+                name="location_name"
+                id="location_name"
+                class="form-control form-control-modern"
+                value="<?= htmlspecialchars($device['location_name'] ?? '') ?>">
         </div>
     </div>
 
@@ -146,7 +136,7 @@ $errors = Session::get('errors');
         <button type="submit" class="btn-primary-modern">
             <i class="bi bi-check-lg"></i> <?= $isEdit ? 'บันทึกการแก้ไข' : 'เพิ่มอุปกรณ์' ?>
         </button>
-        <a href="<?= APP_URL . Device::listPath($device['asset_group'] ?? $defaultGroup ?? '') ?>" class="btn-secondary-modern">ยกเลิก</a>
+        <a href="<?= APP_URL ?>/devices" class="btn-secondary-modern">ยกเลิก</a>
     </div>
     <input type="hidden" name="_csrf" value="<?= htmlspecialchars(Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
 </form>

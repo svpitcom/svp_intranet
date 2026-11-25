@@ -1,23 +1,28 @@
 <?php
 $currentUser = Session::get('user');
+$isAdmin = ($currentUser['user_role'] ?? '') === 'admin';
 $nextDir = $dir === 'asc' ? 'desc' : 'asc';
-$group = $group ?? Device::groupFilter($_GET['group'] ?? '');
 
-$sortLink = function (string $column, string $label, string $sort, string $dir, string $nextDir) use ($group): string {
+/** สร้าง URL หน้าอื่น โดยคง sort/dir และคำค้นเดิมไว้เสมอ */
+$pageUrl = function (int $page, string $sort, string $dir): string {
+    return APP_URL . '/devices?' . http_build_query([
+        'page' => $page,
+        'sort' => $sort,
+        'dir'  => $dir,
+    ]) . Search::suffix();
+};
+
+/** ลิงก์หัวตารางสำหรับเรียงลำดับ */
+$sortLink = function (string $column, string $label, string $sort, string $dir, string $nextDir) use ($pageUrl) {
     $icon = '<i class="bi bi-arrow-down-up sort-icon-idle"></i>';
     if ($sort === $column) {
         $icon = $dir === 'asc'
             ? '<i class="bi bi-sort-up-alt sort-icon-active"></i>'
             : '<i class="bi bi-sort-down sort-icon-active"></i>';
     }
-    $url = APP_URL . Device::listPath($group) . '?sort=' . urlencode($column) . '&dir=' . ($sort === $column ? $nextDir : 'asc') . Search::suffix();
-    $url .= '&group=' . urlencode($group);
-    return '<a href="' . $url . '" class="sort-link">' . htmlspecialchars($label) . ' ' . $icon . '</a>';
-};
-
-/** สร้าง URL หน้าอื่น โดยคง sort/dir เดิมไว้เสมอ */
-$pageUrl = function (int $page, string $sort, string $dir) use ($group): string {
-    return APP_URL . Device::listPath($group) . '?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . $page . Search::suffix() . '&group=' . urlencode($group);
+    // ถ้าคลิกคอลัมน์ที่กำลังเรียงอยู่ ให้สลับทิศทาง ถ้าเป็นคอลัมน์ใหม่ให้เริ่มที่ asc
+    $url = $pageUrl(1, $column, $sort === $column ? $nextDir : 'asc');
+    return '<a href="' . htmlspecialchars($url) . '" class="sort-link">' . htmlspecialchars($label) . ' ' . $icon . '</a>';
 };
 ?>
 
@@ -34,29 +39,21 @@ $pageUrl = function (int $page, string $sort, string $dir) use ($group): string 
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h4 class="mb-0 fw-bold"><?= Device::GROUPS[$group] ?? 'ทะเบียนอุปกรณ์รวม' ?></h4>
         <span class="text-muted small">ทั้งหมด <?= number_format($totalDevices) ?> รายการ</span>
     </div>
-    <?php if ($currentUser['user_role'] === 'admin'): ?>
-        <a href="<?= APP_URL ?>/devices/create?group=<?= htmlspecialchars($group) ?>" class="btn-primary-modern btn-sm">
-            <i class="bi bi-plus-lg"></i> <?= $group === 'machine' ? 'เพิ่มเครื่องจักร' : 'เพิ่มอุปกรณ์' ?>
+    <?php if ($isAdmin): ?>
+        <a href="<?= APP_URL ?>/devices/create" class="btn-primary-modern btn-sm">
+            <i class="bi bi-plus-lg"></i> เพิ่มอุปกรณ์
         </a>
     <?php endif; ?>
 </div>
 
-<nav class="d-flex flex-wrap gap-2 mb-3" aria-label="กลุ่มอุปกรณ์">
-    <?php foreach (['' => 'ทั้งหมด'] + Device::GROUPS as $key => $label): ?>
-        <?php if ($key === 'machine' || ($key === 'it' && !ItDeviceAccess::allows($currentUser))) continue; ?>
-        <a class="btn btn-<?= $group === $key ? 'primary' : 'outline-primary' ?>" <?= $group === $key ? 'aria-current="page"' : '' ?> href="<?= APP_URL ?>/devices?group=<?= $key ?><?= Search::suffix() ?>"><?= $label ?></a>
-    <?php endforeach; ?>
-</nav>
-<?php $searchExtra = ['group' => $group];
-$searchPath = Device::listPath($group);
+<?php
 $searchPlaceholder = 'ชื่ออุปกรณ์, Serial, ยี่ห้อ, แผนก หรือผู้ถือครอง';
 $resultCount = $totalDevices;
 require BASE_PATH . '/app/Views/partials/search.php'; ?>
 <div class="card-modern">
-    <?php if ($currentUser['user_role'] === 'admin' && $group === ''): ?>
+    <?php if ($isAdmin): ?>
         <div class="p-3 border-bottom">
             <p class="small text-muted">ปลายทาง Excel: SharePoint / IT · ส่งออกและนำเข้าจากโฟลเดอร์ IT โดยอัตโนมัติ</p>
             <form method="post" action="<?= APP_URL ?>/devices/sync-excel" onsubmit="return confirm('อัปเดต Excel ในโฟลเดอร์ IT ด้วยข้อมูลทั้งหมดจาก Intranet? ข้อมูลที่แก้ไว้ในไฟล์นั้นจะถูกแทนที่');">
@@ -74,17 +71,16 @@ require BASE_PATH . '/app/Views/partials/search.php'; ?>
         <table class="table table-hover align-middle mb-0 table-modern">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th><?= $sortLink('svp_device_id', 'ID', $sort, $dir, $nextDir) ?></th>
                     <th><?= $sortLink('svp_device_name', 'ชื่ออุปกรณ์', $sort, $dir, $nextDir) ?></th>
                     <th><?= $sortLink('brand_name', 'ยี่ห้อ', $sort, $dir, $nextDir) ?></th>
                     <th>โมเดล</th>
-                    <th>กลุ่ม</th>
                     <th>SerialNumber</th>
                     <th><?= $sortLink('device_type_name', 'ประเภทอุปกรณ์', $sort, $dir, $nextDir) ?></th>
                     <th><?= $sortLink('svp_department_name', 'แผนก', $sort, $dir, $nextDir) ?></th>
                     <th>พนักงานใช้งาน</th>
                     <th><?= $sortLink('is_active', 'สถานะ', $sort, $dir, $nextDir) ?></th>
-                    <?php if ($currentUser['user_role'] === 'admin'): ?><th class="text-end">จัดการ</th><?php endif; ?>
+                    <?php if ($isAdmin): ?><th class="text-end">จัดการ</th><?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -93,17 +89,16 @@ require BASE_PATH . '/app/Views/partials/search.php'; ?>
                         <td class="text-muted"><?= htmlspecialchars($dv['svp_device_id']) ?></td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <span class="device-icon"><i class="bi bi-<?= ($dv['asset_group'] ?? '') === 'machine' ? 'gear' : 'laptop' ?>"></i></span>
+                                <span class="device-icon"><i class="bi bi-laptop"></i></span>
                                 <span class="fw-medium"><?= htmlspecialchars($dv['svp_device_name']) ?></span>
                             </div>
                         </td>
                         <td><?= htmlspecialchars($dv['brand_name'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($dv['model_name'] ?? '-') ?></td>
-                        <td><span class="badge bg-secondary"><?= Device::GROUPS[$dv['asset_group'] ?? 'unclassified'] ?? 'ยังไม่จัดกลุ่ม' ?></span></td>
                         <td><span class="code-chip"><?= htmlspecialchars($dv['serial_number'] ?? '-') ?></span></td>
                         <td><?= htmlspecialchars($dv['device_type_name'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($dv['svp_department_name'] ?? '-') ?></td>
-                        <td class="text-muted"><?= htmlspecialchars($dv['first_name'] . ' ' . $dv['last_name']) ?></td>
+                        <td class="text-muted"><?= htmlspecialchars(trim(($dv['first_name'] ?? '') . ' ' . ($dv['last_name'] ?? '')) ?: '-') ?></td>
                         <td>
                             <?php if ($dv['is_active']): ?>
                                 <span class="status-dot status-active"></span><span class="text-success small fw-medium">ใช้งาน</span>
@@ -111,7 +106,7 @@ require BASE_PATH . '/app/Views/partials/search.php'; ?>
                                 <span class="status-dot status-inactive"></span><span class="text-muted small">ปิดการใช้งาน</span>
                             <?php endif; ?>
                         </td>
-                        <?php if ($currentUser['user_role'] === 'admin'): ?>
+                        <?php if ($isAdmin): ?>
                             <td class="text-end">
                                 <a href="<?= APP_URL ?>/devices/<?= $dv['svp_device_id'] ?>/edit" class="btn-icon" title="แก้ไข">
                                     <i class="bi bi-pencil-square"></i>
@@ -129,7 +124,7 @@ require BASE_PATH . '/app/Views/partials/search.php'; ?>
                 <?php endforeach; ?>
                 <?php if (empty($devices)): ?>
                     <tr>
-                        <td colspan="11" class="text-center text-muted py-5">
+                        <td colspan="<?= $isAdmin ? 10 : 9 ?>" class="text-center text-muted py-5">
                             <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i>
                             ยังไม่มีข้อมูลอุปกรณ์
                         </td>
